@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nfeProc>
+  <NFe>
+    <infNFe Id="NFeDEMO-SAIDA-1002">
+      <ide>
+        <cUF>35</cUF>
+        <natOp>Venda de mercadoria</natOp>
+        <mod>55</mod>
+        <serie>1</serie>
+        <nNF>1002</nNF>
+        <dhEmi>2026-07-15T14:00:00-03:00</dhEmi>
+        <tpNF>1</tpNF>
+      </ide>
+      <emit>
+        <CNPJ>11222333000181</CNPJ>
+        <xNome>Cliente Ficticio Comercio Ltda</xNome>
+      </emit>
+      <dest>
+        <CNPJ>33444555000199</CNPJ>
+        <xNome>Comprador Final Comercio Ltda</xNome>
+      </dest>
+      <det nItem="1">
+        <prod>
+          <cProd>P001</cProd>
+          <xProd>Parafuso Sextavado M8</xProd>
+          <NCM>73181500</NCM>
+          <CFOP>5102</CFOP>
+          <qCom>10</qCom>
+          <vUnCom>4.00</vUnCom>
+          <vProd>40.00</vProd>
+        </prod>
+        <imposto>
+          <ICMS><ICMS00><CST>00</CST><pICMS>18.00</pICMS><vICMS>7.20</vICMS></ICMS00></ICMS>
+          <PIS><PISAliq><CST>01</CST><pPIS>1.65</pPIS><vPIS>0.66</vPIS></PISAliq></PIS>
+          <COFINS><COFINSAliq><CST>01</CST><pCOFINS>7.60</pCOFINS><vCOFINS>3.04</vCOFINS></COFINSAliq></COFINS>
+        </imposto>
+      </det>
+      <total>
+        <ICMSTot>
+          <vProd>40.00</vProd>
+          <vICMS>7.20</vICMS>
+          <vNF>40.00</vNF>
+        </ICMSTot>
+      </total>
+    </infNFe>
+    <protNFe><infProt><cStat>100</cStat></infProt></protNFe>
+  </NFe>
+</nfeProc>

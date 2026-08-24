@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nfeProc>
+  <NFe>
+    <infNFe Id="NFeDEMO-SAIDA-1005">
+      <ide>
+        <cUF>35</cUF>
+        <natOp>Venda de mercadoria</natOp>
+        <mod>55</mod>
+        <serie>1</serie>
+        <nNF>1005</nNF>
+        <dhEmi>2026-07-29T14:00:00-03:00</dhEmi>
+        <tpNF>1</tpNF>
+      </ide>
+      <emit>
+        <CNPJ>11222333000181</CNPJ>
+        <xNome>Cliente Ficticio Comercio Ltda</xNome>
+      </emit>
+      <dest>
+        <CNPJ>33444555000199</CNPJ>
+        <xNome>Comprador Final Comercio Ltda</xNome>
+      </dest>
+      <det nItem="1">
+        <prod>
+          <cProd>P002</cProd>
+          <xProd>Chapa de Aco 2mm</xProd>
+          <NCM>72091600</NCM>
+          <CFOP>5102</CFOP>
+          <qCom>5</qCom>
+          <vUnCom>18.00</vUnCom>
+          <vProd>90.00</vProd>
+        </prod>
+        <imposto>
+          <ICMS><ICMS00><CST>00</CST><pICMS>18.00</pICMS><vICMS>16.20</vICMS></ICMS00></ICMS>
+          <PIS><PISAliq><CST>01</CST><pPIS>1.65</pPIS><vPIS>1.49</vPIS></PISAliq></PIS>
+          <COFINS><COFINSAliq><CST>01</CST><pCOFINS>7.60</pCOFINS><vCOFINS>6.84</vCOFINS></COFINSAliq></COFINS>
+        </imposto>
+      </det>
+      <total>
+        <ICMSTot>
+          <vProd>90.00</vProd>
+          <vICMS>16.20</vICMS>
+          <vNF>90.00</vNF>
+        </ICMSTot>
+      </total>
+    </infNFe>
+    <protNFe><infProt><cStat>100</cStat></infProt></protNFe>
+  </NFe>
+</nfeProc>

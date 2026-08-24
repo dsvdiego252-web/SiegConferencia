@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIEG Conferência Fiscal</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>SIEG Conferência Fiscal</h1>
+    <p class="subtitle">Documentos integrados, quebras de sequência e cruzamento tributário por cliente</p>
+  </header>
+
+  <main>
+    <section class="panel filters">
+      <div class="field">
+        <label for="apiBaseUrl">Backend</label>
+        <input id="apiBaseUrl" type="text" value="http://localhost:3001" />
+      </div>
+      <div class="field">
+        <label for="clienteSelect">Cliente</label>
+        <select id="clienteSelect"></select>
+      </div>
+      <div class="field">
+        <label for="mesInput">Mês</label>
+        <input id="mesInput" type="month" />
+      </div>
+      <div class="field field-button">
+        <button id="btnAtualizar">Atualizar</button>
+      </div>
+      <details class="add-client">
+        <summary>+ cadastrar cliente</summary>
+        <div class="add-client-form">
+          <input id="novoClienteCnpj" type="text" placeholder="CNPJ (somente números)" maxlength="14" />
+          <input id="novoClienteNome" type="text" placeholder="Nome do cliente" />
+          <button id="btnAdicionarCliente">Adicionar</button>
+        </div>
+      </details>
+    </section>
+
+    <section id="statusBox" class="status"></section>
+
+    <section class="panel summary" id="summaryPanel" hidden>
+      <div class="summary-card">
+        <span class="summary-value" id="summaryTotal">0</span>
+        <span class="summary-label">Documentos integrados</span>
+      </div>
+      <div class="summary-card">
+        <span class="summary-value" id="summaryEntrada">0</span>
+        <span class="summary-label">Entradas</span>
+      </div>
+      <div class="summary-card">
+        <span class="summary-value" id="summarySaida">0</span>
+        <span class="summary-label">Saídas</span>
+      </div>
+      <div class="summary-card" id="summaryGapsCard">
+        <span class="summary-value" id="summaryGaps">0</span>
+        <span class="summary-label">Quebras de sequência</span>
+      </div>
+    </section>
+
+    <section class="panel" id="sequencePanel" hidden>
+      <h2>Quebras de sequência (documentos de saída)</h2>
+      <p class="hint">Agrupado por emitente + série. Números faltantes dentro do intervalo emitido no mês.</p>
+      <div class="table-wrap">
+        <table id="sequenceTable">
+          <thead>
+            <tr>
+              <th>Emitente</th>
+              <th>Série</th>
+              <th>Faixa emitida</th>
+              <th>Encontradas</th>
+              <th>Canceladas</th>
+              <th>Faltando</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" id="documentsPanel" hidden>
+      <h2>Documentos integrados no mês</h2>
+      <div class="table-wrap">
+        <table id="documentsTable">
+          <thead>
+            <tr>
+              <th>Operação</th>
+              <th>Nº</th>
+              <th>Série</th>
+              <th>Emissão</th>
+              <th>Emitente</th>
+              <th>Destinatário</th>
+              <th>Valor</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" id="taxPanel" hidden>
+      <h2>Cruzamento tributário — entrada x saída por produto</h2>
+      <div class="table-wrap">
+        <table id="taxTable">
+          <thead>
+            <tr>
+              <th>Produto (NCM)</th>
+              <th>Qtd. entrada</th>
+              <th>Qtd. saída</th>
+              <th>Saldo qtd.</th>
+              <th>ICMS entrada</th>
+              <th>ICMS saída</th>
+              <th>PIS+COFINS entrada</th>
+              <th>PIS+COFINS saída</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

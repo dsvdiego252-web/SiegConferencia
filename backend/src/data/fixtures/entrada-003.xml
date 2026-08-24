@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nfeProc>
+  <NFe>
+    <infNFe Id="NFeDEMO-ENTRADA-503">
+      <ide>
+        <cUF>35</cUF>
+        <natOp>Compra para revenda</natOp>
+        <mod>55</mod>
+        <serie>1</serie>
+        <nNF>503</nNF>
+        <dhEmi>2026-08-06T10:00:00-03:00</dhEmi>
+        <tpNF>0</tpNF>
+      </ide>
+      <emit>
+        <CNPJ>22333444000155</CNPJ>
+        <xNome>Fornecedor Aço e Ferragens Ltda</xNome>
+      </emit>
+      <dest>
+        <CNPJ>11222333000181</CNPJ>
+        <xNome>Cliente Ficticio Comercio Ltda</xNome>
+      </dest>
+      <det nItem="1">
+        <prod>
+          <cProd>P001</cProd>
+          <xProd>Parafuso Sextavado M8</xProd>
+          <NCM>73181500</NCM>
+          <CFOP>1102</CFOP>
+          <qCom>60</qCom>
+          <vUnCom>2.60</vUnCom>
+          <vProd>156.00</vProd>
+        </prod>
+        <imposto>
+          <ICMS><ICMS00><CST>00</CST><pICMS>12.00</pICMS><vICMS>18.72</vICMS></ICMS00></ICMS>
+          <PIS><PISAliq><CST>01</CST><pPIS>1.65</pPIS><vPIS>2.57</vPIS></PISAliq></PIS>
+          <COFINS><COFINSAliq><CST>01</CST><pCOFINS>7.60</pCOFINS><vCOFINS>11.86</vCOFINS></COFINSAliq></COFINS>
+        </imposto>
+      </det>
+      <total>
+        <ICMSTot>
+          <vProd>156.00</vProd>
+          <vICMS>18.72</vICMS>
+          <vNF>156.00</vNF>
+        </ICMSTot>
+      </total>
+    </infNFe>
+    <protNFe><infProt><cStat>100</cStat></infProt></protNFe>
+  </NFe>
+</nfeProc>
