@@ -19,3 +19,17 @@ export function resolverPeriodo(query) {
     dataFim: query.fim || undefined,
   };
 }
+
+/**
+ * Verifica se uma data (AAAA-MM-DD, ou prefixo de um ISO datetime) cai
+ * dentro do período informado. Sem dataInicio/dataFim, ou sem a própria
+ * data, considera que está dentro (não filtra).
+ */
+export function estaDentroDoPeriodo(dataISO, dataInicio, dataFim) {
+  if (!dataInicio && !dataFim) return true;
+  const data = String(dataISO || '').slice(0, 10);
+  if (!data) return true;
+  if (dataInicio && data < dataInicio) return false;
+  if (dataFim && data > dataFim) return false;
+  return true;
+}

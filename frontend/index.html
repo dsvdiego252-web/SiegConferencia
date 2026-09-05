@@ -120,6 +120,85 @@
         </table>
       </div>
     </section>
+
+    <section class="panel">
+      <h2>Conferência Domínio x SIEG</h2>
+      <p class="hint">
+        Envie a planilha exportada do Domínio (XLSX ou CSV) com as notas do mês. O sistema cruza com os
+        documentos da SIEG e aponta o que está pendente de lançamento, o que só existe no Domínio, e onde os
+        valores não batem — sem precisar de acesso liberado à API da SIEG para esse cruzamento específico.
+      </p>
+      <div class="filters" style="padding: 0;">
+        <div class="field">
+          <label for="dominioFileInput">Planilha do Domínio</label>
+          <input id="dominioFileInput" type="file" accept=".csv,.xlsx,.xls" />
+        </div>
+        <div class="field field-button">
+          <button id="btnConferirDominio">Conferir</button>
+        </div>
+      </div>
+      <div id="reconciliationStatus" class="status"></div>
+    </section>
+
+    <section class="panel summary" id="reconciliationSummaryPanel" hidden>
+      <div class="summary-card">
+        <span class="summary-value" id="reconTotalPareados">0</span>
+        <span class="summary-label">Casadas OK</span>
+      </div>
+      <div class="summary-card" id="reconDivergentesCard">
+        <span class="summary-value" id="reconTotalDivergentes">0</span>
+        <span class="summary-label">Valor divergente</span>
+      </div>
+      <div class="summary-card" id="reconSomenteSiegCard">
+        <span class="summary-value" id="reconTotalSomenteSieg">0</span>
+        <span class="summary-label">Pendente no Domínio</span>
+      </div>
+      <div class="summary-card" id="reconSomenteDominioCard">
+        <span class="summary-value" id="reconTotalSomenteDominio">0</span>
+        <span class="summary-label">Sem XML na SIEG</span>
+      </div>
+    </section>
+
+    <section class="panel" id="reconciliationResumoPanel" hidden>
+      <h2>Receita por mês — SIEG x Domínio</h2>
+      <div class="table-wrap">
+        <table id="reconResumoTable">
+          <thead>
+            <tr>
+              <th>Mês</th>
+              <th>Entrada SIEG</th>
+              <th>Entrada Domínio</th>
+              <th>Diferença entrada</th>
+              <th>Saída SIEG</th>
+              <th>Saída Domínio</th>
+              <th>Diferença saída</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" id="reconciliationDetailPanel" hidden>
+      <h2>Divergências e pendências</h2>
+      <div class="table-wrap">
+        <table id="reconDetailTable">
+          <thead>
+            <tr>
+              <th>Situação</th>
+              <th>Nº</th>
+              <th>Série</th>
+              <th>Operação</th>
+              <th>Emissão</th>
+              <th>Valor SIEG</th>
+              <th>Valor Domínio</th>
+              <th>Diferença</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
   </main>
 
   <script src="js/app.js"></script>

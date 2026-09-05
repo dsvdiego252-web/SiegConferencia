@@ -19,6 +19,21 @@ const els = {
   documentsTableBody: document.querySelector('#documentsTable tbody'),
   taxPanel: document.getElementById('taxPanel'),
   taxTableBody: document.querySelector('#taxTable tbody'),
+  dominioFileInput: document.getElementById('dominioFileInput'),
+  btnConferirDominio: document.getElementById('btnConferirDominio'),
+  reconciliationStatus: document.getElementById('reconciliationStatus'),
+  reconciliationSummaryPanel: document.getElementById('reconciliationSummaryPanel'),
+  reconTotalPareados: document.getElementById('reconTotalPareados'),
+  reconTotalDivergentes: document.getElementById('reconTotalDivergentes'),
+  reconDivergentesCard: document.getElementById('reconDivergentesCard'),
+  reconTotalSomenteSieg: document.getElementById('reconTotalSomenteSieg'),
+  reconSomenteSiegCard: document.getElementById('reconSomenteSiegCard'),
+  reconTotalSomenteDominio: document.getElementById('reconTotalSomenteDominio'),
+  reconSomenteDominioCard: document.getElementById('reconSomenteDominioCard'),
+  reconciliationResumoPanel: document.getElementById('reconciliationResumoPanel'),
+  reconResumoTableBody: document.querySelector('#reconResumoTable tbody'),
+  reconciliationDetailPanel: document.getElementById('reconciliationDetailPanel'),
+  reconDetailTableBody: document.querySelector('#reconDetailTable tbody'),
 };
 
 function apiBase() {
@@ -43,6 +58,13 @@ async function apiPost(pathAndQuery, body) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.erro || `Erro ${res.status} ao chamar ${pathAndQuery}`);
+  return data;
+}
+
+async function apiPostForm(pathAndQuery, formData) {
+  const res = await fetch(`${apiBase()}${pathAndQuery}`, { method: 'POST', body: formData });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.erro || `Erro ${res.status} ao chamar ${pathAndQuery}`);
   return data;
@@ -206,10 +228,129 @@ async function adicionarCliente() {
   }
 }
 
+function renderReconciliation(resultado) {
+  els.reconciliationSummaryPanel.hidden = false;
+  els.reconciliationResumoPanel.hidden = false;
+  els.reconciliationDetailPanel.hidden = false;
+
+  els.reconTotalPareados.textContent = resultado.totalPareados - resultado.totalDivergentes;
+  els.reconTotalDivergentes.textContent = resultado.totalDivergentes;
+  els.reconTotalSomenteSieg.textContent = resultado.somenteSieg.length;
+  els.reconTotalSomenteDominio.textContent = resultado.somenteDominio.length;
+
+  els.reconDivergentesCard.classList.toggle('alerta', resultado.totalDivergentes > 0);
+  els.reconSomenteSiegCard.classList.toggle('alerta-leve', resultado.somenteSieg.length > 0);
+  els.reconSomenteDominioCard.classList.toggle('alerta-leve', resultado.somenteDominio.length > 0);
+
+  els.reconResumoTableBody.innerHTML = '';
+  for (const m of resultado.resumoPorMes) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${m.mes}</td>
+      <td>${formatMoney(m.sieg.entrada)}</td>
+      <td>${formatMoney(m.dominio.entrada)}</td>
+      <td>${formatMoney(m.diferenca.entrada)}</td>
+      <td>${formatMoney(m.sieg.saida)}</td>
+      <td>${formatMoney(m.dominio.saida)}</td>
+      <td>${formatMoney(m.diferenca.saida)}</td>
+    `;
+    els.reconResumoTableBody.appendChild(tr);
+  }
+
+  const linhas = [
+    ...resultado.pareados
+      .filter((p) => p.divergente)
+      .map((p) => ({ situacao: 'divergente', rowClass: 'row-divergente', badge: 'Valor diferente', ...p })),
+    ...resultado.somenteSieg.map((d) => ({
+      situacao: 'pendente',
+      rowClass: 'row-pendente',
+      badge: 'Pendente no Domínio',
+      numero: d.numero,
+      serie: d.serie,
+      operacao: d.operacao,
+      dataEmissao: d.dataEmissao,
+      sieg: { valorTotal: d.valorTotal },
+      dominio: null,
+    })),
+    ...resultado.somenteDominio.map((d) => ({
+      situacao: 'somente-dominio',
+      rowClass: 'row-somente-dominio',
+      badge: 'Sem XML na SIEG',
+      numero: d.numero,
+      serie: d.serie,
+      operacao: d.operacao,
+      dataEmissao: d.dataEmissao,
+      sieg: null,
+      dominio: { valorTotal: d.valorTotal },
+    })),
+  ].sort((a, b) => (a.dataEmissao || '').localeCompare(b.dataEmissao || ''));
+
+  els.reconDetailTableBody.innerHTML = '';
+  if (!linhas.length) {
+    els.reconDetailTableBody.innerHTML = '<tr class="empty-row"><td colspan="8">Nenhuma divergência ou pendência encontrada — tudo bateu.</td></tr>';
+    return;
+  }
+  for (const l of linhas) {
+    const tr = document.createElement('tr');
+    tr.className = l.rowClass;
+    const valorSieg = l.sieg ? formatMoney(l.sieg.valorTotal) : '—';
+    const valorDominio = l.dominio ? formatMoney(l.dominio.valorTotal) : '—';
+    const diferenca = l.sieg && l.dominio ? formatMoney(l.diffValorTotal) : '—';
+    tr.innerHTML = `
+      <td><span class="badge badge-${l.situacao === 'divergente' ? 'divergente' : l.situacao === 'pendente' ? 'pendente' : 'somente-dominio'}">${l.badge}</span></td>
+      <td>${l.numero}</td>
+      <td>${l.serie}</td>
+      <td><span class="badge badge-${l.operacao}">${l.operacao}</span></td>
+      <td>${formatDate(l.dataEmissao)}</td>
+      <td>${valorSieg}</td>
+      <td>${valorDominio}</td>
+      <td>${diferenca}</td>
+    `;
+    els.reconDetailTableBody.appendChild(tr);
+  }
+}
+
+async function conferirDominio() {
+  const cnpj = els.clienteSelect.value;
+  const mes = els.mesInput.value;
+  const arquivo = els.dominioFileInput.files[0];
+
+  els.reconciliationStatus.classList.remove('error');
+
+  if (!cnpj) {
+    els.reconciliationStatus.textContent = 'Selecione um cliente primeiro.';
+    return;
+  }
+  if (!mes) {
+    els.reconciliationStatus.textContent = 'Selecione um mês no filtro acima primeiro.';
+    return;
+  }
+  if (!arquivo) {
+    els.reconciliationStatus.textContent = 'Escolha o arquivo exportado do Domínio (XLSX ou CSV).';
+    return;
+  }
+
+  els.reconciliationStatus.textContent = 'Conferindo...';
+  try {
+    const formData = new FormData();
+    formData.append('cnpj', cnpj);
+    formData.append('mes', mes);
+    formData.append('dominioFile', arquivo);
+
+    const resultado = await apiPostForm('/api/reconciliation', formData);
+    renderReconciliation(resultado);
+    els.reconciliationStatus.textContent = `Conferido às ${new Date().toLocaleTimeString('pt-BR')} — ${resultado.totalSieg} docs na SIEG, ${resultado.totalDominio} no Domínio.`;
+  } catch (err) {
+    els.reconciliationStatus.classList.add('error');
+    els.reconciliationStatus.textContent = err.message;
+  }
+}
+
 async function init() {
   els.mesInput.value = currentMonthDefault();
   els.btnAtualizar.addEventListener('click', atualizar);
   els.btnAdicionarCliente.addEventListener('click', adicionarCliente);
+  els.btnConferirDominio.addEventListener('click', conferirDominio);
 
   try {
     await carregarClientes();

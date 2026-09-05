@@ -1,5 +1,6 @@
 import { fetchAllXmls, XmlType } from './siegClient.js';
 import { parseNfeBatch, classificarOperacao } from './xmlParser.js';
+import { estaDentroDoPeriodo } from './dateUtils.js';
 
 /**
  * Busca (ou usa o mock) e normaliza todos os documentos NFe relacionados a
@@ -37,17 +38,8 @@ export async function obterDocumentosClassificados({ clienteCnpj, dataInicio, da
     docsUnicos.set(chave, doc);
   }
 
-  const dentroDoPeriodo = (doc) => {
-    if (!dataInicio && !dataFim) return true;
-    const dataDoc = (doc.dataEmissao || '').slice(0, 10);
-    if (!dataDoc) return true;
-    if (dataInicio && dataDoc < dataInicio) return false;
-    if (dataFim && dataDoc > dataFim) return false;
-    return true;
-  };
-
   return [...docsUnicos.values()]
-    .filter(dentroDoPeriodo)
+    .filter((doc) => estaDentroDoPeriodo(doc.dataEmissao, dataInicio, dataFim))
     .map((doc) => ({ doc, operacao: classificarOperacao(doc, clienteCnpj) }))
     .sort((a, b) => String(a.doc.dataEmissao).localeCompare(String(b.doc.dataEmissao)));
 }

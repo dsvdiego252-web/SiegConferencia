@@ -177,6 +177,49 @@ main {
   color: var(--danger);
 }
 
+.summary-card.alerta {
+  background: var(--danger-bg);
+}
+
+.summary-card.alerta .summary-value {
+  color: var(--danger);
+}
+
+.summary-card.alerta-leve {
+  background: #fff4e0;
+}
+
+.summary-card.alerta-leve .summary-value {
+  color: #b25c00;
+}
+
+tr.row-divergente {
+  background: var(--danger-bg);
+}
+
+tr.row-pendente {
+  background: #fff4e0;
+}
+
+tr.row-somente-dominio {
+  background: #eef2ff;
+}
+
+.badge-divergente {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.badge-pendente {
+  background: #fff4e0;
+  color: #b25c00;
+}
+
+.badge-somente-dominio {
+  background: #eef2ff;
+  color: #3346c9;
+}
+
 #summaryGapsCard.no-gaps .summary-value {
   color: var(--ok);
 }

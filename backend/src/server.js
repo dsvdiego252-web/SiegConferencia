@@ -4,6 +4,7 @@ import { config } from './config.js';
 import { clientsRouter } from './routes/clients.js';
 import { xmlsRouter } from './routes/xmls.js';
 import { analysisRouter } from './routes/analysis.js';
+import { reconciliationRouter } from './routes/reconciliation.js';
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/clients', clientsRouter);
 app.use('/api/xmls', xmlsRouter);
 app.use('/api/analysis', analysisRouter);
+app.use('/api/reconciliation', reconciliationRouter);
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
