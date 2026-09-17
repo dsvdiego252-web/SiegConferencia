@@ -452,8 +452,10 @@ async function init() {
 
   try {
     await carregarClientes();
-    if (els.clienteSelect.value) await atualizar();
-    else setStatus('Nenhum cliente cadastrado ainda — use "cadastrar cliente" acima.');
+    if (!els.clienteSelect.value) setStatus('Nenhum cliente cadastrado ainda — use "cadastrar cliente" acima.');
+    // Não busca automaticamente ao carregar a página — cada busca na SIEG
+    // consome a cota real de requisições, então só busca quando a pessoa
+    // clicar em "Atualizar" de propósito.
   } catch (err) {
     setStatus(`Não foi possível conectar ao backend${apiBase() ? ` em ${apiBase()}` : ''}: ${err.message}`, true);
   }

@@ -115,17 +115,19 @@ create table painel_cache (
   erro_mensagem text,
   combos_concluidos jsonb not null default '[]'::jsonb,
   docs_parciais jsonb not null default '[]'::jsonb,
+  combo_parcial jsonb,
   atualizado_em timestamptz not null default now(),
   primary key (cnpj, data_inicio, data_fim, tipo)
 );
 ```
 
-(Se você já criou essa tabela numa versão anterior sem as colunas
-`combos_concluidos`/`docs_parciais`, rode em vez disso:
+(Se você já criou essa tabela numa versão anterior, rode em vez disso —
+não apaga nada que já existe:
 ```sql
 alter table painel_cache
   add column if not exists combos_concluidos jsonb not null default '[]'::jsonb,
-  add column if not exists docs_parciais jsonb not null default '[]'::jsonb;
+  add column if not exists docs_parciais jsonb not null default '[]'::jsonb,
+  add column if not exists combo_parcial jsonb;
 ```
 )
 
@@ -141,21 +143,24 @@ Depois de configurar as variáveis, faça um redeploy pra elas valerem.
 ### Busca por etapas (por que `/api/painel` responde "buscando")
 
 A SIEG limita `/baixar-xmls` a **2 requisições por minuto** de verdade, e o
-painel pode precisar de até 4 (NFe/NFCe × entrada/saída) — na pior das
-hipóteses isso passa dos 60 segundos, o teto de execução de uma função na
-Vercel (mesmo configurando `maxDuration: 60` em `vercel.json`, o máximo do
-plano Hobby). Por isso `/api/painel` busca **um combo (tipo × direção) por
-requisição**: com o Supabase configurado, cada chamada avança o que ainda
-falta buscar, salva o progresso (`combos_concluidos`/`docs_parciais`) na
-tabela `painel_cache`, e responde `{ "status": "buscando", "progresso":
-"2/4" }` até terminar todos os combos, quando então responde `{ "status":
-"pronto", ... }`. O front-end reconsulta o mesmo endpoint (com o mesmo
-`cnpj`/`mes`/`tipo`) a cada 2 segundos até sair "pronto" — isso é mais
-confiável do que tentar rodar a busca "em segundo plano" além do tempo de
-resposta, que depende de um mecanismo (`waitUntil`) nem sempre disponível
-dependendo de como a função é hospedada. Resultados prontos ficam em cache
-por 10 minutos; depois disso, a próxima consulta recomeça a busca (por
-etapas de novo) em vez de usar o dado velho. Sem
+painel pode precisar de até 4 combos (NFe/NFCe × entrada/saída) — cada um
+podendo precisar de várias páginas de até 50 documentos se o cliente tiver
+volume. Na pior das hipóteses isso passa dos 60 segundos, o teto de
+execução de uma função na Vercel (mesmo configurando `maxDuration: 60` em
+`vercel.json`, o máximo do plano Hobby). Por isso `/api/painel` busca **aos
+poucos, com pausa tanto entre combos quanto no meio da paginação de um
+combo só**: antes de esperar o rate limit liberar uma próxima página,
+`siegClient.js` verifica se essa espera cabe no tempo restante da
+requisição atual — se não couber, para ali, guarda o que já baixou
+(`combos_concluidos`/`docs_parciais`/`combo_parcial`) na tabela
+`painel_cache`, e responde `{ "status": "buscando", "progresso": "2/4" }`.
+O front-end reconsulta o mesmo endpoint (com o mesmo `cnpj`/`mes`/`tipo`) a
+cada 2 segundos, retomando de onde parou, até sair `{ "status": "pronto",
+... }`. Essa abordagem não depende de nenhum mecanismo de "rodar em segundo
+plano" (como `waitUntil`) — cada requisição só faz o trabalho que cabe
+dentro do próprio tempo de resposta. Resultados prontos ficam em cache por
+10 minutos; depois disso, a próxima consulta recomeça a busca (por etapas
+de novo) em vez de usar o dado velho. Sem
 `SUPABASE_URL`/`SUPABASE_SECRET_KEY` configurados (dev local), esse cache
 fica desligado e a busca volta a ser síncrona (todos os combos de uma vez)
 — ok para o modo mock, que é instantâneo.

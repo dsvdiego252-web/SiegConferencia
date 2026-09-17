@@ -19,16 +19,22 @@ export const XmlType = {
 
 function criarLimitadorDeTaxa(maxPorMinuto) {
   const timestamps = [];
-  async function aguardarSlot() {
+  // Se `prazoFinal` for informado e a espera necessária ultrapassar esse
+  // horário, não espera — devolve false pra quem chamou decidir parar por
+  // agora e continuar depois (ver fetchAllXmls), em vez de estourar o tempo
+  // de execução da função no meio da espera.
+  async function aguardarSlot(prazoFinal) {
     const janelaMs = 60_000;
     const agora = Date.now();
     while (timestamps.length && agora - timestamps[0] > janelaMs) timestamps.shift();
     if (timestamps.length >= maxPorMinuto) {
       const espera = janelaMs - (agora - timestamps[0]) + 200;
+      if (prazoFinal && agora + espera > prazoFinal) return false;
       await new Promise((resolve) => setTimeout(resolve, espera));
-      return aguardarSlot();
+      return aguardarSlot(prazoFinal);
     }
     timestamps.push(Date.now());
+    return true;
   }
   return aguardarSlot;
 }
@@ -66,8 +72,17 @@ async function obterJwt() {
   return token;
 }
 
-async function chamarApiV1(caminho, body, aguardarSlot) {
-  await aguardarSlot();
+class PrazoExcedidoError extends Error {
+  constructor() {
+    super('Sem tempo suficiente para aguardar o limite de requisições da SIEG nesta chamada.');
+    this.prazoExcedido = true;
+  }
+}
+
+async function chamarApiV1(caminho, body, aguardarSlot, prazoFinal) {
+  const conseguiuSlot = await aguardarSlot(prazoFinal);
+  if (!conseguiuSlot) throw new PrazoExcedidoError();
+
   const jwt = await obterJwt();
 
   return fetch(`${config.sieg.baseUrl}${caminho}`, {
@@ -107,7 +122,7 @@ export async function contarXmls({ dataEmissaoInicio, dataEmissaoFim, cnpjEmit, 
  * binário contendo um .xml por documento — não mais um array de base64
  * como a documentação pública antiga descrevia.
  */
-async function fetchPage({ xmlType, dataEmissaoInicio, dataEmissaoFim, cnpjEmit, cnpjDest, take, skip }) {
+async function fetchPage({ xmlType, dataEmissaoInicio, dataEmissaoFim, cnpjEmit, cnpjDest, take, skip, prazoFinal }) {
   const body = {
     TipoXml: xmlType,
     Take: take,
@@ -118,7 +133,7 @@ async function fetchPage({ xmlType, dataEmissaoInicio, dataEmissaoFim, cnpjEmit,
   if (cnpjEmit) body.CnpjEmit = cnpjEmit;
   if (cnpjDest) body.CnpjDest = cnpjDest;
 
-  const response = await chamarApiV1('/api/v1/baixar-xmls', body, aguardarSlotDownload);
+  const response = await chamarApiV1('/api/v1/baixar-xmls', body, aguardarSlotDownload, prazoFinal);
 
   if (response.status === 404) {
     return []; // "Nenhum arquivo XML localizado" — fim dos resultados para esse filtro.
@@ -137,34 +152,56 @@ async function fetchPage({ xmlType, dataEmissaoInicio, dataEmissaoFim, cnpjEmit,
 }
 
 /**
- * Busca todos os XMLs de um período/CNPJ, paginando automaticamente até
- * a SIEG não retornar mais nenhum arquivo.
+ * Busca XMLs de um período/CNPJ, paginando até a SIEG não retornar mais
+ * nenhum arquivo — ou até `prazoFinal` (timestamp em ms) chegar perto o
+ * bastante de exigir uma espera do rate limit que não caberia no tempo
+ * restante. Nesse caso para e devolve `completo: false` com `proximoSkip`,
+ * pra quem chamou continuar de onde parou numa próxima chamada (ver
+ * painel.js) — sem isso, um cliente com bastante volume numa única direção
+ * (ex.: muitas vendas NFCe no mês) podia estourar sozinho o tempo máximo de
+ * execução da função, mesmo já buscando um combo por vez.
+ *
+ * Sem `prazoFinal` (uso do modo mock/dev local, sem risco de timeout),
+ * busca tudo de uma vez, como antes.
  *
  * Atenção: a SIEG limita /baixar-xmls a um intervalo de até 2 meses entre
  * DataEmissaoInicio e DataEmissaoFim. O uso atual do projeto (filtro por
- * mês no painel) sempre respeita esse limite; se um período maior for
- * passado aqui, a própria API retorna um erro claro em vez de dados
- * incompletos silenciosos.
+ * mês no painel) sempre respeita esse limite.
  */
-export async function fetchAllXmls({ xmlType, dataEmissaoInicio, dataEmissaoFim, cnpjEmit, cnpjDest, maxPages = 40 }) {
+export async function fetchAllXmls({
+  xmlType,
+  dataEmissaoInicio,
+  dataEmissaoFim,
+  cnpjEmit,
+  cnpjDest,
+  maxPages = 40,
+  skipInicial = 0,
+  prazoFinal,
+}) {
   assertSiegConfigured();
 
   if (config.mockMode) {
-    return loadFixtureXmls();
+    return { xmls: await loadFixtureXmls(), completo: true, proximoSkip: 0 };
   }
 
   const take = config.sieg.pageSize;
   const allXmls = [];
-  let skip = 0;
+  let skip = skipInicial;
 
   for (let page = 0; page < maxPages; page += 1) {
-    const xmls = await fetchPage({ xmlType, dataEmissaoInicio, dataEmissaoFim, cnpjEmit, cnpjDest, take, skip });
+    let xmls;
+    try {
+      xmls = await fetchPage({ xmlType, dataEmissaoInicio, dataEmissaoFim, cnpjEmit, cnpjDest, take, skip, prazoFinal });
+    } catch (err) {
+      if (err.prazoExcedido) return { xmls: allXmls, completo: false, proximoSkip: skip };
+      throw err;
+    }
     allXmls.push(...xmls);
-    if (xmls.length < take) break;
+    if (xmls.length < take) return { xmls: allXmls, completo: true, proximoSkip: skip + take };
     skip += take;
   }
 
-  return allXmls;
+  return { xmls: allXmls, completo: true, proximoSkip: skip };
 }
 
 async function loadFixtureXmls() {

@@ -37,6 +37,7 @@ export async function reiniciarBusca(cnpj, dataInicio, dataFim, tipo) {
     erro_mensagem: null,
     combos_concluidos: [],
     docs_parciais: [],
+    combo_parcial: null,
     atualizado_em: new Date().toISOString(),
   };
   const { error } = await supabase.from('painel_cache').upsert(linha);
@@ -44,12 +45,18 @@ export async function reiniciarBusca(cnpj, dataInicio, dataFim, tipo) {
   return linha;
 }
 
-export async function salvarProgresso(cnpj, dataInicio, dataFim, tipo, combosConcluidos, docsParciais) {
+// combosConcluidos: combos totalmente baixados até agora.
+// docsParciais: documentos já mesclados dos combos concluídos.
+// comboParcial: { chave, proximoSkip, docs } do combo em andamento cuja
+// paginação não coube inteira no tempo desta requisição — ou null se
+// nenhum combo ficou pela metade.
+export async function salvarProgresso(cnpj, dataInicio, dataFim, tipo, combosConcluidos, docsParciais, comboParcial) {
   const { error } = await supabase
     .from('painel_cache')
     .update({
       combos_concluidos: combosConcluidos,
       docs_parciais: docsParciais,
+      combo_parcial: comboParcial,
       atualizado_em: new Date().toISOString(),
     })
     .eq('cnpj', cnpj)
@@ -68,6 +75,7 @@ export async function salvarResultado(cnpj, dataInicio, dataFim, tipo, dados) {
       erro_mensagem: null,
       combos_concluidos: [],
       docs_parciais: [],
+      combo_parcial: null,
       atualizado_em: new Date().toISOString(),
     })
     .eq('cnpj', cnpj)

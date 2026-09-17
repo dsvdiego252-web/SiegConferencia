@@ -100,24 +100,38 @@ painelRouter.get('/', async (req, res) => {
     }
 
     // status === 'buscando': continua de onde parou. Cada combo (tipo x
-    // direção) só é buscado uma vez; o progresso fica salvo no Supabase
-    // entre chamadas — cliente com bastante volume termina em várias
-    // requisições em sequência (o front-end repete sozinho) em vez de
-    // depender de rodar em segundo plano além do tempo de resposta.
+    // direção) fica pausável no meio da paginação também — um combo
+    // sozinho com bastante volume (várias páginas de 50 documentos) não
+    // pode estourar o tempo de execução da função, então o `prazoFinal`
+    // passado pra buscarCombo faz a busca parar antes de uma espera do
+    // rate limit que não caberia no tempo restante desta requisição.
     const combos = listarCombos(tipos);
     const combosConcluidos = new Set(cache.combos_concluidos || []);
     let docsAcumulados = cache.docs_parciais || [];
-    const inicio = Date.now();
+    let comboParcial = cache.combo_parcial || null;
+    const prazoFinal = Date.now() + ORCAMENTO_MS;
 
     try {
       for (const combo of combos) {
         const chave = chaveCombo(combo);
         if (combosConcluidos.has(chave)) continue;
-        if (Date.now() - inicio > ORCAMENTO_MS) break;
+        if (Date.now() >= prazoFinal) break;
 
-        const docsCombo = await buscarCombo(combo, { clienteCnpj: cnpj, dataInicio, dataFim });
-        docsAcumulados = mesclarDocumentos(docsAcumulados, docsCombo);
-        combosConcluidos.add(chave);
+        const emAndamento = comboParcial && comboParcial.chave === chave;
+        const skipInicial = emAndamento ? comboParcial.proximoSkip : 0;
+        const docsJaDoCombo = emAndamento ? comboParcial.docs : [];
+
+        const resultado = await buscarCombo(combo, { clienteCnpj: cnpj, dataInicio, dataFim, skipInicial, prazoFinal });
+        const docsDoComboAtualizados = mesclarDocumentos(docsJaDoCombo, resultado.docs);
+
+        if (resultado.completo) {
+          docsAcumulados = mesclarDocumentos(docsAcumulados, docsDoComboAtualizados);
+          combosConcluidos.add(chave);
+          comboParcial = null;
+        } else {
+          comboParcial = { chave, proximoSkip: resultado.proximoSkip, docs: docsDoComboAtualizados };
+          break;
+        }
       }
     } catch (err) {
       await salvarErro(cnpj, dataInicio, dataFim, tipo, err.message);
@@ -131,7 +145,7 @@ painelRouter.get('/', async (req, res) => {
       return res.json({ status: 'pronto', periodo: { dataInicio, dataFim }, desatualizado: false, ...dados });
     }
 
-    await salvarProgresso(cnpj, dataInicio, dataFim, tipo, [...combosConcluidos], docsAcumulados);
+    await salvarProgresso(cnpj, dataInicio, dataFim, tipo, [...combosConcluidos], docsAcumulados, comboParcial);
     return res.json({
       status: 'buscando',
       periodo: { dataInicio, dataFim },

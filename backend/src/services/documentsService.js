@@ -23,21 +23,28 @@ export function chaveCombo(combo) {
 }
 
 /**
- * Busca e faz o parsing de um único combo. Usada para avançar a busca aos
- * poucos (um combo por requisição HTTP) quando há cache/progresso — ver
- * painel.js — em vez de buscar tudo de uma vez, o que pode estourar o
- * tempo máximo de execução de uma função na Vercel quando o cliente tem
- * volume (o rate limit real da SIEG é de só 2 requisições/minuto).
+ * Busca e faz o parsing de um único combo, com suporte a pausar no meio da
+ * paginação (`skipInicial`/`prazoFinal`) — usada para avançar a busca aos
+ * poucos (ver painel.js) em vez de buscar tudo de uma vez, o que pode
+ * estourar o tempo máximo de execução de uma função na Vercel quando o
+ * combo sozinho já tem bastante volume (o rate limit real da SIEG é de só
+ * 2 requisições/minuto, e cada página são até 50 documentos).
+ *
+ * Retorna { docs, completo, proximoSkip }: `completo: false` significa que
+ * ainda faltam páginas — quem chamou deve guardar `proximoSkip` e tentar de
+ * novo depois.
  */
-export async function buscarCombo(combo, { clienteCnpj, dataInicio, dataFim }) {
+export async function buscarCombo(combo, { clienteCnpj, dataInicio, dataFim, skipInicial, prazoFinal }) {
   const filtroDirecao = combo.direcao === 'emit' ? { cnpjEmit: clienteCnpj } : { cnpjDest: clienteCnpj };
-  const xmls = await fetchAllXmls({
+  const resultado = await fetchAllXmls({
     xmlType: combo.xmlType,
     dataEmissaoInicio: dataInicio,
     dataEmissaoFim: dataFim,
     ...filtroDirecao,
+    skipInicial,
+    prazoFinal,
   });
-  return parseNfeBatch(xmls);
+  return { docs: parseNfeBatch(resultado.xmls), completo: resultado.completo, proximoSkip: resultado.proximoSkip };
 }
 
 /** Junta duas listas de documentos já parseados, sem duplicar por chave de acesso. */
@@ -73,6 +80,6 @@ export function classificarDocumentos(docs, clienteCnpj, dataInicio, dataFim, ti
 export async function obterDocumentosClassificados({ clienteCnpj, dataInicio, dataFim, tipos }) {
   const combos = listarCombos(tipos);
   const resultados = await Promise.all(combos.map((combo) => buscarCombo(combo, { clienteCnpj, dataInicio, dataFim })));
-  const docs = mesclarDocumentos([], resultados.flat());
+  const docs = mesclarDocumentos([], resultados.flatMap((r) => r.docs));
   return classificarDocumentos(docs, clienteCnpj, dataInicio, dataFim, tipos);
 }
