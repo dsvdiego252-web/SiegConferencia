@@ -101,35 +101,74 @@ create table clientes (
 );
 ```
 
+Rode também esta segunda tabela — cache do painel (ver "Busca em segundo
+plano" abaixo):
+
+```sql
+create table painel_cache (
+  cnpj text not null,
+  data_inicio date not null,
+  data_fim date not null,
+  tipo text not null default 'todos',
+  status text not null default 'buscando',
+  dados jsonb,
+  erro_mensagem text,
+  atualizado_em timestamptz not null default now(),
+  primary key (cnpj, data_inicio, data_fim, tipo)
+);
+```
+
 E configure na Vercel:
 
 - `SUPABASE_URL` — a Project URL do projeto (Project Settings → API Keys).
-- `SUPABASE_SECRET_KEY` — a **Secret key** (não a Publishable), já que
-  `clientsStore.js` roda só no backend e a tabela não tem RLS habilitado.
+- `SUPABASE_SECRET_KEY` — a **Secret key** (não a Publishable), já que os
+  serviços que usam essas tabelas rodam só no backend e nenhuma delas tem
+  RLS habilitado.
 
 Depois de configurar as variáveis, faça um redeploy pra elas valerem.
 
+### Busca em segundo plano (por que `/api/painel` responde "buscando")
+
+A SIEG limita `/baixar-xmls` a **2 requisições por minuto** de verdade, e o
+painel pode precisar de até 4 (NFe/NFCe × entrada/saída) — na pior das
+hipóteses isso passa dos 60 segundos, o teto de execução de uma função na
+Vercel (mesmo configurando `maxDuration: 60` em `vercel.json`, o máximo do
+plano Hobby). Por isso `/api/painel` não busca mais de forma síncrona: com o
+Supabase configurado, ele responde na hora com `{ "status": "buscando" }` e
+dispara a busca de verdade em segundo plano (via `waitUntil`), guardando o
+resultado na tabela `painel_cache`. O front-end reconsulta o mesmo endpoint
+a cada poucos segundos até vir `{ "status": "pronto", ... }` (ou `"erro"`).
+Resultados prontos ficam em cache por 10 minutos; depois disso, a próxima
+consulta ainda responde na hora com o dado antigo (`desatualizado: true`) e
+já dispara uma atualização por trás. Sem `SUPABASE_URL`/`SUPABASE_SECRET_KEY`
+configurados (dev local), esse cache fica desligado e a busca volta a ser
+síncrona — ok para o modo mock, que é instantâneo.
+
 ## Endpoints do backend
 
-- `GET /api/clients` — lista clientes cadastrados (`backend/src/data/clients.json`).
+- `GET /api/clients` — lista clientes cadastrados (`backend/src/data/clients.json`
+  em dev local, ou tabela `clientes` no Supabase em produção).
 - `POST /api/clients` — cadastra um cliente (`{ cnpj, nome }`).
-- `GET /api/xmls?cnpj=...&mes=AAAA-MM` — documentos integrados no mês (NFe
-  e NFCe), já classificados como `entrada`/`saida` (comparando o CNPJ do
-  cliente com emitente/destinatário de cada documento).
-- `GET /api/analysis/sequence?cnpj=...&mes=AAAA-MM` — agrupa as notas de
-  saída por (emitente, **tipo de documento**, série) e aponta números
-  faltantes na sequência. NFe e NFCe são contadas separadamente mesmo
-  quando usam o mesmo número de série.
-- `GET /api/analysis/tax?cnpj=...&mes=AAAA-MM` — agrega, por mês e por
-  produto (NCM), quanto entrou e saiu em valor de produto, ICMS, PIS e
-  COFINS.
-- `GET /api/analysis/reforma-tributaria?cnpj=...&mes=AAAA-MM` — verifica,
-  por documento emitido a partir de 01/01/2026, se os campos da Reforma
-  Tributária (CST e Classificação Tributária do grupo IBS/CBS, criado
-  pela Nota Técnica 2025.002) estão preenchidos. Aponta por emitente
-  quantos documentos estão conformes, parcialmente adequados (só alguns
-  itens têm os campos) ou totalmente sem adequação — não recalcula nem
-  valida os valores de IBS/CBS, só a presença da informação.
+- `GET /api/painel?cnpj=...&mes=AAAA-MM&tipo=todos|nfe|nfce` — endpoint
+  principal usado pelo front-end: busca os documentos do período (já
+  classificados em `entrada`/`saida`) e monta de uma vez as quatro análises
+  (documentos integrados, quebra de sequência, cruzamento tributário e
+  conformidade com a Reforma Tributária). `tipo` restringe a busca a NFe ou
+  NFCe (metade das requisições à SIEG); sem informar, busca os dois.
+  Resposta assíncrona — ver "Busca em segundo plano" acima:
+  - `{ "status": "buscando" }` — reconsulte o mesmo endpoint em alguns
+    segundos.
+  - `{ "status": "erro", "erro": "..." }` — a busca falhou.
+  - `{ "status": "pronto", "xmls": {...}, "sequence": {...}, "tax": {...},
+    "reforma": {...}, "desatualizado": bool }` — resultado pronto;
+    `desatualizado: true` significa que já está reconsultando a SIEG por
+    trás (cache com mais de 10 minutos), mas o que veio já pode ser usado.
+  Passe `forcar=1` pra ignorar o cache e forçar uma nova busca.
+- `GET /api/xmls`, `GET /api/analysis/sequence`, `GET /api/analysis/tax`,
+  `GET /api/analysis/reforma-tributaria` (todos com `cnpj=...&mes=AAAA-MM`)
+  — os mesmos dados de `/api/painel`, mas cada um buscando a SIEG de novo
+  por conta própria (sem cache/segundo plano). Mantidos por compatibilidade;
+  o front-end usa só `/api/painel`.
 
 Todos aceitam `inicio=AAAA-MM-DD&fim=AAAA-MM-DD` como alternativa ao atalho
 `mes=`.

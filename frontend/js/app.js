@@ -2,6 +2,7 @@ const els = {
   apiBaseUrl: document.getElementById('apiBaseUrl'),
   clienteSelect: document.getElementById('clienteSelect'),
   mesInput: document.getElementById('mesInput'),
+  tipoDocSelect: document.getElementById('tipoDocSelect'),
   btnAtualizar: document.getElementById('btnAtualizar'),
   novoClienteCnpj: document.getElementById('novoClienteCnpj'),
   novoClienteNome: document.getElementById('novoClienteNome'),
@@ -250,9 +251,28 @@ function renderReforma(reforma) {
   }
 }
 
+const POLL_INTERVALO_MS = 4000;
+const POLL_MAX_TENTATIVAS = 30; // ~2 minutos no total
+
+// O backend responde na hora com status "buscando" (a busca real roda em
+// segundo plano, guardada no Supabase) e este loop reconsulta o mesmo
+// endpoint de tempos em tempos até sair "pronto" — evita travar a tela
+// esperando os até ~60s que a SIEG pode levar numa única requisição HTTP.
+async function buscarPainelComEspera(query) {
+  for (let tentativa = 0; tentativa < POLL_MAX_TENTATIVAS; tentativa += 1) {
+    const painel = await apiGet(`/api/painel?${query}`);
+    if (painel.status === 'pronto') return painel;
+    if (painel.status === 'erro') throw new Error(painel.erro || 'Falha ao buscar dados na SIEG.');
+    setStatus('Buscando na SIEG em segundo plano... isso pode levar até 1 minuto.', false, true);
+    await new Promise((resolve) => setTimeout(resolve, POLL_INTERVALO_MS));
+  }
+  throw new Error('A busca está demorando mais que o esperado. Tente novamente em instantes.');
+}
+
 async function atualizar() {
   const cnpj = els.clienteSelect.value;
   const mes = els.mesInput.value;
+  const tipo = els.tipoDocSelect.value;
   if (!cnpj) {
     setStatus('Cadastre ou selecione um cliente primeiro.', true);
     return;
@@ -263,14 +283,10 @@ async function atualizar() {
   }
 
   els.btnAtualizar.disabled = true;
-  setStatus('Buscando na SIEG... pode levar até 1 minuto por causa do limite de requisições da API.', false, true);
+  setStatus('Buscando na SIEG...', false, true);
   try {
-    const query = `cnpj=${encodeURIComponent(cnpj)}&mes=${encodeURIComponent(mes)}`;
-    // Uma única chamada que busca os XMLs da SIEG uma vez só e monta todas as
-    // análises a partir do mesmo resultado — evita repetir a busca completa
-    // 4x (documentos, sequência, tributos, reforma) e estourar o limite real
-    // de 2 requisições/minuto da SIEG numa única atualização de tela.
-    const painel = await apiGet(`/api/painel?${query}`);
+    const query = `cnpj=${encodeURIComponent(cnpj)}&mes=${encodeURIComponent(mes)}&tipo=${encodeURIComponent(tipo)}`;
+    const painel = await buscarPainelComEspera(query);
 
     renderDocumentos(painel.xmls.documentos);
     const temQuebra = renderSequencia(painel.sequence.grupos);
@@ -278,7 +294,8 @@ async function atualizar() {
     renderReforma(painel.reforma);
     renderResumo(painel.xmls, temQuebra);
 
-    setStatus(`Atualizado às ${new Date().toLocaleTimeString('pt-BR')}.`);
+    const aviso = painel.desatualizado ? ' (atualizando em segundo plano — os números podem mudar em instantes)' : '';
+    setStatus(`Atualizado às ${new Date().toLocaleTimeString('pt-BR')}.${aviso}`);
   } catch (err) {
     setStatus(err.message, true);
   } finally {
