@@ -7,6 +7,8 @@ const els = {
   novoClienteNome: document.getElementById('novoClienteNome'),
   btnAdicionarCliente: document.getElementById('btnAdicionarCliente'),
   statusBox: document.getElementById('statusBox'),
+  statusSpinner: document.getElementById('statusSpinner'),
+  statusText: document.getElementById('statusText'),
   summaryPanel: document.getElementById('summaryPanel'),
   summaryTotal: document.getElementById('summaryTotal'),
   summaryEntrada: document.getElementById('summaryEntrada'),
@@ -51,9 +53,10 @@ function apiBase() {
   return els.apiBaseUrl.value.trim().replace(/\/$/, '');
 }
 
-function setStatus(message, isError = false) {
-  els.statusBox.textContent = message;
+function setStatus(message, isError = false, isLoading = false) {
+  els.statusText.textContent = message;
   els.statusBox.classList.toggle('error', isError);
+  els.statusSpinner.hidden = !isLoading;
 }
 
 async function apiGet(pathAndQuery) {
@@ -259,7 +262,8 @@ async function atualizar() {
     return;
   }
 
-  setStatus('Carregando...');
+  els.btnAtualizar.disabled = true;
+  setStatus('Buscando na SIEG... pode levar até 1 minuto por causa do limite de requisições da API.', false, true);
   try {
     const query = `cnpj=${encodeURIComponent(cnpj)}&mes=${encodeURIComponent(mes)}`;
     // Uma única chamada que busca os XMLs da SIEG uma vez só e monta todas as
@@ -277,6 +281,8 @@ async function atualizar() {
     setStatus(`Atualizado às ${new Date().toLocaleTimeString('pt-BR')}.`);
   } catch (err) {
     setStatus(err.message, true);
+  } finally {
+    els.btnAtualizar.disabled = false;
   }
 }
 
@@ -400,7 +406,8 @@ async function conferirDominio() {
     return;
   }
 
-  els.reconciliationStatus.textContent = 'Conferindo...';
+  els.btnConferirDominio.disabled = true;
+  els.reconciliationStatus.textContent = 'Buscando na SIEG... pode levar até 1 minuto por causa do limite de requisições da API.';
   try {
     const formData = new FormData();
     formData.append('cnpj', cnpj);
@@ -413,6 +420,8 @@ async function conferirDominio() {
   } catch (err) {
     els.reconciliationStatus.classList.add('error');
     els.reconciliationStatus.textContent = err.message;
+  } finally {
+    els.btnConferirDominio.disabled = false;
   }
 }
 
