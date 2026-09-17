@@ -30,6 +30,28 @@ body {
   padding: 24px 32px 12px;
 }
 
+.topbar-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.logout-link {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-decoration: none;
+  white-space: nowrap;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.logout-link:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
 .topbar h1 {
   margin: 0 0 4px;
   font-size: 1.5rem;
