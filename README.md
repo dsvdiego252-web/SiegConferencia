@@ -89,15 +89,25 @@ Project Settings → Environment Variables:**
   plataforma — por isso o backend implementa a própria (HTTP Basic Auth,
   em `backend/src/app.js`).
 
-**Também é preciso conectar uma store do Vercel Blob** (Project → Storage →
-Create Database → Blob → Connect to Project). Isso injeta automaticamente a
-variável `BLOB_READ_WRITE_TOKEN`, usada por `clientsStore.js` para guardar a
-lista de clientes cadastrados pelo painel — sem isso, o cadastro de cliente
-não persiste entre deploys/invocações na Vercel (o sistema de arquivos lá é
-somente leitura fora de `/tmp`).
+**Também é preciso um projeto Supabase** para persistir a lista de clientes
+cadastrados pelo painel — sem isso, o cadastro de cliente não sobrevive entre
+deploys/invocações na Vercel (o sistema de arquivos lá é somente leitura fora
+de `/tmp`). Crie um projeto em supabase.com, rode no SQL Editor:
 
-Depois de configurar as variáveis e conectar o Blob, faça um redeploy pra
-elas valerem.
+```sql
+create table clientes (
+  cnpj text primary key,
+  nome text not null
+);
+```
+
+E configure na Vercel:
+
+- `SUPABASE_URL` — a Project URL do projeto (Project Settings → API Keys).
+- `SUPABASE_SECRET_KEY` — a **Secret key** (não a Publishable), já que
+  `clientsStore.js` roda só no backend e a tabela não tem RLS habilitado.
+
+Depois de configurar as variáveis, faça um redeploy pra elas valerem.
 
 ## Endpoints do backend
 

@@ -5,7 +5,7 @@
   "type": "module",
   "description": "SIEG Conferência Fiscal — deploy Vercel (api/index.js expõe o backend Express, /frontend é servido estático pelo próprio app).",
   "dependencies": {
-    "@vercel/blob": "^0.27.1",
+    "@supabase/supabase-js": "^2.45.4",
     "adm-zip": "^0.6.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
