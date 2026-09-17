@@ -504,8 +504,14 @@ async function buscarPainelComEspera(query) {
     const painel = await apiGet(`/api/painel?${query}&_=${Date.now()}`);
     if (painel.status === 'pronto') return painel;
     if (painel.status === 'erro') throw new Error(painel.erro || 'Falha ao buscar dados na SIEG.');
-    const progresso = painel.progresso ? ` (${painel.progresso} concluído)` : '';
-    setStatus(`Buscando na SIEG...${progresso} isso pode levar alguns minutos dependendo do volume.`, false, true);
+    const progresso = painel.progresso ? ` (${painel.progresso} concluído` : '';
+    const detalhe = painel.documentosNoComboAtual ? `, ${painel.documentosNoComboAtual} documentos já baixados no tipo atual` : '';
+    const fechaParenteses = progresso ? ')' : '';
+    setStatus(
+      `Buscando na SIEG...${progresso}${detalhe}${fechaParenteses} — isso pode levar alguns minutos dependendo do volume.`,
+      false,
+      true
+    );
     await new Promise((resolve) => setTimeout(resolve, POLL_INTERVALO_MS));
   }
   throw new Error('A busca está demorando mais que o esperado. Tente novamente em instantes.');

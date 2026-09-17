@@ -219,10 +219,16 @@ painelRouter.get('/', async (req, res) => {
     }
 
     await salvarProgresso(cnpj, dataInicio, dataFim, tipo, [...combosConcluidos], docsAcumulados, comboParcial);
+    const documentosNoComboAtual = comboParcial?.docs?.length || 0;
     return res.json({
       status: 'buscando',
       periodo: { dataInicio, dataFim },
       progresso: `${combosConcluidos.size}/${combos.length}`,
+      // Um combo sozinho pode ter muitas páginas quando o cliente tem
+      // bastante volume (ex.: muitas vendas NFCe) — sem isso, o contador de
+      // combos concluídos fica parado em "0/2" por bastante tempo mesmo com
+      // a busca avançando de verdade, página a página.
+      documentosNoComboAtual,
     });
   } catch (err) {
     res.status(400).json({ erro: err.message });
