@@ -97,9 +97,17 @@ de `/tmp`). Crie um projeto em supabase.com, rode no SQL Editor:
 ```sql
 create table clientes (
   cnpj text primary key,
-  nome text not null
+  nome text not null,
+  regime_tributario text
 );
 ```
+
+(Se a tabela já existir sem a coluna `regime_tributario`, rode `alter table
+clientes add column if not exists regime_tributario text;`.) O regime
+tributário (`simples_nacional`, `mei`, `lucro_presumido` ou `lucro_real`) é
+editável no painel (botão "✎ Editar cliente") e define o prazo usado na
+checagem da Reforma Tributária: Simples Nacional/MEI só são obrigados a
+partir de 01/2027; os demais regimes (ou sem regime definido), 01/2026.
 
 Rode também esta segunda tabela — cache/progresso do painel (ver "Busca por
 etapas" abaixo):
@@ -173,7 +181,9 @@ metade.
 
 - `GET /api/clients` — lista clientes cadastrados (`backend/src/data/clients.json`
   em dev local, ou tabela `clientes` no Supabase em produção).
-- `POST /api/clients` — cadastra um cliente (`{ cnpj, nome }`).
+- `POST /api/clients` — cadastra um cliente (`{ cnpj, nome, regimeTributario }`).
+- `PATCH /api/clients/:cnpj` — atualiza nome/regime tributário de um cliente
+  existente (`{ nome, regimeTributario }`).
 - `GET /api/painel?cnpj=...&mes=AAAA-MM&tipo=todos|nfe|nfce` — endpoint
   principal usado pelo front-end: busca os documentos do período (já
   classificados em `entrada`/`saida`) e monta de uma vez as quatro análises

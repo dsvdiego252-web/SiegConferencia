@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { listarClientes, adicionarCliente } from '../services/clientsStore.js';
+import { listarClientes, adicionarCliente, atualizarCliente } from '../services/clientsStore.js';
 
 export const clientsRouter = Router();
 
@@ -13,9 +13,19 @@ clientsRouter.get('/', async (req, res) => {
 
 clientsRouter.post('/', async (req, res) => {
   try {
-    const { cnpj, nome } = req.body || {};
-    const clientes = await adicionarCliente({ cnpj, nome });
+    const { cnpj, nome, regimeTributario } = req.body || {};
+    const clientes = await adicionarCliente({ cnpj, nome, regimeTributario });
     res.status(201).json(clientes);
+  } catch (err) {
+    res.status(400).json({ erro: err.message });
+  }
+});
+
+clientsRouter.patch('/:cnpj', async (req, res) => {
+  try {
+    const { nome, regimeTributario } = req.body || {};
+    const clientes = await atualizarCliente(req.params.cnpj, { nome, regimeTributario });
+    res.json(clientes);
   } catch (err) {
     res.status(400).json({ erro: err.message });
   }

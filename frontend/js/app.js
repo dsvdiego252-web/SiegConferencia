@@ -5,10 +5,13 @@ const els = {
   dataFimInput: document.getElementById('dataFimInput'),
   btnAtualizar: document.getElementById('btnAtualizar'),
   btnAbrirCadastroCliente: document.getElementById('btnAbrirCadastroCliente'),
+  btnEditarCliente: document.getElementById('btnEditarCliente'),
   clienteModalOverlay: document.getElementById('clienteModalOverlay'),
+  clienteModalTitulo: document.getElementById('clienteModalTitulo'),
   btnFecharModalCliente: document.getElementById('btnFecharModalCliente'),
   novoClienteCnpj: document.getElementById('novoClienteCnpj'),
   novoClienteNome: document.getElementById('novoClienteNome'),
+  novoClienteRegime: document.getElementById('novoClienteRegime'),
   btnAdicionarCliente: document.getElementById('btnAdicionarCliente'),
   clienteModalErro: document.getElementById('clienteModalErro'),
   statusBox: document.getElementById('statusBox'),
@@ -39,6 +42,7 @@ const els = {
   situacaoFiltroSelect: document.getElementById('situacaoFiltroSelect'),
   taxPanel: document.getElementById('taxPanel'),
   taxTableBody: document.querySelector('#taxTable tbody'),
+  taxPagination: document.getElementById('taxPagination'),
   reformaSummaryPanel: document.getElementById('reformaSummaryPanel'),
   reformaTotalAnalisados: document.getElementById('reformaTotalAnalisados'),
   reformaConformes: document.getElementById('reformaConformes'),
@@ -48,6 +52,7 @@ const els = {
   reformaSemAdequacaoCard: document.getElementById('reformaSemAdequacaoCard'),
   reformaPanel: document.getElementById('reformaPanel'),
   reformaDataCorte: document.getElementById('reformaDataCorte'),
+  reformaRegimeInfo: document.getElementById('reformaRegimeInfo'),
   reformaResumoTableBody: document.querySelector('#reformaResumoTable tbody'),
   dominioFileInput: document.getElementById('dominioFileInput'),
   btnConferirDominio: document.getElementById('btnConferirDominio'),
@@ -100,6 +105,17 @@ async function apiPost(pathAndQuery, body) {
   return data;
 }
 
+async function apiPatch(pathAndQuery, body) {
+  const res = await fetch(`${apiBase()}${pathAndQuery}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.erro || `Erro ${res.status} ao chamar ${pathAndQuery}`);
+  return data;
+}
+
 async function apiPostForm(pathAndQuery, formData) {
   const res = await fetch(`${apiBase()}${pathAndQuery}`, { method: 'POST', body: formData });
   const data = await res.json().catch(() => ({}));
@@ -130,10 +146,12 @@ function ultimoDiaMesAtual() {
   return formatDateInput(new Date(now.getFullYear(), now.getMonth() + 1, 0));
 }
 
+let clientesCarregados = [];
+
 async function carregarClientes(selecionarCnpj) {
-  const clientes = await apiGet('/api/clients');
+  clientesCarregados = await apiGet('/api/clients');
   els.clienteSelect.innerHTML = '';
-  for (const c of clientes) {
+  for (const c of clientesCarregados) {
     const opt = document.createElement('option');
     opt.value = c.cnpj;
     opt.textContent = `${c.nome} (${c.cnpj})`;
@@ -218,31 +236,10 @@ function renderPaginaDocumentos() {
     els.documentsTableBody.appendChild(tr);
   }
 
-  els.documentsPagination.innerHTML = '';
-  if (totalPaginas > 1) {
-    const btnAnterior = document.createElement('button');
-    btnAnterior.type = 'button';
-    btnAnterior.textContent = '← Anterior';
-    btnAnterior.disabled = paginaDocumentosAtual === 1;
-    btnAnterior.addEventListener('click', () => {
-      paginaDocumentosAtual -= 1;
-      renderPaginaDocumentos();
-    });
-
-    const btnProxima = document.createElement('button');
-    btnProxima.type = 'button';
-    btnProxima.textContent = 'Próxima →';
-    btnProxima.disabled = paginaDocumentosAtual === totalPaginas;
-    btnProxima.addEventListener('click', () => {
-      paginaDocumentosAtual += 1;
-      renderPaginaDocumentos();
-    });
-
-    const info = document.createElement('span');
-    info.textContent = `Página ${paginaDocumentosAtual} de ${totalPaginas} (${filtrados.length} documentos)`;
-
-    els.documentsPagination.append(btnAnterior, info, btnProxima);
-  }
+  renderPaginacao(els.documentsPagination, paginaDocumentosAtual, filtrados.length, DOCUMENTS_PAGE_SIZE, (novaPagina) => {
+    paginaDocumentosAtual = novaPagina;
+    renderPaginaDocumentos();
+  });
 }
 
 // CSTs do IBS/CBS que tipicamente representam algum benefício/desoneração
@@ -374,15 +371,51 @@ function renderSequencia(grupos) {
   return temQuebra;
 }
 
+const TAX_PAGE_SIZE = 20;
+let produtosCarregados = [];
+let paginaTaxAtual = 1;
+
+function renderPaginacao(container, paginaAtual, totalItens, tamanhoPagina, aoMudar) {
+  container.innerHTML = '';
+  const totalPaginas = Math.max(1, Math.ceil(totalItens / tamanhoPagina));
+  if (totalPaginas <= 1) return;
+
+  const btnAnterior = document.createElement('button');
+  btnAnterior.type = 'button';
+  btnAnterior.textContent = '← Anterior';
+  btnAnterior.disabled = paginaAtual === 1;
+  btnAnterior.addEventListener('click', () => aoMudar(paginaAtual - 1));
+
+  const btnProxima = document.createElement('button');
+  btnProxima.type = 'button';
+  btnProxima.textContent = 'Próxima →';
+  btnProxima.disabled = paginaAtual === totalPaginas;
+  btnProxima.addEventListener('click', () => aoMudar(paginaAtual + 1));
+
+  const info = document.createElement('span');
+  info.textContent = `Página ${paginaAtual} de ${totalPaginas} (${totalItens} itens)`;
+
+  container.append(btnAnterior, info, btnProxima);
+}
+
 function renderTributos(meses) {
+  produtosCarregados = meses.flatMap((m) => m.produtos);
+  paginaTaxAtual = 1;
   els.taxPanel.hidden = false;
+  renderPaginaTax();
+}
+
+function renderPaginaTax() {
   els.taxTableBody.innerHTML = '';
-  const produtos = meses.flatMap((m) => m.produtos);
-  if (!produtos.length) {
+  if (!produtosCarregados.length) {
     els.taxTableBody.innerHTML = '<tr class="empty-row"><td colspan="8">Sem itens no período para cruzar.</td></tr>';
+    els.taxPagination.innerHTML = '';
     return;
   }
-  for (const p of produtos) {
+
+  const inicio = (paginaTaxAtual - 1) * TAX_PAGE_SIZE;
+  const pagina = produtosCarregados.slice(inicio, inicio + TAX_PAGE_SIZE);
+  for (const p of pagina) {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${p.descricaoExemplo}<br><span class="hint">${p.ncm || 'sem NCM'}</span></td>
@@ -396,12 +429,32 @@ function renderTributos(meses) {
     `;
     els.taxTableBody.appendChild(tr);
   }
+
+  renderPaginacao(els.taxPagination, paginaTaxAtual, produtosCarregados.length, TAX_PAGE_SIZE, (novaPagina) => {
+    paginaTaxAtual = novaPagina;
+    renderPaginaTax();
+  });
 }
 
-function renderReforma(reforma) {
+const ROTULO_REGIME = {
+  simples_nacional: 'Simples Nacional',
+  mei: 'MEI',
+  lucro_presumido: 'Lucro Presumido',
+  lucro_real: 'Lucro Real',
+};
+
+function renderReforma(reforma, cliente) {
   els.reformaSummaryPanel.hidden = false;
   els.reformaPanel.hidden = false;
   els.reformaDataCorte.textContent = formatDate(reforma.dataCorte);
+
+  const regime = cliente?.regimeTributario;
+  if (regime) {
+    els.reformaRegimeInfo.textContent = `Regime tributário deste cliente: ${ROTULO_REGIME[regime] || regime} — prazo usado: ${formatDate(reforma.dataCorte)}.`;
+  } else {
+    els.reformaRegimeInfo.innerHTML =
+      '<strong>Regime tributário não informado</strong> pra esse cliente — usando o prazo padrão (01/2026). Se ele for optante do Simples Nacional ou MEI, o prazo real é 01/2027; edite o cadastro do cliente (botão "✎ Editar cliente") pra informar o regime e corrigir essa checagem.';
+  }
 
   els.reformaTotalAnalisados.textContent = reforma.totais.totalDocumentosAnalisados;
   els.reformaConformes.textContent = reforma.totais.conformes;
@@ -481,7 +534,7 @@ async function atualizar() {
     renderDocumentos(painel.xmls.documentos);
     const temQuebra = renderSequencia(painel.sequence.grupos);
     renderTributos(painel.tax.meses);
-    renderReforma(painel.reforma);
+    renderReforma(painel.reforma, painel.cliente);
     renderResumo(painel.xmls, temQuebra);
     renderValores(painel.valores);
 
@@ -493,20 +546,49 @@ async function atualizar() {
   }
 }
 
+let modoModalCliente = 'adicionar';
+
 function abrirModalCliente() {
+  modoModalCliente = 'adicionar';
+  els.clienteModalTitulo.textContent = 'Cadastrar cliente';
+  els.btnAdicionarCliente.textContent = 'Adicionar';
   els.clienteModalErro.hidden = true;
   els.novoClienteCnpj.value = '';
+  els.novoClienteCnpj.disabled = false;
   els.novoClienteNome.value = '';
+  els.novoClienteRegime.value = '';
+  els.clienteModalOverlay.hidden = false;
+}
+
+function abrirModalEdicaoCliente() {
+  const cnpj = els.clienteSelect.value;
+  if (!cnpj) {
+    setStatus('Selecione um cliente pra editar primeiro.', true);
+    return;
+  }
+  const cliente = clientesCarregados.find((c) => c.cnpj === cnpj);
+  if (!cliente) return;
+
+  modoModalCliente = 'editar';
+  els.clienteModalTitulo.textContent = 'Editar cliente';
+  els.btnAdicionarCliente.textContent = 'Salvar';
+  els.clienteModalErro.hidden = true;
+  els.novoClienteCnpj.value = cliente.cnpj;
+  els.novoClienteCnpj.disabled = true;
+  els.novoClienteNome.value = cliente.nome || '';
+  els.novoClienteRegime.value = cliente.regimeTributario || '';
   els.clienteModalOverlay.hidden = false;
 }
 
 function fecharModalCliente() {
   els.clienteModalOverlay.hidden = true;
+  els.novoClienteCnpj.disabled = false;
 }
 
 async function adicionarCliente() {
   const cnpj = els.novoClienteCnpj.value.replace(/\D/g, '');
   const nome = els.novoClienteNome.value.trim();
+  const regimeTributario = els.novoClienteRegime.value || null;
   els.clienteModalErro.hidden = true;
   if (cnpj.length !== 14) {
     els.clienteModalErro.textContent = 'Informe um CNPJ com 14 dígitos para cadastrar o cliente.';
@@ -514,10 +596,17 @@ async function adicionarCliente() {
     return;
   }
   try {
-    await apiPost('/api/clients', { cnpj, nome });
-    await carregarClientes(cnpj);
-    fecharModalCliente();
-    setStatus('Cliente adicionado.');
+    if (modoModalCliente === 'editar') {
+      await apiPatch(`/api/clients/${cnpj}`, { nome, regimeTributario });
+      await carregarClientes(cnpj);
+      fecharModalCliente();
+      setStatus('Cliente atualizado.');
+    } else {
+      await apiPost('/api/clients', { cnpj, nome, regimeTributario });
+      await carregarClientes(cnpj);
+      fecharModalCliente();
+      setStatus('Cliente adicionado.');
+    }
   } catch (err) {
     els.clienteModalErro.textContent = err.message;
     els.clienteModalErro.hidden = false;
@@ -651,6 +740,7 @@ async function init() {
 
   els.btnAtualizar.addEventListener('click', atualizar);
   els.btnAbrirCadastroCliente.addEventListener('click', abrirModalCliente);
+  els.btnEditarCliente.addEventListener('click', abrirModalEdicaoCliente);
   els.btnAdicionarCliente.addEventListener('click', adicionarCliente);
   els.btnFecharModalCliente.addEventListener('click', fecharModalCliente);
   els.clienteModalOverlay.addEventListener('click', (evento) => {

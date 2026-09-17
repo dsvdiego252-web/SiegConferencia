@@ -12,6 +12,7 @@ import { detectarQuebrasDeSequencia } from '../services/sequenceAnalyzer.js';
 import { cruzarTributacao } from '../services/taxAnalyzer.js';
 import { analisarConformidadeReforma } from '../services/reformaTributariaAnalyzer.js';
 import { XmlType } from '../services/siegClient.js';
+import { obterCliente } from '../services/clientsStore.js';
 import { cacheDisponivel, lerCache, reiniciarBusca, salvarProgresso, salvarResultado, salvarErro, estaExpirado } from '../services/painelCache.js';
 
 export const painelRouter = Router();
@@ -19,6 +20,19 @@ export const painelRouter = Router();
 // Margem de segurança abaixo do maxDuration (60s, o máximo do plano Hobby
 // da Vercel) — reserva tempo pra montar a resposta depois do último combo.
 const ORCAMENTO_MS = 45_000;
+
+// Empresas do Simples Nacional e MEI não são obrigadas a preencher
+// CST/cClassTrib do IBS/CBS em 2026 — a exigência para elas só começa em
+// janeiro de 2027. Regime Normal (lucro presumido/real) ou desconhecido
+// segue o prazo padrão de 01/2026.
+const DATA_CORTE_REGIME_NORMAL = '2026-01-01';
+const DATA_CORTE_SIMPLES_MEI = '2027-01-01';
+
+function resolverDataCorteReforma(regimeTributario) {
+  return regimeTributario === 'simples_nacional' || regimeTributario === 'mei'
+    ? DATA_CORTE_SIMPLES_MEI
+    : DATA_CORTE_REGIME_NORMAL;
+}
 
 function resolverTipos(tipoParam) {
   if (tipoParam === 'nfe') return [XmlType.NFE];
@@ -43,8 +57,8 @@ function situacaoDocumento(doc, situacaoReforma) {
   return 'ok';
 }
 
-function montarPainelDeClassificados(classificados) {
-  const reforma = analisarConformidadeReforma(classificados);
+function montarPainelDeClassificados(classificados, dataCorteReforma) {
+  const reforma = analisarConformidadeReforma(classificados, dataCorteReforma);
   const situacaoReformaPorChave = new Map(reforma.porDocumento.map((d) => [d.chave, d.situacao]));
 
   const documentos = classificados.map(({ doc, operacao }) => {
@@ -121,11 +135,19 @@ painelRouter.get('/', async (req, res) => {
     const tipo = normalizarTipo(req.query.tipo);
     const tipos = resolverTipos(req.query.tipo);
 
+    const cliente = await obterCliente(cnpj);
+    const dataCorteReforma = resolverDataCorteReforma(cliente?.regimeTributario);
+
     // Sem Supabase configurado (dev local), busca tudo direto — o modo mock
     // é instantâneo, sem risco de estourar o tempo de execução.
     if (!cacheDisponivel) {
       const classificados = await obterDocumentosClassificados({ clienteCnpj: cnpj, dataInicio, dataFim, tipos });
-      return res.json({ status: 'pronto', periodo: { dataInicio, dataFim }, ...montarPainelDeClassificados(classificados) });
+      return res.json({
+        status: 'pronto',
+        periodo: { dataInicio, dataFim },
+        cliente,
+        ...montarPainelDeClassificados(classificados, dataCorteReforma),
+      });
     }
 
     let cache = await lerCache(cnpj, dataInicio, dataFim, tipo);
@@ -141,6 +163,7 @@ painelRouter.get('/', async (req, res) => {
         periodo: { dataInicio, dataFim },
         atualizadoEm: cache.atualizado_em,
         desatualizado: false,
+        cliente,
         ...cache.dados,
       });
     }
@@ -190,9 +213,9 @@ painelRouter.get('/', async (req, res) => {
 
     if (combosConcluidos.size === combos.length) {
       const classificados = classificarDocumentos(docsAcumulados, cnpj, dataInicio, dataFim, tipos);
-      const dados = montarPainelDeClassificados(classificados);
+      const dados = montarPainelDeClassificados(classificados, dataCorteReforma);
       await salvarResultado(cnpj, dataInicio, dataFim, tipo, dados);
-      return res.json({ status: 'pronto', periodo: { dataInicio, dataFim }, desatualizado: false, ...dados });
+      return res.json({ status: 'pronto', periodo: { dataInicio, dataFim }, desatualizado: false, cliente, ...dados });
     }
 
     await salvarProgresso(cnpj, dataInicio, dataFim, tipo, [...combosConcluidos], docsAcumulados, comboParcial);
