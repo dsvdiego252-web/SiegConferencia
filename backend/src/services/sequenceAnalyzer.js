@@ -1,5 +1,5 @@
 function groupKey(doc) {
-  return `${doc.emitente.cnpj}::${doc.serie}`;
+  return `${doc.emitente.cnpj}::${doc.tipoDocumento}::${doc.serie}`;
 }
 
 // Compacta uma lista de números ausentes em faixas, ex: [5,6,7,10] -> "5-7, 10"
@@ -34,6 +34,7 @@ export function detectarQuebrasDeSequencia(docsSaida) {
       grupos.set(key, {
         emitCnpj: doc.emitente.cnpj,
         emitNome: doc.emitente.nome,
+        tipoDocumento: doc.tipoDocumento,
         serie: doc.serie,
         numeros: new Set(),
         canceladas: new Set(),
@@ -59,6 +60,7 @@ export function detectarQuebrasDeSequencia(docsSaida) {
     resultado.push({
       emitCnpj: grupo.emitCnpj,
       emitNome: grupo.emitNome,
+      tipoDocumento: grupo.tipoDocumento,
       serie: grupo.serie,
       menorNumero: min,
       maiorNumero: max,
@@ -71,5 +73,5 @@ export function detectarQuebrasDeSequencia(docsSaida) {
     });
   }
 
-  return resultado.sort((a, b) => a.emitNome.localeCompare(b.emitNome) || a.serie - b.serie);
+  return resultado.sort((a, b) => a.emitNome.localeCompare(b.emitNome) || a.tipoDocumento.localeCompare(b.tipoDocumento) || a.serie - b.serie);
 }

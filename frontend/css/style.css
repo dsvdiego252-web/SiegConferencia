@@ -14,6 +14,11 @@
 
 * { box-sizing: border-box; }
 
+/* Garante que [hidden] sempre vença, mesmo em elementos cuja classe (ex.:
+   .summary usa display:grid) sobrescreveria o display:none padrão do
+   navegador para esse atributo. */
+[hidden] { display: none !important; }
+
 body {
   margin: 0;
   font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;

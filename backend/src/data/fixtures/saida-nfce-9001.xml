@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nfeProc>
+  <NFe>
+    <infNFe Id="NFeDEMO-NFCE-9001">
+      <ide>
+        <cUF>35</cUF>
+        <natOp>Venda de mercadoria</natOp>
+        <mod>65</mod>
+        <serie>1</serie>
+        <nNF>9001</nNF>
+        <dhEmi>2026-08-20T11:15:00-03:00</dhEmi>
+        <tpNF>1</tpNF>
+      </ide>
+      <emit>
+        <CNPJ>11222333000181</CNPJ>
+        <xNome>Cliente Ficticio Comercio Ltda</xNome>
+      </emit>
+      <dest>
+        <CNPJ></CNPJ>
+        <xNome>CONSUMIDOR FINAL</xNome>
+      </dest>
+      <det nItem="1">
+        <prod>
+          <cProd>P002</cProd>
+          <xProd>Chapa de Aco 2mm</xProd>
+          <NCM>72091600</NCM>
+          <CFOP>5102</CFOP>
+          <qCom>2</qCom>
+          <vUnCom>18.00</vUnCom>
+          <vProd>36.00</vProd>
+        </prod>
+        <imposto>
+          <ICMS><ICMS00><CST>00</CST><pICMS>18.00</pICMS><vICMS>6.48</vICMS></ICMS00></ICMS>
+          <PIS><PISAliq><CST>01</CST><pPIS>1.65</pPIS><vPIS>0.59</vPIS></PISAliq></PIS>
+          <COFINS><COFINSAliq><CST>01</CST><pCOFINS>7.60</pCOFINS><vCOFINS>2.74</vCOFINS></COFINSAliq></COFINS>
+          <IBSCBS>
+            <CST>000</CST>
+            <cClassTrib>000001</cClassTrib>
+            <gIBSCBS>
+              <vBC>36.00</vBC>
+              <gIBS>
+                <vIBS>0.36</vIBS>
+              </gIBS>
+              <gCBS>
+                <vCBS>0.32</vCBS>
+              </gCBS>
+            </gIBSCBS>
+          </IBSCBS>
+        </imposto>
+      </det>
+      <total>
+        <ICMSTot>
+          <vProd>36.00</vProd>
+          <vICMS>6.48</vICMS>
+          <vNF>36.00</vNF>
+        </ICMSTot>
+      </total>
+    </infNFe>
+    <protNFe><infProt><cStat>100</cStat></infProt></protNFe>
+  </NFe>
+</nfeProc>

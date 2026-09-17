@@ -62,12 +62,13 @@
 
     <section class="panel" id="sequencePanel" hidden>
       <h2>Quebras de sequência (documentos de saída)</h2>
-      <p class="hint">Agrupado por emitente + série. Números faltantes dentro do intervalo emitido no mês.</p>
+      <p class="hint">Agrupado por emitente + tipo de documento + série. Números faltantes dentro do intervalo emitido no mês.</p>
       <div class="table-wrap">
         <table id="sequenceTable">
           <thead>
             <tr>
               <th>Emitente</th>
+              <th>Tipo</th>
               <th>Série</th>
               <th>Faixa emitida</th>
               <th>Encontradas</th>
@@ -87,6 +88,7 @@
           <thead>
             <tr>
               <th>Operação</th>
+              <th>Tipo</th>
               <th>Nº</th>
               <th>Série</th>
               <th>Emissão</th>
@@ -119,6 +121,67 @@
           <tbody></tbody>
         </table>
       </div>
+    </section>
+
+    <section class="panel summary" id="reformaSummaryPanel" hidden>
+      <div class="summary-card">
+        <span class="summary-value" id="reformaTotalAnalisados">0</span>
+        <span class="summary-label">Documentos desde a vigência</span>
+      </div>
+      <div class="summary-card">
+        <span class="summary-value" id="reformaConformes">0</span>
+        <span class="summary-label">Conformes (IBS/CBS ok)</span>
+      </div>
+      <div class="summary-card" id="reformaParciaisCard">
+        <span class="summary-value" id="reformaParciais">0</span>
+        <span class="summary-label">Parcialmente adequados</span>
+      </div>
+      <div class="summary-card" id="reformaSemAdequacaoCard">
+        <span class="summary-value" id="reformaSemAdequacao">0</span>
+        <span class="summary-label">Sem campos da reforma</span>
+      </div>
+    </section>
+
+    <section class="panel" id="reformaPanel" hidden>
+      <h2>Conformidade com a Reforma Tributária (IBS/CBS)</h2>
+      <p class="hint">
+        Verifica se os documentos emitidos desde <span id="reformaDataCorte">01/01/2026</span> trazem os campos da
+        Nota Técnica 2025.002 preenchidos (CST do IBS/CBS, Classificação Tributária, e opcionalmente cBenef).
+        Não valida o cálculo dos valores — só se o emissor do cliente já está adequado e enviando essa informação.
+      </p>
+      <div class="table-wrap">
+        <table id="reformaResumoTable">
+          <thead>
+            <tr>
+              <th>Emitente</th>
+              <th>Documentos</th>
+              <th>Conformes</th>
+              <th>Parciais</th>
+              <th>Sem adequação</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <details style="margin-top: 12px;">
+        <summary class="hint" style="cursor: pointer;">Ver detalhamento por documento</summary>
+        <div class="table-wrap" style="margin-top: 10px;">
+          <table id="reformaDetalheTable">
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Nº</th>
+                <th>Série</th>
+                <th>Emissão</th>
+                <th>Emitente</th>
+                <th>Itens conformes</th>
+                <th>Situação</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </details>
     </section>
 
     <section class="panel">

@@ -1,9 +1,10 @@
 # SIEG Conferência Fiscal
 
 Painel para o escritório acompanhar, por cliente e por mês, os XMLs de
-entrada e saída integrados via API da SIEG: quantidade de documentos,
-quebras de sequência numérica nas notas de saída, cruzamento da
-tributação (ICMS/PIS/COFINS) de produtos entre entrada e saída, e
+entrada e saída (NFe e NFCe) integrados via API da SIEG: quantidade de
+documentos, quebras de sequência numérica nas notas de saída, cruzamento
+da tributação (ICMS/PIS/COFINS) de produtos entre entrada e saída,
+conformidade dos documentos com a Reforma Tributária (IBS/CBS), e
 conferência dos valores lançados no Domínio contra os XMLs da SIEG (hoje
 feita manualmente por uma pessoa antes do cálculo do DAS do Simples
 Nacional).
@@ -78,14 +79,23 @@ reais.
 
 - `GET /api/clients` — lista clientes cadastrados (`backend/src/data/clients.json`).
 - `POST /api/clients` — cadastra um cliente (`{ cnpj, nome }`).
-- `GET /api/xmls?cnpj=...&mes=AAAA-MM` — documentos integrados no mês, já
-  classificados como `entrada`/`saida` (comparando o CNPJ do cliente com
-  emitente/destinatário de cada NFe).
+- `GET /api/xmls?cnpj=...&mes=AAAA-MM` — documentos integrados no mês (NFe
+  e NFCe), já classificados como `entrada`/`saida` (comparando o CNPJ do
+  cliente com emitente/destinatário de cada documento).
 - `GET /api/analysis/sequence?cnpj=...&mes=AAAA-MM` — agrupa as notas de
-  saída por (emitente, série) e aponta números faltantes na sequência.
+  saída por (emitente, **tipo de documento**, série) e aponta números
+  faltantes na sequência. NFe e NFCe são contadas separadamente mesmo
+  quando usam o mesmo número de série.
 - `GET /api/analysis/tax?cnpj=...&mes=AAAA-MM` — agrega, por mês e por
   produto (NCM), quanto entrou e saiu em valor de produto, ICMS, PIS e
   COFINS.
+- `GET /api/analysis/reforma-tributaria?cnpj=...&mes=AAAA-MM` — verifica,
+  por documento emitido a partir de 01/01/2026, se os campos da Reforma
+  Tributária (CST e Classificação Tributária do grupo IBS/CBS, criado
+  pela Nota Técnica 2025.002) estão preenchidos. Aponta por emitente
+  quantos documentos estão conformes, parcialmente adequados (só alguns
+  itens têm os campos) ou totalmente sem adequação — não recalcula nem
+  valida os valores de IBS/CBS, só a presença da informação.
 
 Todos aceitam `inicio=AAAA-MM-DD&fim=AAAA-MM-DD` como alternativa ao atalho
 `mes=`.
@@ -123,11 +133,22 @@ do modo mock) para testar sem precisar de uma exportação real do Domínio.
 
 ## Limitações conhecidas / próximos passos
 
-- **Somente NFe por enquanto.** O parser (`xmlParser.js`) lê o layout de
-  NFe (`nfeProc`/`infNFe`). CTe e NFSe têm layouts próprios e ainda não
-  são interpretados — a SIEG já retorna esses tipos via `XmlType`
-  (`CTE=2`, `NFSE=3`, `NFCE=4`, `CFE=5`), falta escrever o parser
+- **NFe e NFCe suportados; CTe e NFSe ainda não.** O parser (`xmlParser.js`)
+  lê o layout compartilhado por NFe/NFCe (`nfeProc`/`infNFe`, distinguidos
+  pelo campo `mod`: 55=NFe, 65=NFCe). CTe e NFSe têm layouts próprios e
+  ainda não são interpretados — a SIEG já retorna esses tipos via
+  `TipoXml` (`CTE=2`, `NFSE=3`, `CFE=5`), falta escrever o parser
   equivalente para cada um se o escritório precisar deles.
+- **Conformidade com a Reforma Tributária checa presença, não o cálculo.**
+  `reformaTributariaAnalyzer.js` verifica se o grupo `IBSCBS` (CST,
+  `cClassTrib`) existe e está preenchido em cada item, a partir de
+  01/01/2026 — isso aponta clientes cujo emissor ainda não foi adequado,
+  mas não confere se os valores de IBS/CBS calculados estão corretos (a
+  própria SEFAZ já valida isso no schema na hora da emissão). A posição
+  exata do campo `cBenef` no layout da Nota Técnica 2025.002 não está
+  100% documentada nas fontes públicas consultadas — o parser busca esse
+  campo recursivamente dentro do grupo de impostos do item para não
+  depender de um caminho fixo que pode variar.
 - **A API real é bem diferente da documentação pública/artigos de
   terceiros.** O endpoint que funciona de verdade é `POST
   /api/v1/baixar-xmls` (não o `/BaixarXmls` legado citado em blogs e KBs),

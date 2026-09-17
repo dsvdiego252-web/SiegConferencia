@@ -3,9 +3,9 @@ import { parseNfeBatch, classificarOperacao } from './xmlParser.js';
 import { estaDentroDoPeriodo } from './dateUtils.js';
 
 /**
- * Busca (ou usa o mock) e normaliza todos os documentos NFe relacionados a
- * um cliente num período — tanto os que ele emitiu (saída) quanto os que
- * recebeu (entrada) — e classifica cada um.
+ * Busca (ou usa o mock) e normaliza todos os documentos NFe/NFCe
+ * relacionados a um cliente num período — tanto os que ele emitiu (saída)
+ * quanto os que recebeu (entrada) — e classifica cada um.
  *
  * Retorna uma lista de { doc, operacao } onde operacao é 'entrada',
  * 'saida' ou 'desconhecida' (quando nem emitente nem destinatário batem
@@ -13,22 +13,15 @@ import { estaDentroDoPeriodo } from './dateUtils.js';
  * sinal de dado inconsistente).
  */
 export async function obterDocumentosClassificados({ clienteCnpj, dataInicio, dataFim }) {
-  const [xmlsComoEmitente, xmlsComoDestinatario] = await Promise.all([
-    fetchAllXmls({
-      xmlType: XmlType.NFE,
-      dataEmissaoInicio: dataInicio,
-      dataEmissaoFim: dataFim,
-      cnpjEmit: clienteCnpj,
-    }),
-    fetchAllXmls({
-      xmlType: XmlType.NFE,
-      dataEmissaoInicio: dataInicio,
-      dataEmissaoFim: dataFim,
-      cnpjDest: clienteCnpj,
-    }),
+  const tiposConsultados = [XmlType.NFE, XmlType.NFCE];
+
+  const buscas = tiposConsultados.flatMap((xmlType) => [
+    fetchAllXmls({ xmlType, dataEmissaoInicio: dataInicio, dataEmissaoFim: dataFim, cnpjEmit: clienteCnpj }),
+    fetchAllXmls({ xmlType, dataEmissaoInicio: dataInicio, dataEmissaoFim: dataFim, cnpjDest: clienteCnpj }),
   ]);
 
-  const docs = parseNfeBatch([...xmlsComoEmitente, ...xmlsComoDestinatario]);
+  const resultados = await Promise.all(buscas);
+  const docs = parseNfeBatch(resultados.flat());
 
   // Dedup por chave de acesso (o modo mock, por exemplo, devolve o mesmo
   // conjunto de fixtures nas duas buscas acima).

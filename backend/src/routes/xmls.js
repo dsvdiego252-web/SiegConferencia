@@ -15,6 +15,7 @@ xmlsRouter.get('/', async (req, res) => {
     const documentos = classificados.map(({ doc, operacao }) => ({
       chave: doc.chave,
       operacao,
+      tipoDocumento: doc.tipoDocumento,
       numero: doc.numero,
       serie: doc.serie,
       dataEmissao: doc.dataEmissao,

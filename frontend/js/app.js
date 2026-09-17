@@ -19,6 +19,17 @@ const els = {
   documentsTableBody: document.querySelector('#documentsTable tbody'),
   taxPanel: document.getElementById('taxPanel'),
   taxTableBody: document.querySelector('#taxTable tbody'),
+  reformaSummaryPanel: document.getElementById('reformaSummaryPanel'),
+  reformaTotalAnalisados: document.getElementById('reformaTotalAnalisados'),
+  reformaConformes: document.getElementById('reformaConformes'),
+  reformaParciais: document.getElementById('reformaParciais'),
+  reformaParciaisCard: document.getElementById('reformaParciaisCard'),
+  reformaSemAdequacao: document.getElementById('reformaSemAdequacao'),
+  reformaSemAdequacaoCard: document.getElementById('reformaSemAdequacaoCard'),
+  reformaPanel: document.getElementById('reformaPanel'),
+  reformaDataCorte: document.getElementById('reformaDataCorte'),
+  reformaResumoTableBody: document.querySelector('#reformaResumoTable tbody'),
+  reformaDetalheTableBody: document.querySelector('#reformaDetalheTable tbody'),
   dominioFileInput: document.getElementById('dominioFileInput'),
   btnConferirDominio: document.getElementById('btnConferirDominio'),
   reconciliationStatus: document.getElementById('reconciliationStatus'),
@@ -110,13 +121,14 @@ function renderDocumentos(documentos) {
   els.documentsPanel.hidden = false;
   els.documentsTableBody.innerHTML = '';
   if (!documentos.length) {
-    els.documentsTableBody.innerHTML = '<tr class="empty-row"><td colspan="7">Nenhum documento integrado no período.</td></tr>';
+    els.documentsTableBody.innerHTML = '<tr class="empty-row"><td colspan="8">Nenhum documento integrado no período.</td></tr>';
     return;
   }
   for (const d of documentos) {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td><span class="badge badge-${d.operacao}">${d.operacao}</span></td>
+      <td>${d.tipoDocumento}</td>
       <td>${d.numero}</td>
       <td>${d.serie}</td>
       <td>${formatDate(d.dataEmissao)}</td>
@@ -132,7 +144,7 @@ function renderSequencia(grupos) {
   els.sequencePanel.hidden = false;
   els.sequenceTableBody.innerHTML = '';
   if (!grupos.length) {
-    els.sequenceTableBody.innerHTML = '<tr class="empty-row"><td colspan="6">Nenhum documento de saída no período.</td></tr>';
+    els.sequenceTableBody.innerHTML = '<tr class="empty-row"><td colspan="7">Nenhum documento de saída no período.</td></tr>';
     return false;
   }
   let temQuebra = false;
@@ -143,6 +155,7 @@ function renderSequencia(grupos) {
     tr.className = g.temQuebra ? 'row-gap' : 'row-ok';
     tr.innerHTML = `
       <td>${g.emitNome}</td>
+      <td>${g.tipoDocumento}</td>
       <td>${g.serie}</td>
       <td>${g.menorNumero} - ${g.maiorNumero}</td>
       <td>${g.totalEncontrado} / ${g.totalEsperado}</td>
@@ -178,6 +191,62 @@ function renderTributos(meses) {
   }
 }
 
+function renderReforma(reforma) {
+  els.reformaSummaryPanel.hidden = false;
+  els.reformaPanel.hidden = false;
+  els.reformaDataCorte.textContent = formatDate(reforma.dataCorte);
+
+  els.reformaTotalAnalisados.textContent = reforma.totais.totalDocumentosAnalisados;
+  els.reformaConformes.textContent = reforma.totais.conformes;
+  els.reformaParciais.textContent = reforma.totais.parciais;
+  els.reformaSemAdequacao.textContent = reforma.totais.semAdequacao;
+
+  els.reformaParciaisCard.classList.toggle('alerta-leve', reforma.totais.parciais > 0);
+  els.reformaSemAdequacaoCard.classList.toggle('alerta', reforma.totais.semAdequacao > 0);
+
+  els.reformaResumoTableBody.innerHTML = '';
+  if (!reforma.resumoPorEmitente.length) {
+    els.reformaResumoTableBody.innerHTML =
+      '<tr class="empty-row"><td colspan="5">Nenhum documento emitido desde a vigência da reforma no período.</td></tr>';
+  }
+  for (const r of reforma.resumoPorEmitente) {
+    const tr = document.createElement('tr');
+    if (r.semAdequacao > 0) tr.className = 'row-gap';
+    else if (r.parciais > 0) tr.className = 'row-pendente';
+    else tr.className = 'row-ok';
+    tr.innerHTML = `
+      <td>${r.emitNome || r.emitCnpj}</td>
+      <td>${r.totalDocumentos}</td>
+      <td>${r.conformes}</td>
+      <td>${r.parciais}</td>
+      <td>${r.semAdequacao}</td>
+    `;
+    els.reformaResumoTableBody.appendChild(tr);
+  }
+
+  els.reformaDetalheTableBody.innerHTML = '';
+  if (!reforma.porDocumento.length) {
+    els.reformaDetalheTableBody.innerHTML = '<tr class="empty-row"><td colspan="7">Nada a detalhar.</td></tr>';
+    return;
+  }
+  const rotuloSituacao = { conforme: 'Conforme', parcial: 'Parcial', sem_adequacao: 'Sem adequação' };
+  const classeSituacao = { conforme: 'row-ok', parcial: 'row-pendente', sem_adequacao: 'row-gap' };
+  for (const d of reforma.porDocumento) {
+    const tr = document.createElement('tr');
+    tr.className = classeSituacao[d.situacao];
+    tr.innerHTML = `
+      <td>${d.tipoDocumento}</td>
+      <td>${d.numero}</td>
+      <td>${d.serie}</td>
+      <td>${formatDate(d.dataEmissao)}</td>
+      <td>${d.emitNome || d.emitCnpj}</td>
+      <td>${d.itensConformes} / ${d.totalItens}</td>
+      <td>${rotuloSituacao[d.situacao]}</td>
+    `;
+    els.reformaDetalheTableBody.appendChild(tr);
+  }
+}
+
 async function atualizar() {
   const cnpj = els.clienteSelect.value;
   const mes = els.mesInput.value;
@@ -193,15 +262,17 @@ async function atualizar() {
   setStatus('Carregando...');
   try {
     const query = `cnpj=${encodeURIComponent(cnpj)}&mes=${encodeURIComponent(mes)}`;
-    const [xmls, sequence, tax] = await Promise.all([
+    const [xmls, sequence, tax, reforma] = await Promise.all([
       apiGet(`/api/xmls?${query}`),
       apiGet(`/api/analysis/sequence?${query}`),
       apiGet(`/api/analysis/tax?${query}`),
+      apiGet(`/api/analysis/reforma-tributaria?${query}`),
     ]);
 
     renderDocumentos(xmls.documentos);
     const temQuebra = renderSequencia(sequence.grupos);
     renderTributos(tax.meses);
+    renderReforma(reforma);
     renderResumo(xmls, temQuebra);
 
     setStatus(`Atualizado às ${new Date().toLocaleTimeString('pt-BR')}.`);

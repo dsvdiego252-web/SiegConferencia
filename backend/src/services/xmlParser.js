@@ -28,6 +28,48 @@ function firstChildValues(group) {
   return key ? group[key] || {} : {};
 }
 
+// Busca um campo em qualquer profundidade do objeto — usado para achar
+// cBenef, cuja posição exata varia entre o layout antigo (nível do ICMS)
+// e o novo grupo da reforma tributária (IBS/CBS), sem precisar mapear
+// todas as variantes possíveis.
+function buscarValorRecursivo(obj, chave) {
+  if (!obj || typeof obj !== 'object') return null;
+  if (chave in obj && obj[chave] !== undefined && obj[chave] !== '') return obj[chave];
+  for (const valor of Object.values(obj)) {
+    if (valor && typeof valor === 'object') {
+      const encontrado = buscarValorRecursivo(valor, chave);
+      if (encontrado !== null) return encontrado;
+    }
+  }
+  return null;
+}
+
+// Extrai os campos criados pela Nota Técnica 2025.002 (Reforma
+// Tributária — IBS/CBS/IS) quando presentes no item. O grupo <IBSCBS>
+// tem duas variantes conforme o tipo de operação: <gIBSCBS> (regra
+// geral, "ad valorem") ou <gIBSCBSMono> (monofásico, ex.: combustíveis).
+// Documentos emitidos antes da adequação do emissor do cliente
+// simplesmente não têm esse grupo — é exatamente isso que a análise de
+// conformidade da reforma detecta.
+function extrairReformaTributaria(imposto) {
+  const grupo = imposto?.IBSCBS;
+  if (!grupo) return { presente: false, classTrib: null, cst: null, cBenef: null, valorIbs: 0, valorCbs: 0 };
+
+  const monofasico = Boolean(grupo.gIBSCBSMono);
+  const gValores = grupo.gIBSCBS ?? grupo.gIBSCBSMono ?? {};
+
+  return {
+    presente: true,
+    monofasico,
+    cst: grupo.CST ?? null,
+    classTrib: grupo.cClassTrib ?? null,
+    cBenef: buscarValorRecursivo(grupo, 'cBenef'),
+    valorBaseCalculo: toNumber(gValores.vBC),
+    valorIbs: toNumber(gValores?.gIBS?.vIBS),
+    valorCbs: toNumber(gValores?.gCBS?.vCBS),
+  };
+}
+
 /**
  * Recebe uma string XML de NFe (padrão nfeProc ou NFe "solto") e retorna um
  * documento fiscal normalizado, ou null se o XML não for uma NFe reconhecível
@@ -71,11 +113,15 @@ export function parseNfeXml(xmlString) {
       icms: { cst: icms.CST ?? icms.CSOSN ?? null, aliquota: toNumber(icms.pICMS), valor: toNumber(icms.vICMS) },
       pis: { cst: pis.CST ?? null, aliquota: toNumber(pis.pPIS), valor: toNumber(pis.vPIS) },
       cofins: { cst: cofins.CST ?? null, aliquota: toNumber(cofins.pCOFINS), valor: toNumber(cofins.vCOFINS) },
+      reformaTributaria: extrairReformaTributaria(imposto),
     };
   });
 
+  const mod = Number(ide.mod);
+  const tipoDocumento = mod === 65 ? 'NFCe' : 'NFe';
+
   return {
-    tipoDocumento: 'NFe',
+    tipoDocumento,
     chave,
     numero: toNumber(ide.nNF),
     serie: toNumber(ide.serie),
