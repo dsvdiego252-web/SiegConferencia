@@ -1,12 +1,14 @@
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import AdmZip from 'adm-zip';
 import { config, assertSiegConfigured } from '../config.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = path.join(__dirname, '..', 'data', 'fixtures');
 
-// Códigos de XmlType documentados pela SIEG.
+// Códigos de TipoXml/XmlType confirmados na documentação real da API
+// (integracoes.sieg.com): 1=NFe, 2=CTe, 3=NFSe, 4=NFCe, 5=CFe.
 export const XmlType = {
   NFE: 1,
   CTE: 2,
@@ -15,71 +17,134 @@ export const XmlType = {
   CFE: 5,
 };
 
-// Controle simples de janela deslizante para respeitar o limite de
-// 30 requisições/minuto imposto pela SIEG (evita bloqueio/HTTP 429).
-const requestTimestamps = [];
-async function throttle() {
-  const windowMs = 60_000;
-  const now = Date.now();
-  while (requestTimestamps.length && now - requestTimestamps[0] > windowMs) {
-    requestTimestamps.shift();
+function criarLimitadorDeTaxa(maxPorMinuto) {
+  const timestamps = [];
+  async function aguardarSlot() {
+    const janelaMs = 60_000;
+    const agora = Date.now();
+    while (timestamps.length && agora - timestamps[0] > janelaMs) timestamps.shift();
+    if (timestamps.length >= maxPorMinuto) {
+      const espera = janelaMs - (agora - timestamps[0]) + 200;
+      await new Promise((resolve) => setTimeout(resolve, espera));
+      return aguardarSlot();
+    }
+    timestamps.push(Date.now());
   }
-  if (requestTimestamps.length >= config.sieg.maxRequestsPerMinute) {
-    const waitMs = windowMs - (now - requestTimestamps[0]) + 50;
-    await new Promise((resolve) => setTimeout(resolve, waitMs));
-    return throttle();
+  return aguardarSlot;
+}
+
+const aguardarSlotDownload = criarLimitadorDeTaxa(config.sieg.maxRequestsPerMinuteDownload);
+const aguardarSlotContagem = criarLimitadorDeTaxa(config.sieg.maxRequestsPerMinuteContagem);
+
+// O JWT (gerado a partir de ClientId/SecretKey) vale 24h segundo a
+// documentação da SIEG. Cacheamos com uma margem de segurança de 1h para
+// não arriscar usar um token vencido no meio de um lote de chamadas.
+let jwtCache = { token: null, expiraEm: 0 };
+
+async function obterJwt() {
+  const agora = Date.now();
+  if (jwtCache.token && agora < jwtCache.expiraEm) return jwtCache.token;
+
+  const response = await fetch(`${config.sieg.baseUrl}/api/v1/create-jwt`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'X-Client-Id': config.sieg.clientId,
+      'X-Secret-Key': config.sieg.secretKey,
+    },
+    body: '',
+  });
+
+  if (!response.ok) {
+    const texto = await response.text().catch(() => '');
+    throw new Error(`Falha ao gerar JWT na SIEG (${response.status}): ${texto || response.statusText}`);
   }
-  requestTimestamps.push(Date.now());
+
+  const token = await response.json(); // a API devolve o token como uma string JSON, ex: "eyJhbGciOi..."
+  jwtCache = { token, expiraEm: agora + 23 * 60 * 60 * 1000 };
+  return token;
+}
+
+async function chamarApiV1(caminho, body, aguardarSlot) {
+  await aguardarSlot();
+  const jwt = await obterJwt();
+
+  return fetch(`${config.sieg.baseUrl}${caminho}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${jwt}`,
+      'X-Api-Key': config.sieg.apiKey,
+    },
+    body: JSON.stringify(body),
+  });
 }
 
 /**
- * Busca uma página de XMLs na SIEG. Retorna a lista de XMLs já
- * decodificados de base64 para string, e um flag indicando se pode
- * haver mais páginas (heurística: página cheia == provavelmente há mais).
+ * Conta quantos XMLs de cada tipo existem para o filtro informado.
+ * Útil para saber se vale a pena chamar o download, e para diagnóstico.
+ * Limite da SIEG: intervalo de datas de até 3 meses.
+ */
+export async function contarXmls({ dataEmissaoInicio, dataEmissaoFim, cnpjEmit, cnpjDest }) {
+  assertSiegConfigured();
+
+  const body = { DataEmissaoInicio: dataEmissaoInicio, DataEmissaoFim: dataEmissaoFim };
+  if (cnpjEmit) body.CnpjEmit = cnpjEmit;
+  if (cnpjDest) body.CnpjDest = cnpjDest;
+
+  const response = await chamarApiV1('/api/v1/contar-xmls', body, aguardarSlotContagem);
+  const payload = await response.json().catch(() => ({}));
+
+  if (!response.ok || payload.IsFailure) {
+    throw new Error(`SIEG contar-xmls falhou: ${payload.ErrorMessage || response.status}`);
+  }
+  return payload.Data;
+}
+
+/**
+ * Busca uma página de XMLs (até 50) na SIEG. A resposta é um arquivo ZIP
+ * binário contendo um .xml por documento — não mais um array de base64
+ * como a documentação pública antiga descrevia.
  */
 async function fetchPage({ xmlType, dataEmissaoInicio, dataEmissaoFim, cnpjEmit, cnpjDest, take, skip }) {
-  await throttle();
-
-  const url = `${config.sieg.baseUrl}/BaixarXmls?api_key=${encodeURIComponent(config.sieg.apiKey)}`;
   const body = {
-    XmlType: xmlType,
+    TipoXml: xmlType,
     Take: take,
     Skip: skip,
     DataEmissaoInicio: dataEmissaoInicio,
     DataEmissaoFim: dataEmissaoFim,
-    Downloadevent: false,
   };
   if (cnpjEmit) body.CnpjEmit = cnpjEmit;
   if (cnpjDest) body.CnpjDest = cnpjDest;
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
+  const response = await chamarApiV1('/api/v1/baixar-xmls', body, aguardarSlotDownload);
 
+  if (response.status === 404) {
+    return []; // "Nenhum arquivo XML localizado" — fim dos resultados para esse filtro.
+  }
   if (!response.ok) {
-    const text = await response.text().catch(() => '');
-    throw new Error(`SIEG API respondeu ${response.status}: ${text || response.statusText}`);
+    const texto = await response.text().catch(() => '');
+    throw new Error(`SIEG baixar-xmls respondeu ${response.status}: ${texto || response.statusText}`);
   }
 
-  const payload = await response.json();
-
-  // A API retorna um array de strings em base64. Alguns tenants/erros
-  // retornam um objeto { Status, Message } — tratamos os dois formatos.
-  if (!Array.isArray(payload)) {
-    if (payload?.Status && payload.Status !== 200 && payload.Status !== 'success') {
-      throw new Error(`SIEG API erro: ${payload.Message || JSON.stringify(payload)}`);
-    }
-    return [];
-  }
-
-  return payload.map((base64Xml) => Buffer.from(base64Xml, 'base64').toString('utf-8'));
+  const buffer = Buffer.from(await response.arrayBuffer());
+  const zip = new AdmZip(buffer);
+  return zip
+    .getEntries()
+    .filter((entry) => !entry.isDirectory && entry.entryName.toLowerCase().endsWith('.xml'))
+    .map((entry) => entry.getData().toString('utf-8'));
 }
 
 /**
  * Busca todos os XMLs de um período/CNPJ, paginando automaticamente até
- * a SIEG retornar uma página incompleta (fim dos resultados).
+ * a SIEG não retornar mais nenhum arquivo.
+ *
+ * Atenção: a SIEG limita /baixar-xmls a um intervalo de até 2 meses entre
+ * DataEmissaoInicio e DataEmissaoFim. O uso atual do projeto (filtro por
+ * mês no painel) sempre respeita esse limite; se um período maior for
+ * passado aqui, a própria API retorna um erro claro em vez de dados
+ * incompletos silenciosos.
  */
 export async function fetchAllXmls({ xmlType, dataEmissaoInicio, dataEmissaoFim, cnpjEmit, cnpjDest, maxPages = 40 }) {
   assertSiegConfigured();

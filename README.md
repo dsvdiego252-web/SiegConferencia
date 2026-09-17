@@ -52,8 +52,27 @@ compras e vendas dos mesmos produtos para exercitar o cruzamento
 tributário. É o jeito mais rápido de ver o painel funcionando sem ter uma
 chave da SIEG em mãos.
 
-Para usar dados reais, defina `SIEG_API_KEY` (gerada em *Minha Conta >>
-Integrações API SIEG*, usuário administrador) e `MOCK_MODE=false`.
+### Usando dados reais
+
+A API da SIEG exige **duas credenciais diferentes usadas juntas** — isso não
+está claro na documentação pública/artigos de terceiros, só na documentação
+oficial em integracoes.sieg.com:
+
+1. **`SIEG_CLIENT_ID` e `SIEG_SECRET_KEY`** — vêm do "Cadastro de sistema
+   externo" (API SIEG para Clientes SIEG → Cadastro → Formulário). Depois de
+   aprovado, a SIEG manda um e-mail com um link que mostra essas duas
+   credenciais **uma única vez**. Guarde-as assim que aparecerem.
+2. **`SIEG_API_KEY`** — a chave "de sempre", gerada em Minha Conta →
+   Integrações API SIEG.
+
+O backend usa `CLIENT_ID`/`SECRET_KEY` pra gerar um JWT (válido 24h, renovado
+automaticamente) e manda esse JWT **junto com** a API Key em toda chamada.
+Só a API Key sozinha (o jeito documentado publicamente) retorna
+`401 - Erro ao obter dados de usuário` — foi preciso achar esse fluxo raiz
+por tentativa e erro direto na doc oficial.
+
+Com as três variáveis no `.env` e `MOCK_MODE=false`, o painel já busca dados
+reais.
 
 ## Endpoints do backend
 
@@ -109,23 +128,31 @@ do modo mock) para testar sem precisar de uma exportação real do Domínio.
   são interpretados — a SIEG já retorna esses tipos via `XmlType`
   (`CTE=2`, `NFSE=3`, `NFCE=4`, `CFE=5`), falta escrever o parser
   equivalente para cada um se o escritório precisar deles.
-- **Resposta da SIEG confirmada apenas pela documentação pública.** Validei
-  o formato do endpoint (`POST /BaixarXmls?api_key=...`, paginação
-  `Take`/`Skip` de até 50, array de XMLs em base64 na resposta, limite de
-  30 requisições/minuto) via a base de conhecimento da SIEG, mas não testei
-  contra uma chave real — vale confirmar os primeiros retornos reais
-  assim que houver uma API key disponível, especialmente casos de erro e
-  o comportamento de `Downloadevent`.
+- **A API real é bem diferente da documentação pública/artigos de
+  terceiros.** O endpoint que funciona de verdade é `POST
+  /api/v1/baixar-xmls` (não o `/BaixarXmls` legado citado em blogs e KBs),
+  autenticado com JWT (gerado a partir de `SIEG_CLIENT_ID`/`SIEG_SECRET_KEY`)
+  **+** a API Key, nos headers `Authorization: Bearer` e `X-Api-Key`. O
+  campo do tipo de documento se chama `TipoXml` (não `XmlType`), e a
+  resposta é um **arquivo ZIP binário** com um `.xml` por documento — não
+  um array de base64. O limite de intervalo de datas também é menor do que
+  o documentado publicamente: **2 meses** para `/baixar-xmls` (contra 3
+  meses em `/contar-xmls`), e o rate limit real é de **2 requisições por
+  minuto** por API Key (bem mais restritivo que os "30/min" citados em
+  outros lugares). Tudo isso já está implementado em `siegClient.js` e foi
+  validado com uma conta e cliente reais.
 - **Quebra de sequência ainda não busca eventos de cancelamento à parte.**
   O parser já reconhece `cStat 101/151` (nota cancelada) quando o evento
   vem embutido no XML consultado, mas não faz uma segunda chamada para
   buscar eventos de cancelamento separadamente — se a SIEG só retornar o
   cancelamento como um XML de evento à parte, isso ainda precisa ser
   encadeado.
-- **Sem persistência real.** Cada requisição busca de novo na SIEG (ou nas
-  fixtures). Para um volume maior de clientes/período vale cachear os XMLs
-  já baixados (há uma pasta `backend/src/data/cache/` reservada para isso)
-  para não estourar o limite de 30 req/min.
+- **Sem persistência real — e agora isso importa mais.** Cada requisição
+  busca de novo na SIEG (ou nas fixtures). Com o rate limit real de
+  `/baixar-xmls` sendo só 2 requisições/minuto (100 XMLs/min), buscar um mês
+  inteiro de um cliente com muito volume pode demorar minutos. Vale cachear
+  os XMLs já baixados (há uma pasta `backend/src/data/cache/` reservada
+  para isso) tanto por performance quanto para não reconsumir a cota à toa.
 - **Sem autenticação no painel.** Hoje qualquer um que acesse o front-end
   consegue consultar qualquer cliente cadastrado — ok para uso interno
   local, mas precisa de login antes de expor isso na rede.
