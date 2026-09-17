@@ -16,12 +16,16 @@ export const config = {
     // conjunto com o JWT (header X-Api-Key) em toda chamada.
     apiKey: process.env.SIEG_API_KEY || '',
     baseUrl: process.env.SIEG_API_BASE_URL || 'https://api.sieg.com',
-    // Confirmado na documentação real da API (integracoes.sieg.com):
-    // /api/v1/baixar-xmls aceita no máximo 50 XMLs por página e tem um
-    // limite de 2 requisições/minuto por API Key — bem mais restritivo
-    // que o /ContarXmls legado. /api/v1/contar-xmls não documenta um
-    // limite específico; usamos um valor conservador.
-    pageSize: 50,
+    // A SIEG documenta até 50 XMLs por página, mas pra clientes com bastante
+    // volume (ex.: muitas vendas NFCe no período) o tempo que a SIEG leva
+    // pra montar o ZIP de 50 documentos de uma vez pode passar do tempo que
+    // uma função na Vercel aguenta rodar — reduzimos pra 20 pra cada página
+    // ter mais chance de completar dentro do orçamento de tempo (ver
+    // painel.js), mesmo que precise de mais páginas no total.
+    pageSize: 20,
+    // Limite de 2 requisições/minuto por API Key — bem mais restritivo que
+    // o /ContarXmls legado. /api/v1/contar-xmls não documenta um limite
+    // específico; usamos um valor conservador.
     maxRequestsPerMinuteDownload: 2,
     maxRequestsPerMinuteContagem: 20,
   },
