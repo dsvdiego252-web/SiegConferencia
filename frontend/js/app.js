@@ -48,7 +48,7 @@ const els = {
 };
 
 function apiBase() {
-  return els.apiBaseUrl.value.replace(/\/$/, '');
+  return els.apiBaseUrl.value.trim().replace(/\/$/, '');
 }
 
 function setStatus(message, isError = false) {
@@ -428,7 +428,7 @@ async function init() {
     if (els.clienteSelect.value) await atualizar();
     else setStatus('Nenhum cliente cadastrado ainda — use "cadastrar cliente" acima.');
   } catch (err) {
-    setStatus(`Não foi possível conectar ao backend em ${apiBase()}: ${err.message}`, true);
+    setStatus(`Não foi possível conectar ao backend${apiBase() ? ` em ${apiBase()}` : ''}: ${err.message}`, true);
   }
 }
 

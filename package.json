@@ -1,0 +1,17 @@
+{
+  "name": "sieg-conferencia",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "SIEG Conferência Fiscal — deploy Vercel (api/index.js expõe o backend Express, /frontend é servido estático pelo próprio app).",
+  "dependencies": {
+    "@vercel/blob": "^0.27.1",
+    "adm-zip": "^0.6.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "fast-xml-parser": "^4.4.1",
+    "multer": "^2.3.0",
+    "xlsx": "^0.18.5"
+  }
+}

@@ -12,35 +12,31 @@ Nacional).
 ## Arquitetura
 
 ```
-frontend/   HTML/CSS/JS puro (sem build). Fala apenas com o backend local.
-backend/    Node.js + Express: guarda a API key da SIEG, faz o proxy das
-            chamadas, baixa e decodifica os XMLs, faz o parsing de NFe e
-            roda as análises (sequência / tributos).
+frontend/     HTML/CSS/JS puro (sem build).
+backend/src/  Node.js + Express: guarda as credenciais da SIEG, faz o
+              proxy das chamadas, baixa/descompacta os XMLs, faz o
+              parsing de NFe/NFCe e roda as análises.
+api/index.js  Ponto de entrada para a Vercel (reexporta o app do Express
+              como função serverless).
 ```
 
-O front-end **não** chama a SIEG diretamente — isso exigiria expor a API
-key no navegador e provavelmente esbarraria em CORS. O backend guarda a
-chave em `.env` e expõe endpoints já normalizados para o front consumir.
+O backend serve o front-end como arquivos estáticos (`express.static`) e
+expõe a API — tudo pela mesma porta/domínio, tanto localmente quanto na
+Vercel. O front-end nunca chama a SIEG diretamente nem guarda nenhuma
+credencial.
 
-## Como rodar
+## Como rodar localmente
 
 ```bash
 cd backend
-cp .env.example .env      # edite SIEG_API_KEY se for usar dados reais
+cp .env.example .env      # edite as credenciais se for usar dados reais
 npm install
-npm start                 # sobe em http://localhost:3001
+npm start                 # sobe tudo (front + API) em http://localhost:3001
 ```
 
-Em outro terminal, sirva o front-end como arquivos estáticos (qualquer
-servidor HTTP simples serve):
-
-```bash
-cd frontend
-python3 -m http.server 8080
-```
-
-Abra `http://localhost:8080`. No campo "Backend" já vem preenchido
-`http://localhost:3001` — ajuste se o backend estiver em outra porta/host.
+Abra `http://localhost:3001` — é a mesma porta pro painel e pra API. Sem
+`ADMIN_USER`/`ADMIN_PASSWORD` no `.env`, o painel fica aberto (sem login),
+o que é conveniente em dev local.
 
 ### Modo mock (padrão)
 
@@ -74,6 +70,34 @@ por tentativa e erro direto na doc oficial.
 
 Com as três variáveis no `.env` e `MOCK_MODE=false`, o painel já busca dados
 reais.
+
+## Publicando na Vercel
+
+O projeto está pronto pra rodar como um deploy único na Vercel (`api/index.js`
+expõe o Express inteiro — front + API — como uma função serverless; o
+`vercel.json` na raiz redireciona todas as rotas pra ela).
+
+**Antes de publicar (ou logo depois do primeiro deploy), configure em
+Project Settings → Environment Variables:**
+
+- `SIEG_CLIENT_ID`, `SIEG_SECRET_KEY`, `SIEG_API_KEY` — as credenciais reais
+  (ver seção acima).
+- `MOCK_MODE=false`.
+- `ADMIN_USER` e `ADMIN_PASSWORD` — **login do painel**. Sem essas duas
+  variáveis, o painel fica aberto na internet para qualquer um com o link.
+  A Vercel Hobby (gratuita) não tem proteção por senha nativa da
+  plataforma — por isso o backend implementa a própria (HTTP Basic Auth,
+  em `backend/src/app.js`).
+
+**Também é preciso conectar uma store do Vercel Blob** (Project → Storage →
+Create Database → Blob → Connect to Project). Isso injeta automaticamente a
+variável `BLOB_READ_WRITE_TOKEN`, usada por `clientsStore.js` para guardar a
+lista de clientes cadastrados pelo painel — sem isso, o cadastro de cliente
+não persiste entre deploys/invocações na Vercel (o sistema de arquivos lá é
+somente leitura fora de `/tmp`).
+
+Depois de configurar as variáveis e conectar o Blob, faça um redeploy pra
+elas valerem.
 
 ## Endpoints do backend
 
@@ -174,6 +198,8 @@ do modo mock) para testar sem precisar de uma exportação real do Domínio.
   inteiro de um cliente com muito volume pode demorar minutos. Vale cachear
   os XMLs já baixados (há uma pasta `backend/src/data/cache/` reservada
   para isso) tanto por performance quanto para não reconsumir a cota à toa.
-- **Sem autenticação no painel.** Hoje qualquer um que acesse o front-end
-  consegue consultar qualquer cliente cadastrado — ok para uso interno
-  local, mas precisa de login antes de expor isso na rede.
+- **Autenticação é só um usuário/senha compartilhado (HTTP Basic).** Protege
+  contra acesso aberto na internet, mas não distingue usuários nem tem
+  controle por cliente/permissão — todo mundo com a senha vê todos os
+  clientes cadastrados. Suficiente para um escritório pequeno com poucas
+  pessoas acessando; para mais controle, precisaria de login individual.
