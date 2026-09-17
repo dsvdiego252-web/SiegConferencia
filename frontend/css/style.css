@@ -485,3 +485,8 @@ tr.row-cancelada {
   font-size: 0.95rem;
   margin: 20px 0 8px;
 }
+
+.destaque-erro {
+  color: var(--danger);
+  font-weight: 600;
+}

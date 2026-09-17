@@ -245,15 +245,54 @@ function renderPaginaDocumentos() {
   }
 }
 
+// CSTs do IBS/CBS que tipicamente representam algum benefício/desoneração
+// (alíquota reduzida, isenção, imunidade, diferimento, suspensão,
+// monofásico) — quando o cClassTrib complementa isso mas o cBenef também
+// está vazio, vale conferir se deveria estar preenchido. Isso é um alerta
+// brando, não uma regra fechada: no modelo novo o cClassTrib já cumpre boa
+// parte do papel do cBenef antigo do ICMS, e a exigência exata de cBenef
+// ainda não está 100% pacificada nas fontes públicas disponíveis.
+const CST_COM_POSSIVEL_BENEFICIO = [200, 400, 410, 510, 550, 620];
+
+// O fast-xml-parser converte valores numéricos como "000" ou "000001" para
+// number (0, 1), perdendo os zeros à esquerda — CST tem 3 dígitos e
+// cClassTrib tem 6, então recompletamos na exibição.
+function preenchido(valor) {
+  return valor !== null && valor !== undefined && valor !== '';
+}
+
+function formatarCodigoReforma(valor, digitos) {
+  if (!preenchido(valor)) return null;
+  return String(valor).padStart(digitos, '0');
+}
+
+function textoReformaItem(reforma) {
+  if (!reforma?.presente) {
+    return '<span class="destaque-erro">Sem o grupo IBS/CBS no XML</span> (CST e Classificação Tributária ausentes)';
+  }
+
+  const cstFormatado = formatarCodigoReforma(reforma.cst, 3);
+  const classTribFormatado = formatarCodigoReforma(reforma.classTrib, 6);
+  const linhaCst = cstFormatado ? `CST: ${cstFormatado}` : '<span class="destaque-erro">CST: faltando</span>';
+  const linhaClassTrib = classTribFormatado
+    ? `ClassTrib: ${classTribFormatado}`
+    : '<span class="destaque-erro">Classificação Tributária (cClassTrib): faltando</span>';
+  const linhaCbenef = preenchido(reforma.cBenef) ? `cBenef: ${reforma.cBenef}` : 'cBenef: não informado';
+
+  let aviso = '';
+  if (cstFormatado && CST_COM_POSSIVEL_BENEFICIO.includes(Number(reforma.cst)) && !preenchido(reforma.cBenef)) {
+    aviso = '<div class="hint" style="color:#b25c00;">CST indica alíquota reduzida/isenção/diferimento — confira se o cBenef deveria estar preenchido.</div>';
+  }
+
+  return `<div>${linhaCst}</div><div>${linhaClassTrib}</div><div>${linhaCbenef}</div>${aviso}`;
+}
+
 function abrirModalDocumento(doc) {
   els.docModalTitulo.textContent = `${doc.tipoDocumento} nº ${doc.numero} — série ${doc.serie}`;
 
   const linhasItens = doc.itens
     .map((item) => {
-      const reforma = item.reformaTributaria;
-      const reformaTexto = reforma?.presente
-        ? `CST ${reforma.cst ?? '-'} · ClassTrib ${reforma.classTrib ?? '-'}${reforma.cBenef ? ` · cBenef ${reforma.cBenef}` : ''}`
-        : 'Sem campos da Reforma Tributária';
+      const reformaTexto = textoReformaItem(item.reformaTributaria);
       return `
         <tr>
           <td>${item.codigo}<br><span class="hint">${item.descricao}</span></td>
@@ -263,7 +302,7 @@ function abrirModalDocumento(doc) {
           <td>${formatMoney(item.valorProduto)}</td>
           <td>${formatMoney(item.icms.valor)} <span class="hint">(CST ${item.icms.cst ?? '-'})</span></td>
           <td>${formatMoney(item.pis.valor + item.cofins.valor)}</td>
-          <td class="hint">${reformaTexto}</td>
+          <td style="font-size: 0.82rem;">${reformaTexto}</td>
         </tr>
       `;
     })
