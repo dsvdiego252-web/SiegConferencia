@@ -595,7 +595,13 @@ function exportarAvisos() {
 }
 
 const POLL_INTERVALO_MS = 2000;
-const POLL_MAX_TENTATIVAS = 60; // cada tentativa já busca um pedaço de verdade; isso cobre clientes com bastante volume
+// Cada tentativa já busca um pedaço de verdade, mas o rate limit real da
+// SIEG (2 requisições/minuto pra baixar XMLs) faz cada uma poder levar até
+// ~45s — clientes com bastante volume (ex.: muitas vendas NFCe em 15 dias)
+// podem precisar de dezenas de páginas só pra um tipo/direção. 60 tentativas
+// (~2-8min) se mostrou insuficiente num caso real; 150 dá mais margem sem
+// prender a aba por horas.
+const POLL_MAX_TENTATIVAS = 150;
 
 // Cada chamada a /api/painel avança um pedaço de verdade da busca (um tipo
 // de documento x direção por vez) e guarda o progresso no Supabase — este
@@ -621,7 +627,9 @@ async function buscarPainelComEspera(query) {
     );
     await new Promise((resolve) => setTimeout(resolve, POLL_INTERVALO_MS));
   }
-  throw new Error('A busca está demorando mais que o esperado. Tente novamente em instantes.');
+  throw new Error(
+    'A busca ainda não terminou, mas o progresso já foi salvo — clique em "Buscar" de novo pra continuar de onde parou (não recomeça do zero). Pra clientes com bastante volume, tente também um período mais curto (poucos dias por vez).'
+  );
 }
 
 function periodoValido() {
