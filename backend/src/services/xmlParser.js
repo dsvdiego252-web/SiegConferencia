@@ -110,7 +110,12 @@ export function parseNfeXml(xmlString) {
       quantidade: toNumber(prod.qCom),
       valorUnitario: toNumber(prod.vUnCom),
       valorProduto: toNumber(prod.vProd),
-      icms: { cst: icms.CST ?? icms.CSOSN ?? null, aliquota: toNumber(icms.pICMS), valor: toNumber(icms.vICMS) },
+      icms: {
+        cst: icms.CST ?? icms.CSOSN ?? null,
+        aliquota: toNumber(icms.pICMS),
+        valor: toNumber(icms.vICMS),
+        baseCalculo: toNumber(icms.vBC),
+      },
       pis: { cst: pis.CST ?? null, aliquota: toNumber(pis.pPIS), valor: toNumber(pis.vPIS) },
       cofins: { cst: cofins.CST ?? null, aliquota: toNumber(cofins.pCOFINS), valor: toNumber(cofins.vCOFINS) },
       reformaTributaria: extrairReformaTributaria(imposto),

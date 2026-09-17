@@ -275,13 +275,16 @@ function textoReformaItem(reforma) {
     ? `ClassTrib: ${classTribFormatado}`
     : '<span class="destaque-erro">Classificação Tributária (cClassTrib): faltando</span>';
   const linhaCbenef = preenchido(reforma.cBenef) ? `cBenef: ${reforma.cBenef}` : 'cBenef: não informado';
+  const linhaBaseCalculo = `BC IBS/CBS: ${formatMoney(reforma.valorBaseCalculo)}`;
+  const linhaIbs = `IBS: ${formatMoney(reforma.valorIbs)}`;
+  const linhaCbs = `CBS: ${formatMoney(reforma.valorCbs)}`;
 
   let aviso = '';
   if (cstFormatado && CST_COM_POSSIVEL_BENEFICIO.includes(Number(reforma.cst)) && !preenchido(reforma.cBenef)) {
     aviso = '<div class="hint" style="color:#b25c00;">CST indica alíquota reduzida/isenção/diferimento — confira se o cBenef deveria estar preenchido.</div>';
   }
 
-  return `<div>${linhaCst}</div><div>${linhaClassTrib}</div><div>${linhaCbenef}</div>${aviso}`;
+  return `<div>${linhaCst}</div><div>${linhaClassTrib}</div><div>${linhaCbenef}</div><div>${linhaBaseCalculo}</div><div>${linhaIbs}</div><div>${linhaCbs}</div>${aviso}`;
 }
 
 function abrirModalDocumento(doc) {
@@ -297,7 +300,7 @@ function abrirModalDocumento(doc) {
           <td>${item.cfop || '-'}</td>
           <td>${item.quantidade}</td>
           <td>${formatMoney(item.valorProduto)}</td>
-          <td>${formatMoney(item.icms.valor)} <span class="hint">(CST ${item.icms.cst ?? '-'})</span></td>
+          <td>${formatMoney(item.icms.valor)} <span class="hint">(CST ${item.icms.cst ?? '-'} · BC ${formatMoney(item.icms.baseCalculo)})</span></td>
           <td>${formatMoney(item.pis.valor + item.cofins.valor)}</td>
           <td style="font-size: 0.82rem;">${reformaTexto}</td>
         </tr>
