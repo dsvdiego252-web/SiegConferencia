@@ -101,8 +101,8 @@ create table clientes (
 );
 ```
 
-Rode também esta segunda tabela — cache do painel (ver "Busca em segundo
-plano" abaixo):
+Rode também esta segunda tabela — cache/progresso do painel (ver "Busca por
+etapas" abaixo):
 
 ```sql
 create table painel_cache (
@@ -113,10 +113,21 @@ create table painel_cache (
   status text not null default 'buscando',
   dados jsonb,
   erro_mensagem text,
+  combos_concluidos jsonb not null default '[]'::jsonb,
+  docs_parciais jsonb not null default '[]'::jsonb,
   atualizado_em timestamptz not null default now(),
   primary key (cnpj, data_inicio, data_fim, tipo)
 );
 ```
+
+(Se você já criou essa tabela numa versão anterior sem as colunas
+`combos_concluidos`/`docs_parciais`, rode em vez disso:
+```sql
+alter table painel_cache
+  add column if not exists combos_concluidos jsonb not null default '[]'::jsonb,
+  add column if not exists docs_parciais jsonb not null default '[]'::jsonb;
+```
+)
 
 E configure na Vercel:
 
@@ -127,22 +138,31 @@ E configure na Vercel:
 
 Depois de configurar as variáveis, faça um redeploy pra elas valerem.
 
-### Busca em segundo plano (por que `/api/painel` responde "buscando")
+### Busca por etapas (por que `/api/painel` responde "buscando")
 
 A SIEG limita `/baixar-xmls` a **2 requisições por minuto** de verdade, e o
 painel pode precisar de até 4 (NFe/NFCe × entrada/saída) — na pior das
 hipóteses isso passa dos 60 segundos, o teto de execução de uma função na
 Vercel (mesmo configurando `maxDuration: 60` em `vercel.json`, o máximo do
-plano Hobby). Por isso `/api/painel` não busca mais de forma síncrona: com o
-Supabase configurado, ele responde na hora com `{ "status": "buscando" }` e
-dispara a busca de verdade em segundo plano (via `waitUntil`), guardando o
-resultado na tabela `painel_cache`. O front-end reconsulta o mesmo endpoint
-a cada poucos segundos até vir `{ "status": "pronto", ... }` (ou `"erro"`).
-Resultados prontos ficam em cache por 10 minutos; depois disso, a próxima
-consulta ainda responde na hora com o dado antigo (`desatualizado: true`) e
-já dispara uma atualização por trás. Sem `SUPABASE_URL`/`SUPABASE_SECRET_KEY`
-configurados (dev local), esse cache fica desligado e a busca volta a ser
-síncrona — ok para o modo mock, que é instantâneo.
+plano Hobby). Por isso `/api/painel` busca **um combo (tipo × direção) por
+requisição**: com o Supabase configurado, cada chamada avança o que ainda
+falta buscar, salva o progresso (`combos_concluidos`/`docs_parciais`) na
+tabela `painel_cache`, e responde `{ "status": "buscando", "progresso":
+"2/4" }` até terminar todos os combos, quando então responde `{ "status":
+"pronto", ... }`. O front-end reconsulta o mesmo endpoint (com o mesmo
+`cnpj`/`mes`/`tipo`) a cada 2 segundos até sair "pronto" — isso é mais
+confiável do que tentar rodar a busca "em segundo plano" além do tempo de
+resposta, que depende de um mecanismo (`waitUntil`) nem sempre disponível
+dependendo de como a função é hospedada. Resultados prontos ficam em cache
+por 10 minutos; depois disso, a próxima consulta recomeça a busca (por
+etapas de novo) em vez de usar o dado velho. Sem
+`SUPABASE_URL`/`SUPABASE_SECRET_KEY` configurados (dev local), esse cache
+fica desligado e a busca volta a ser síncrona (todos os combos de uma vez)
+— ok para o modo mock, que é instantâneo.
+
+Use o filtro **"Tipo de documento"** (Todos/NFe/NFCe) pra reduzir de 4 para
+2 combos quando não precisar dos dois tipos — corta o tempo total pela
+metade.
 
 ## Endpoints do backend
 
@@ -155,20 +175,20 @@ síncrona — ok para o modo mock, que é instantâneo.
   (documentos integrados, quebra de sequência, cruzamento tributário e
   conformidade com a Reforma Tributária). `tipo` restringe a busca a NFe ou
   NFCe (metade das requisições à SIEG); sem informar, busca os dois.
-  Resposta assíncrona — ver "Busca em segundo plano" acima:
-  - `{ "status": "buscando" }` — reconsulte o mesmo endpoint em alguns
-    segundos.
+  Resposta em etapas — ver "Busca por etapas" acima:
+  - `{ "status": "buscando", "progresso": "2/4" }` — reconsulte o mesmo
+    endpoint (mesmos parâmetros) em alguns segundos; cada chamada avança
+    mais um combo.
   - `{ "status": "erro", "erro": "..." }` — a busca falhou.
   - `{ "status": "pronto", "xmls": {...}, "sequence": {...}, "tax": {...},
-    "reforma": {...}, "desatualizado": bool }` — resultado pronto;
-    `desatualizado: true` significa que já está reconsultando a SIEG por
-    trás (cache com mais de 10 minutos), mas o que veio já pode ser usado.
-  Passe `forcar=1` pra ignorar o cache e forçar uma nova busca.
+    "reforma": {...} }` — resultado pronto.
+  Passe `forcar=1` pra ignorar o cache e recomeçar a busca do zero.
 - `GET /api/xmls`, `GET /api/analysis/sequence`, `GET /api/analysis/tax`,
   `GET /api/analysis/reforma-tributaria` (todos com `cnpj=...&mes=AAAA-MM`)
   — os mesmos dados de `/api/painel`, mas cada um buscando a SIEG de novo
-  por conta própria (sem cache/segundo plano). Mantidos por compatibilidade;
-  o front-end usa só `/api/painel`.
+  por conta própria, tudo de uma vez (sem cache/etapas — arrisca timeout
+  com volume real). Mantidos por compatibilidade; o front-end usa só
+  `/api/painel`.
 
 Todos aceitam `inicio=AAAA-MM-DD&fim=AAAA-MM-DD` como alternativa ao atalho
 `mes=`.

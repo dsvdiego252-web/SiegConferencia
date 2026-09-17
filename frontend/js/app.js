@@ -251,19 +251,21 @@ function renderReforma(reforma) {
   }
 }
 
-const POLL_INTERVALO_MS = 4000;
-const POLL_MAX_TENTATIVAS = 30; // ~2 minutos no total
+const POLL_INTERVALO_MS = 2000;
+const POLL_MAX_TENTATIVAS = 60; // cada tentativa já busca um pedaço de verdade; isso cobre clientes com bastante volume
 
-// O backend responde na hora com status "buscando" (a busca real roda em
-// segundo plano, guardada no Supabase) e este loop reconsulta o mesmo
-// endpoint de tempos em tempos até sair "pronto" — evita travar a tela
-// esperando os até ~60s que a SIEG pode levar numa única requisição HTTP.
+// Cada chamada a /api/painel avança um pedaço de verdade da busca (um tipo
+// de documento x direção por vez) e guarda o progresso no Supabase — este
+// loop repete a chamada até o backend responder "pronto", sem depender de
+// nenhum mecanismo de "segundo plano" pra terminar o que não coube dentro
+// do tempo de execução de uma única requisição.
 async function buscarPainelComEspera(query) {
   for (let tentativa = 0; tentativa < POLL_MAX_TENTATIVAS; tentativa += 1) {
     const painel = await apiGet(`/api/painel?${query}`);
     if (painel.status === 'pronto') return painel;
     if (painel.status === 'erro') throw new Error(painel.erro || 'Falha ao buscar dados na SIEG.');
-    setStatus('Buscando na SIEG em segundo plano... isso pode levar até 1 minuto.', false, true);
+    const progresso = painel.progresso ? ` (${painel.progresso} concluído)` : '';
+    setStatus(`Buscando na SIEG...${progresso} isso pode levar alguns minutos dependendo do volume.`, false, true);
     await new Promise((resolve) => setTimeout(resolve, POLL_INTERVALO_MS));
   }
   throw new Error('A busca está demorando mais que o esperado. Tente novamente em instantes.');

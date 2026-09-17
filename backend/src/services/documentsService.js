@@ -5,42 +5,74 @@ import { estaDentroDoPeriodo } from './dateUtils.js';
 const TIPO_DOCUMENTO_POR_XMLTYPE = { [XmlType.NFE]: 'NFe', [XmlType.NFCE]: 'NFCe' };
 
 /**
- * Busca (ou usa o mock) e normaliza os documentos relacionados a um cliente
- * num período — tanto os que ele emitiu (saída) quanto os que recebeu
- * (entrada) — e classifica cada um. O parâmetro opcional `tipos` (array de
- * XmlType) restringe a busca a NFe e/ou NFCe; sem ele, busca os dois. Além
- * de economizar consultas à SIEG (cada tipo consome sua própria cota de
- * requisições), o resultado também é filtrado por tipo no final, como
- * segurança extra (o modo mock ignora o tipo pedido nas fixtures).
- *
- * Retorna uma lista de { doc, operacao } onde operacao é 'entrada',
- * 'saida' ou 'desconhecida' (quando nem emitente nem destinatário batem
- * com o CNPJ do cliente — normalmente não deveria acontecer, mas serve de
- * sinal de dado inconsistente).
+ * Lista os "combos" (tipo de documento x direção emitente/destinatário) que
+ * precisam ser consultados na SIEG. tipos (array de XmlType) restringe a
+ * NFe e/ou NFCe; sem ele, usa os dois — cada combo é uma requisição de
+ * download separada, com sua própria cota na SIEG.
  */
-export async function obterDocumentosClassificados({ clienteCnpj, dataInicio, dataFim, tipos }) {
+export function listarCombos(tipos) {
+  const tiposConsultados = tipos && tipos.length ? tipos : [XmlType.NFE, XmlType.NFCE];
+  return tiposConsultados.flatMap((xmlType) => [
+    { xmlType, direcao: 'emit' },
+    { xmlType, direcao: 'dest' },
+  ]);
+}
+
+export function chaveCombo(combo) {
+  return `${combo.xmlType}:${combo.direcao}`;
+}
+
+/**
+ * Busca e faz o parsing de um único combo. Usada para avançar a busca aos
+ * poucos (um combo por requisição HTTP) quando há cache/progresso — ver
+ * painel.js — em vez de buscar tudo de uma vez, o que pode estourar o
+ * tempo máximo de execução de uma função na Vercel quando o cliente tem
+ * volume (o rate limit real da SIEG é de só 2 requisições/minuto).
+ */
+export async function buscarCombo(combo, { clienteCnpj, dataInicio, dataFim }) {
+  const filtroDirecao = combo.direcao === 'emit' ? { cnpjEmit: clienteCnpj } : { cnpjDest: clienteCnpj };
+  const xmls = await fetchAllXmls({
+    xmlType: combo.xmlType,
+    dataEmissaoInicio: dataInicio,
+    dataEmissaoFim: dataFim,
+    ...filtroDirecao,
+  });
+  return parseNfeBatch(xmls);
+}
+
+/** Junta duas listas de documentos já parseados, sem duplicar por chave de acesso. */
+export function mesclarDocumentos(docsExistentes, docsNovos) {
+  const mapa = new Map(docsExistentes.map((d) => [d.chave || `${d.emitente.cnpj}-${d.serie}-${d.numero}`, d]));
+  for (const doc of docsNovos) {
+    mapa.set(doc.chave || `${doc.emitente.cnpj}-${doc.serie}-${doc.numero}`, doc);
+  }
+  return [...mapa.values()];
+}
+
+/**
+ * Filtra por período/tipo, classifica cada documento como entrada/saída (do
+ * ponto de vista do cliente) e ordena por data de emissão.
+ */
+export function classificarDocumentos(docs, clienteCnpj, dataInicio, dataFim, tipos) {
   const tiposConsultados = tipos && tipos.length ? tipos : [XmlType.NFE, XmlType.NFCE];
   const tiposDocumentoPermitidos = new Set(tiposConsultados.map((t) => TIPO_DOCUMENTO_POR_XMLTYPE[t]));
 
-  const buscas = tiposConsultados.flatMap((xmlType) => [
-    fetchAllXmls({ xmlType, dataEmissaoInicio: dataInicio, dataEmissaoFim: dataFim, cnpjEmit: clienteCnpj }),
-    fetchAllXmls({ xmlType, dataEmissaoInicio: dataInicio, dataEmissaoFim: dataFim, cnpjDest: clienteCnpj }),
-  ]);
-
-  const resultados = await Promise.all(buscas);
-  const docs = parseNfeBatch(resultados.flat());
-
-  // Dedup por chave de acesso (o modo mock, por exemplo, devolve o mesmo
-  // conjunto de fixtures nas duas buscas acima).
-  const docsUnicos = new Map();
-  for (const doc of docs) {
-    const chave = doc.chave || `${doc.emitente.cnpj}-${doc.serie}-${doc.numero}`;
-    docsUnicos.set(chave, doc);
-  }
-
-  return [...docsUnicos.values()]
+  return docs
     .filter((doc) => estaDentroDoPeriodo(doc.dataEmissao, dataInicio, dataFim))
     .filter((doc) => tiposDocumentoPermitidos.has(doc.tipoDocumento))
     .map((doc) => ({ doc, operacao: classificarOperacao(doc, clienteCnpj) }))
     .sort((a, b) => String(a.doc.dataEmissao).localeCompare(String(b.doc.dataEmissao)));
+}
+
+/**
+ * Busca todos os combos de uma vez e já classifica — usado no modo sem
+ * cache (dev local, onde o modo mock é instantâneo e não há risco de
+ * estourar o tempo de execução). Em produção com o Supabase configurado,
+ * painel.js busca combo por combo em vez de chamar esta função.
+ */
+export async function obterDocumentosClassificados({ clienteCnpj, dataInicio, dataFim, tipos }) {
+  const combos = listarCombos(tipos);
+  const resultados = await Promise.all(combos.map((combo) => buscarCombo(combo, { clienteCnpj, dataInicio, dataFim })));
+  const docs = mesclarDocumentos([], resultados.flat());
+  return classificarDocumentos(docs, clienteCnpj, dataInicio, dataFim, tipos);
 }

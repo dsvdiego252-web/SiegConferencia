@@ -1,25 +1,25 @@
 import { Router } from 'express';
-import { waitUntil } from '@vercel/functions';
-import { obterDocumentosClassificados } from '../services/documentsService.js';
+import {
+  obterDocumentosClassificados,
+  listarCombos,
+  chaveCombo,
+  buscarCombo,
+  mesclarDocumentos,
+  classificarDocumentos,
+} from '../services/documentsService.js';
 import { resolverPeriodo } from '../services/dateUtils.js';
 import { detectarQuebrasDeSequencia } from '../services/sequenceAnalyzer.js';
 import { cruzarTributacao } from '../services/taxAnalyzer.js';
 import { analisarConformidadeReforma } from '../services/reformaTributariaAnalyzer.js';
 import { XmlType } from '../services/siegClient.js';
-import {
-  cacheDisponivel,
-  lerCache,
-  marcarBuscando,
-  salvarResultado,
-  salvarErro,
-  estaExpirado,
-  estaTravado,
-} from '../services/painelCache.js';
+import { cacheDisponivel, lerCache, reiniciarBusca, salvarProgresso, salvarResultado, salvarErro, estaExpirado } from '../services/painelCache.js';
 
 export const painelRouter = Router();
 
-// "nfe"/"nfce" restringem a busca a um tipo só (metade das requisições à
-// SIEG); qualquer outro valor (ou ausente) busca os dois.
+// Margem de segurança abaixo do maxDuration (60s, o máximo do plano Hobby
+// da Vercel) — reserva tempo pra montar a resposta depois do último combo.
+const ORCAMENTO_MS = 45_000;
+
 function resolverTipos(tipoParam) {
   if (tipoParam === 'nfe') return [XmlType.NFE];
   if (tipoParam === 'nfce') return [XmlType.NFCE];
@@ -30,9 +30,7 @@ function normalizarTipo(tipoParam) {
   return tipoParam === 'nfe' || tipoParam === 'nfce' ? tipoParam : 'todos';
 }
 
-async function montarPainel(cnpj, dataInicio, dataFim, tipos) {
-  const classificados = await obterDocumentosClassificados({ clienteCnpj: cnpj, dataInicio, dataFim, tipos });
-
+function montarPainelDeClassificados(classificados) {
   const documentos = classificados.map(({ doc, operacao }) => ({
     chave: doc.chave,
     operacao,
@@ -64,15 +62,6 @@ async function montarPainel(cnpj, dataInicio, dataFim, tipos) {
   };
 }
 
-async function buscarEAtualizarCache(cnpj, dataInicio, dataFim, tipo, tipos) {
-  try {
-    const dados = await montarPainel(cnpj, dataInicio, dataFim, tipos);
-    await salvarResultado(cnpj, dataInicio, dataFim, tipo, dados);
-  } catch (err) {
-    await salvarErro(cnpj, dataInicio, dataFim, tipo, err.message);
-  }
-}
-
 painelRouter.get('/', async (req, res) => {
   try {
     const { cnpj, forcar } = req.query;
@@ -82,46 +71,71 @@ painelRouter.get('/', async (req, res) => {
     const tipo = normalizarTipo(req.query.tipo);
     const tipos = resolverTipos(req.query.tipo);
 
-    // Sem Supabase configurado (dev local), busca direto — sem persistência
-    // não tem como coordenar o "buscando em segundo plano" entre chamadas.
+    // Sem Supabase configurado (dev local), busca tudo direto — o modo mock
+    // é instantâneo, sem risco de estourar o tempo de execução.
     if (!cacheDisponivel) {
-      const dados = await montarPainel(cnpj, dataInicio, dataFim, tipos);
-      return res.json({ status: 'pronto', periodo: { dataInicio, dataFim }, ...dados });
+      const classificados = await obterDocumentosClassificados({ clienteCnpj: cnpj, dataInicio, dataFim, tipos });
+      return res.json({ status: 'pronto', periodo: { dataInicio, dataFim }, ...montarPainelDeClassificados(classificados) });
     }
 
-    const cache = await lerCache(cnpj, dataInicio, dataFim, tipo);
+    let cache = await lerCache(cnpj, dataInicio, dataFim, tipo);
 
-    if (!cache || forcar === '1') {
-      await marcarBuscando(cnpj, dataInicio, dataFim, tipo);
-      waitUntil(buscarEAtualizarCache(cnpj, dataInicio, dataFim, tipo, tipos));
-      return res.json({ status: 'buscando', periodo: { dataInicio, dataFim } });
+    const precisaReiniciar = !cache || forcar === '1' || (cache.status === 'pronto' && estaExpirado(cache.atualizado_em));
+    if (precisaReiniciar) {
+      cache = await reiniciarBusca(cnpj, dataInicio, dataFim, tipo);
     }
 
-    if (cache.status === 'buscando') {
-      if (estaTravado(cache.atualizado_em)) {
-        await marcarBuscando(cnpj, dataInicio, dataFim, tipo);
-        waitUntil(buscarEAtualizarCache(cnpj, dataInicio, dataFim, tipo, tipos));
-      }
-      return res.json({ status: 'buscando', periodo: { dataInicio, dataFim } });
+    if (cache.status === 'pronto') {
+      return res.json({
+        status: 'pronto',
+        periodo: { dataInicio, dataFim },
+        atualizadoEm: cache.atualizado_em,
+        desatualizado: false,
+        ...cache.dados,
+      });
     }
 
     if (cache.status === 'erro') {
       return res.json({ status: 'erro', periodo: { dataInicio, dataFim }, erro: cache.erro_mensagem });
     }
 
-    // status === 'pronto': responde na hora com o que já tem; se estiver
-    // velho, dispara uma atualização em segundo plano sem travar a resposta.
-    const desatualizado = estaExpirado(cache.atualizado_em);
-    if (desatualizado) {
-      waitUntil(buscarEAtualizarCache(cnpj, dataInicio, dataFim, tipo, tipos));
+    // status === 'buscando': continua de onde parou. Cada combo (tipo x
+    // direção) só é buscado uma vez; o progresso fica salvo no Supabase
+    // entre chamadas — cliente com bastante volume termina em várias
+    // requisições em sequência (o front-end repete sozinho) em vez de
+    // depender de rodar em segundo plano além do tempo de resposta.
+    const combos = listarCombos(tipos);
+    const combosConcluidos = new Set(cache.combos_concluidos || []);
+    let docsAcumulados = cache.docs_parciais || [];
+    const inicio = Date.now();
+
+    try {
+      for (const combo of combos) {
+        const chave = chaveCombo(combo);
+        if (combosConcluidos.has(chave)) continue;
+        if (Date.now() - inicio > ORCAMENTO_MS) break;
+
+        const docsCombo = await buscarCombo(combo, { clienteCnpj: cnpj, dataInicio, dataFim });
+        docsAcumulados = mesclarDocumentos(docsAcumulados, docsCombo);
+        combosConcluidos.add(chave);
+      }
+    } catch (err) {
+      await salvarErro(cnpj, dataInicio, dataFim, tipo, err.message);
+      return res.json({ status: 'erro', periodo: { dataInicio, dataFim }, erro: err.message });
     }
 
-    res.json({
-      status: 'pronto',
+    if (combosConcluidos.size === combos.length) {
+      const classificados = classificarDocumentos(docsAcumulados, cnpj, dataInicio, dataFim, tipos);
+      const dados = montarPainelDeClassificados(classificados);
+      await salvarResultado(cnpj, dataInicio, dataFim, tipo, dados);
+      return res.json({ status: 'pronto', periodo: { dataInicio, dataFim }, desatualizado: false, ...dados });
+    }
+
+    await salvarProgresso(cnpj, dataInicio, dataFim, tipo, [...combosConcluidos], docsAcumulados);
+    return res.json({
+      status: 'buscando',
       periodo: { dataInicio, dataFim },
-      atualizadoEm: cache.atualizado_em,
-      desatualizado,
-      ...cache.dados,
+      progresso: `${combosConcluidos.size}/${combos.length}`,
     });
   } catch (err) {
     res.status(400).json({ erro: err.message });
