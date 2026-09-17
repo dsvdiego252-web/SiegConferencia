@@ -130,13 +130,15 @@ main {
   opacity: 0.9;
 }
 
+.field-button .btn-secondary {
+  background: white;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+
 .field-full {
   flex-basis: 100%;
   margin: 0;
-}
-
-.add-client {
-  flex-basis: 100%;
 }
 
 .panel-header {
@@ -155,32 +157,6 @@ main {
   margin-top: 10px;
 }
 
-.add-client summary {
-  cursor: pointer;
-  color: var(--primary);
-  font-size: 0.85rem;
-}
-
-.add-client-form {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.add-client-form input {
-  padding: 8px 10px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-}
-
-.add-client-form button {
-  padding: 8px 14px;
-  border: 1px solid var(--primary);
-  background: white;
-  color: var(--primary);
-  border-radius: 6px;
-  cursor: pointer;
-}
 
 .status {
   font-size: 0.9rem;
@@ -437,6 +413,24 @@ tr.row-cancelada {
   display: flex;
   flex-direction: column;
   box-shadow: 0 20px 60px -20px rgba(0, 0, 0, 0.4);
+}
+
+.modal-small {
+  max-width: 420px;
+}
+
+.modal-small .field input {
+  width: 100%;
+}
+
+.modal-small button {
+  padding: 9px 18px;
+  border: none;
+  border-radius: 6px;
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .modal-header {

@@ -1,13 +1,16 @@
 const els = {
-  apiBaseUrl: document.getElementById('apiBaseUrl'),
   clienteSelect: document.getElementById('clienteSelect'),
   tipoDocSelect: document.getElementById('tipoDocSelect'),
   dataInicioInput: document.getElementById('dataInicioInput'),
   dataFimInput: document.getElementById('dataFimInput'),
   btnAtualizar: document.getElementById('btnAtualizar'),
+  btnAbrirCadastroCliente: document.getElementById('btnAbrirCadastroCliente'),
+  clienteModalOverlay: document.getElementById('clienteModalOverlay'),
+  btnFecharModalCliente: document.getElementById('btnFecharModalCliente'),
   novoClienteCnpj: document.getElementById('novoClienteCnpj'),
   novoClienteNome: document.getElementById('novoClienteNome'),
   btnAdicionarCliente: document.getElementById('btnAdicionarCliente'),
+  clienteModalErro: document.getElementById('clienteModalErro'),
   statusBox: document.getElementById('statusBox'),
   statusSpinner: document.getElementById('statusSpinner'),
   statusText: document.getElementById('statusText'),
@@ -67,8 +70,10 @@ const els = {
   btnFecharModal: document.getElementById('btnFecharModal'),
 };
 
+// O front-end é servido pelo mesmo backend (mesma origem), tanto em dev
+// local quanto na Vercel — não precisa apontar pra outro endereço.
 function apiBase() {
-  return els.apiBaseUrl.value.trim().replace(/\/$/, '');
+  return '';
 }
 
 function setStatus(message, isError = false, isLoading = false) {
@@ -449,21 +454,34 @@ async function atualizar() {
   }
 }
 
+function abrirModalCliente() {
+  els.clienteModalErro.hidden = true;
+  els.novoClienteCnpj.value = '';
+  els.novoClienteNome.value = '';
+  els.clienteModalOverlay.hidden = false;
+}
+
+function fecharModalCliente() {
+  els.clienteModalOverlay.hidden = true;
+}
+
 async function adicionarCliente() {
   const cnpj = els.novoClienteCnpj.value.replace(/\D/g, '');
   const nome = els.novoClienteNome.value.trim();
+  els.clienteModalErro.hidden = true;
   if (cnpj.length !== 14) {
-    setStatus('Informe um CNPJ com 14 dígitos para cadastrar o cliente.', true);
+    els.clienteModalErro.textContent = 'Informe um CNPJ com 14 dígitos para cadastrar o cliente.';
+    els.clienteModalErro.hidden = false;
     return;
   }
   try {
     await apiPost('/api/clients', { cnpj, nome });
-    els.novoClienteCnpj.value = '';
-    els.novoClienteNome.value = '';
     await carregarClientes(cnpj);
+    fecharModalCliente();
     setStatus('Cliente adicionado.');
   } catch (err) {
-    setStatus(err.message, true);
+    els.clienteModalErro.textContent = err.message;
+    els.clienteModalErro.hidden = false;
   }
 }
 
@@ -593,7 +611,12 @@ async function init() {
   els.dataFimInput.value = ultimoDiaMesAtual();
 
   els.btnAtualizar.addEventListener('click', atualizar);
+  els.btnAbrirCadastroCliente.addEventListener('click', abrirModalCliente);
   els.btnAdicionarCliente.addEventListener('click', adicionarCliente);
+  els.btnFecharModalCliente.addEventListener('click', fecharModalCliente);
+  els.clienteModalOverlay.addEventListener('click', (evento) => {
+    if (evento.target === els.clienteModalOverlay) fecharModalCliente();
+  });
   els.btnConferirDominio.addEventListener('click', conferirDominio);
   els.situacaoFiltroSelect.addEventListener('change', () => {
     paginaDocumentosAtual = 1;
@@ -604,17 +627,20 @@ async function init() {
     if (evento.target === els.docModalOverlay) fecharModal();
   });
   document.addEventListener('keydown', (evento) => {
-    if (evento.key === 'Escape') fecharModal();
+    if (evento.key === 'Escape') {
+      fecharModal();
+      fecharModalCliente();
+    }
   });
 
   try {
     await carregarClientes();
-    if (!els.clienteSelect.value) setStatus('Nenhum cliente cadastrado ainda — use "cadastrar cliente" acima.');
+    if (!els.clienteSelect.value) setStatus('Nenhum cliente cadastrado ainda — clique em "+ Cadastrar cliente" acima.');
     // Não busca automaticamente ao carregar a página — cada busca na SIEG
     // consome a cota real de requisições, então só busca quando a pessoa
-    // clicar em "Atualizar" de propósito.
+    // clicar em "Buscar" de propósito.
   } catch (err) {
-    setStatus(`Não foi possível conectar ao backend${apiBase() ? ` em ${apiBase()}` : ''}: ${err.message}`, true);
+    setStatus(`Não foi possível conectar ao backend: ${err.message}`, true);
   }
 }
 

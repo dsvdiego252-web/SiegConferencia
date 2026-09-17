@@ -18,10 +18,6 @@
   <main>
     <section class="panel filters">
       <div class="field">
-        <label for="apiBaseUrl">Backend</label>
-        <input id="apiBaseUrl" type="text" value="" placeholder="vazio = mesma origem (produção); ex: http://localhost:3001 em dev local" />
-      </div>
-      <div class="field">
         <label for="clienteSelect">Cliente</label>
         <select id="clienteSelect"></select>
       </div>
@@ -42,17 +38,11 @@
         </select>
       </div>
       <div class="field field-button">
-        <button id="btnAtualizar">Atualizar</button>
+        <button id="btnAtualizar">Buscar</button>
       </div>
-      <p class="hint field-full">Dica: pra ver o mês inteiro, coloque o dia 1 em "De" e o último dia do mês em "Até". Períodos menores buscam mais rápido em clientes com bastante volume.</p>
-      <details class="add-client">
-        <summary>+ cadastrar cliente</summary>
-        <div class="add-client-form">
-          <input id="novoClienteCnpj" type="text" placeholder="CNPJ (somente números)" maxlength="14" />
-          <input id="novoClienteNome" type="text" placeholder="Nome do cliente" />
-          <button id="btnAdicionarCliente">Adicionar</button>
-        </div>
-      </details>
+      <div class="field field-button">
+        <button id="btnAbrirCadastroCliente" class="btn-secondary" type="button">+ Cadastrar cliente</button>
+      </div>
     </section>
 
     <section id="statusBox" class="status">
@@ -320,6 +310,27 @@
         <button id="btnFecharModal" class="modal-close" type="button" aria-label="Fechar">&times;</button>
       </div>
       <div class="modal-body" id="docModalCorpo"></div>
+    </div>
+  </div>
+
+  <div id="clienteModalOverlay" class="modal-overlay" hidden>
+    <div class="modal modal-small">
+      <div class="modal-header">
+        <h2>Cadastrar cliente</h2>
+        <button id="btnFecharModalCliente" class="modal-close" type="button" aria-label="Fechar">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label for="novoClienteCnpj">CNPJ (somente números)</label>
+          <input id="novoClienteCnpj" type="text" maxlength="14" />
+        </div>
+        <div class="field" style="margin-top: 12px;">
+          <label for="novoClienteNome">Nome do cliente</label>
+          <input id="novoClienteNome" type="text" />
+        </div>
+        <button id="btnAdicionarCliente" type="button" style="margin-top: 16px;">Adicionar</button>
+        <p id="clienteModalErro" class="status error" hidden></p>
+      </div>
     </div>
   </div>
 
