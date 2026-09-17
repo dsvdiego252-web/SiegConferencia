@@ -6,6 +6,7 @@ const els = {
   btnAtualizar: document.getElementById('btnAtualizar'),
   btnAbrirCadastroCliente: document.getElementById('btnAbrirCadastroCliente'),
   btnEditarCliente: document.getElementById('btnEditarCliente'),
+  btnExportarAvisos: document.getElementById('btnExportarAvisos'),
   clienteModalOverlay: document.getElementById('clienteModalOverlay'),
   clienteModalTitulo: document.getElementById('clienteModalTitulo'),
   btnFecharModalCliente: document.getElementById('btnFecharModalCliente'),
@@ -488,6 +489,111 @@ function renderReforma(reforma, cliente) {
   }
 }
 
+function csvEscape(valor) {
+  const texto = String(valor ?? '');
+  if (/["\n;]/.test(texto)) return `"${texto.replace(/"/g, '""')}"`;
+  return texto;
+}
+
+function linhaCsv(campos) {
+  return campos.map(csvEscape).join(';');
+}
+
+function baixarArquivo(nomeArquivo, conteudo) {
+  const blob = new Blob([`﻿${conteudo}`], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = nomeArquivo;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+// Resume, por item, quais campos da reforma tributária estão faltando num
+// documento "inconsistente" — mesma lógica de textoReformaItem, mas em
+// texto simples pra caber numa célula de planilha.
+function motivoInconsistencia(doc) {
+  if (doc.situacao === 'cancelada') return 'Documento cancelado';
+  let semGrupo = 0;
+  let semCst = 0;
+  let semClassTrib = 0;
+  const total = doc.itens.length;
+  for (const item of doc.itens) {
+    const r = item.reformaTributaria;
+    if (!r?.presente) {
+      semGrupo += 1;
+      continue;
+    }
+    if (!preenchido(r.cst)) semCst += 1;
+    if (!preenchido(r.classTrib)) semClassTrib += 1;
+  }
+  const partes = [];
+  if (semGrupo) partes.push(`${semGrupo}/${total} item(ns) sem grupo IBS/CBS`);
+  if (semCst) partes.push(`${semCst}/${total} sem CST`);
+  if (semClassTrib) partes.push(`${semClassTrib}/${total} sem Classificação Tributária`);
+  return partes.join('; ') || 'Ver detalhe no documento';
+}
+
+function exportarAvisos() {
+  if (!ultimoPainel) {
+    setStatus('Busque os dados de um cliente antes de exportar os avisos.', true);
+    return;
+  }
+
+  const cliente = ultimoPainel.cliente;
+  const { dataInicio, dataFim } = ultimoPainel.periodo;
+  const linhas = [];
+  linhas.push(linhaCsv([`Avisos - ${cliente?.nome || cliente?.cnpj || ''}`]));
+  linhas.push(linhaCsv([`Período: ${formatDate(dataInicio)} a ${formatDate(dataFim)}`]));
+  linhas.push('');
+
+  const gruposComQuebra = (ultimoPainel.sequence?.grupos || []).filter((g) => g.temQuebra);
+  linhas.push(linhaCsv(['QUEBRAS DE SEQUÊNCIA']));
+  linhas.push(
+    linhaCsv(['Emitente', 'Tipo', 'Série', 'Menor Número', 'Maior Número', 'Total Esperado', 'Total Encontrado', 'Canceladas', 'Faixas Faltantes'])
+  );
+  if (!gruposComQuebra.length) {
+    linhas.push(linhaCsv(['Nenhuma quebra de sequência encontrada no período.']));
+  } else {
+    for (const g of gruposComQuebra) {
+      const faltando = g.faixasFaltantes.map((f) => (f.inicio === f.fim ? f.inicio : `${f.inicio}-${f.fim}`)).join(', ');
+      linhas.push(
+        linhaCsv([g.emitNome, g.tipoDocumento, g.serie, g.menorNumero, g.maiorNumero, g.totalEsperado, g.totalEncontrado, g.totalCanceladas, faltando])
+      );
+    }
+  }
+  linhas.push('');
+
+  const documentosInconsistentes = documentosCarregados.filter((d) => d.situacao === 'inconsistente');
+  linhas.push(linhaCsv(['DOCUMENTOS INCONSISTENTES (REFORMA TRIBUTÁRIA - IBS/CBS)']));
+  linhas.push(linhaCsv(['Tipo', 'Número', 'Série', 'Data Emissão', 'Direção', 'Emitente', 'Destinatário', 'Valor Total', 'Motivo']));
+  if (!documentosInconsistentes.length) {
+    linhas.push(linhaCsv(['Nenhum documento inconsistente encontrado no período.']));
+  } else {
+    for (const d of documentosInconsistentes) {
+      linhas.push(
+        linhaCsv([
+          d.tipoDocumento,
+          d.numero,
+          d.serie,
+          formatDate(d.dataEmissao),
+          d.operacao,
+          d.emitente.nome || d.emitente.cnpj,
+          d.destinatario.nome || d.destinatario.cnpj,
+          formatMoney(d.valorTotal),
+          motivoInconsistencia(d),
+        ])
+      );
+    }
+  }
+
+  const nomeArquivo = `avisos_${cliente?.cnpj || 'cliente'}_${dataInicio}_a_${dataFim}.csv`;
+  baixarArquivo(nomeArquivo, linhas.join('\n'));
+  setStatus(`Avisos exportados: ${gruposComQuebra.length} quebra(s) de sequência, ${documentosInconsistentes.length} documento(s) inconsistente(s).`);
+}
+
 const POLL_INTERVALO_MS = 2000;
 const POLL_MAX_TENTATIVAS = 60; // cada tentativa já busca um pedaço de verdade; isso cobre clientes com bastante volume
 
@@ -506,9 +612,10 @@ async function buscarPainelComEspera(query) {
     if (painel.status === 'erro') throw new Error(painel.erro || 'Falha ao buscar dados na SIEG.');
     const progresso = painel.progresso ? ` (${painel.progresso} concluído` : '';
     const detalhe = painel.documentosNoComboAtual ? `, ${painel.documentosNoComboAtual} documentos já baixados no tipo atual` : '';
+    const ateData = painel.dataMaisRecenteBaixada ? `, já chegou até ${formatDate(painel.dataMaisRecenteBaixada)}` : '';
     const fechaParenteses = progresso ? ')' : '';
     setStatus(
-      `Buscando na SIEG...${progresso}${detalhe}${fechaParenteses} — isso pode levar alguns minutos dependendo do volume.`,
+      `Buscando na SIEG...${progresso}${detalhe}${ateData}${fechaParenteses} — isso pode levar alguns minutos dependendo do volume.`,
       false,
       true
     );
@@ -524,6 +631,8 @@ function periodoValido() {
 function montarQueryPeriodo() {
   return `inicio=${encodeURIComponent(els.dataInicioInput.value)}&fim=${encodeURIComponent(els.dataFimInput.value)}`;
 }
+
+let ultimoPainel = null;
 
 async function atualizar() {
   const cnpj = els.clienteSelect.value;
@@ -542,6 +651,7 @@ async function atualizar() {
   try {
     const query = `cnpj=${encodeURIComponent(cnpj)}&${montarQueryPeriodo()}&tipo=${encodeURIComponent(tipo)}`;
     const painel = await buscarPainelComEspera(query);
+    ultimoPainel = painel;
 
     renderDocumentos(painel.xmls.documentos);
     const temQuebra = renderSequencia(painel.sequence.grupos);
@@ -753,6 +863,7 @@ async function init() {
   els.btnAtualizar.addEventListener('click', atualizar);
   els.btnAbrirCadastroCliente.addEventListener('click', abrirModalCliente);
   els.btnEditarCliente.addEventListener('click', abrirModalEdicaoCliente);
+  els.btnExportarAvisos.addEventListener('click', exportarAvisos);
   els.btnAdicionarCliente.addEventListener('click', adicionarCliente);
   els.btnFecharModalCliente.addEventListener('click', fecharModalCliente);
   els.clienteModalOverlay.addEventListener('click', (evento) => {

@@ -191,9 +191,15 @@ metade.
   conformidade com a Reforma Tributária). `tipo` restringe a busca a NFe ou
   NFCe (metade das requisições à SIEG); sem informar, busca os dois.
   Resposta em etapas — ver "Busca por etapas" acima:
-  - `{ "status": "buscando", "progresso": "2/4" }` — reconsulte o mesmo
+  - `{ "status": "buscando", "progresso": "2/4", "documentosNoComboAtual":
+    120, "dataMaisRecenteBaixada": "2026-09-10" }` — reconsulte o mesmo
     endpoint (mesmos parâmetros) em alguns segundos; cada chamada avança
-    mais um combo.
+    mais um combo (ou mais uma página dentro do combo em andamento, daí os
+    dois últimos campos — úteis pro front-end mostrar progresso real num
+    combo de bastante volume, que pode levar minutos pra fechar "1/2").
+    `dataMaisRecenteBaixada` é uma estimativa (maior `dataEmissao` já
+    baixada no combo em andamento) — a SIEG não documenta a ordem de
+    retorno das páginas.
   - `{ "status": "erro", "erro": "..." }` — a busca falhou.
   - `{ "status": "pronto", "xmls": {...}, "valores": {...}, "sequence":
     {...}, "tax": {...}, "reforma": {...} }` — resultado pronto. Cada item

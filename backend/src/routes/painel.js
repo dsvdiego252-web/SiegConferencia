@@ -48,6 +48,19 @@ function round2(n) {
   return Math.round((n + Number.EPSILON) * 100) / 100;
 }
 
+// Maior data de emissão entre os documentos já baixados do combo em
+// andamento — dá uma noção de até onde a busca já avançou dentro do
+// período pedido (ex.: "já baixou até 10/09" de um período até 15/09).
+// É uma estimativa: a SIEG não documenta a ordem de retorno das páginas.
+function maiorDataEmissao(docs) {
+  let maior = null;
+  for (const doc of docs) {
+    const data = String(doc.dataEmissao || '').slice(0, 10);
+    if (data && (!maior || data > maior)) maior = data;
+  }
+  return maior;
+}
+
 // "OK" — documento normal; "cancelada" — cancelada na SEFAZ; "inconsistente"
 // — desde a vigência da Reforma Tributária, mas sem os campos de IBS/CBS
 // completos (situação vem de reformaTributariaAnalyzer.js).
@@ -229,6 +242,7 @@ painelRouter.get('/', async (req, res) => {
       // combos concluídos fica parado em "0/2" por bastante tempo mesmo com
       // a busca avançando de verdade, página a página.
       documentosNoComboAtual,
+      dataMaisRecenteBaixada: comboParcial ? maiorDataEmissao(comboParcial.docs) : null,
     });
   } catch (err) {
     res.status(400).json({ erro: err.message });
