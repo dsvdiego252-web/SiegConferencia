@@ -498,7 +498,10 @@ const POLL_MAX_TENTATIVAS = 60; // cada tentativa já busca um pedaço de verdad
 // do tempo de execução de uma única requisição.
 async function buscarPainelComEspera(query) {
   for (let tentativa = 0; tentativa < POLL_MAX_TENTATIVAS; tentativa += 1) {
-    const painel = await apiGet(`/api/painel?${query}`);
+    // "_" garante uma URL diferente a cada tentativa, pra nenhum cache
+    // (navegador, CDN etc.) devolver uma resposta antiga em vez de deixar a
+    // busca avançar de verdade no servidor.
+    const painel = await apiGet(`/api/painel?${query}&_=${Date.now()}`);
     if (painel.status === 'pronto') return painel;
     if (painel.status === 'erro') throw new Error(painel.erro || 'Falha ao buscar dados na SIEG.');
     const progresso = painel.progresso ? ` (${painel.progresso} concluído)` : '';

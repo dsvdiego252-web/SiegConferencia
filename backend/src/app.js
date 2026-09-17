@@ -160,6 +160,7 @@ function exigirSessao(req, res, next) {
 
 export const app = express();
 app.set('trust proxy', true);
+app.set('etag', false);
 
 app.use(cors());
 app.use(express.json());
@@ -191,6 +192,19 @@ app.get('/logout', (req, res) => {
 });
 
 app.use(exigirSessao);
+
+// As chamadas a /api/* (principalmente o polling de /api/painel, sempre com
+// a mesma URL enquanto a busca está em andamento) nunca podem ser
+// cacheadas — nem pelo navegador, nem pela CDN da Vercel. Sem isso, o
+// polling ficava recebendo de volta (via 304) a mesma resposta antiga em
+// cache pra sempre, travado no mesmo progresso, mesmo com a busca real já
+// tendo avançado no servidor.
+app.use('/api', (req, res, next) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  next();
+});
 
 app.get('/api/health', (req, res) => {
   res.json({ ok: true, mockMode: config.mockMode });
