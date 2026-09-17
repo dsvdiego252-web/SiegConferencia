@@ -85,15 +85,38 @@ async function chamarApiV1(caminho, body, aguardarSlot, prazoFinal) {
 
   const jwt = await obterJwt();
 
-  return fetch(`${config.sieg.baseUrl}${caminho}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${jwt}`,
-      'X-Api-Key': config.sieg.apiKey,
-    },
-    body: JSON.stringify(body),
-  });
+  // A própria chamada HTTP à SIEG (não a espera do rate limit) também pode
+  // demorar — um cliente com muitas notas no período faz a SIEG levar mais
+  // tempo pra montar o ZIP de uma página. Sem um limite aqui, uma chamada
+  // lenta sozinha pode estourar o tempo de execução da função mesmo já
+  // tendo passado pela checagem de rate limit. Aborta com folga antes do
+  // prazo final desta requisição, devolvendo o mesmo sinal de "sem tempo"
+  // pra tentar de novo (mesma página) na próxima chamada.
+  const controller = new AbortController();
+  let timeoutId;
+  if (prazoFinal) {
+    const restante = prazoFinal - Date.now() - 1000;
+    if (restante <= 0) throw new PrazoExcedidoError();
+    timeoutId = setTimeout(() => controller.abort(), restante);
+  }
+
+  try {
+    return await fetch(`${config.sieg.baseUrl}${caminho}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${jwt}`,
+        'X-Api-Key': config.sieg.apiKey,
+      },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+  } catch (err) {
+    if (err.name === 'AbortError') throw new PrazoExcedidoError();
+    throw err;
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+  }
 }
 
 /**
