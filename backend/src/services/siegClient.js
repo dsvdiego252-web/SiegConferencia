@@ -2,7 +2,13 @@ import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import AdmZip from 'adm-zip';
+import { createClient } from '@supabase/supabase-js';
 import { config, assertSiegConfigured } from '../config.js';
+
+// Mesmo padrão usado em painelCache.js/clientsStore.js: sem Supabase
+// configurado (dev local), fica indisponível e cai no limitador em memória.
+const cacheDisponivel = Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SECRET_KEY);
+const supabase = cacheDisponivel ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY) : null;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = path.join(__dirname, '..', 'data', 'fixtures');
@@ -39,8 +45,57 @@ function criarLimitadorDeTaxa(maxPorMinuto) {
   return aguardarSlot;
 }
 
-const aguardarSlotDownload = criarLimitadorDeTaxa(config.sieg.maxRequestsPerMinuteDownload);
+const aguardarSlotDownloadMemoria = criarLimitadorDeTaxa(config.sieg.maxRequestsPerMinuteDownload);
 const aguardarSlotContagem = criarLimitadorDeTaxa(config.sieg.maxRequestsPerMinuteContagem);
+
+// Intervalo mínimo entre chamadas de download, derivado do limite real da
+// SIEG (2/min) — usado pelo controle persistido abaixo, com uma margem de
+// 1s sobre o valor exato (30s) pra não arriscar cair bem em cima do limite.
+const INTERVALO_MINIMO_DOWNLOAD_MS = Math.ceil(60_000 / config.sieg.maxRequestsPerMinuteDownload) + 1000;
+
+/**
+ * Controla o intervalo entre chamadas a /api/v1/baixar-xmls persistindo a
+ * data/hora da última chamada no Supabase, em vez de só na memória do
+ * processo. Isso importa porque, na Vercel, cada requisição a /api/painel
+ * pode ser atendida por uma instância de função diferente (ou por uma
+ * instância "fria" reiniciada) — uma instância nova não tem como saber que
+ * outra já fez uma chamada há poucos segundos, e o limitador em memória
+ * sozinho deixa passar rajadas que estouram o limite real da SIEG (erro
+ * 429), como aconteceu numa busca de alto volume. Sem Supabase configurado
+ * (dev local), cai no limitador em memória de sempre — só há um processo.
+ *
+ * Não é um lock atômico (duas chamadas quase simultâneas podem ambas
+ * passar), mas cobre o caso real desta aplicação (uma busca por vez,
+ * avançando requisição a requisição).
+ */
+async function aguardarSlotDownloadPersistente(prazoFinal) {
+  if (!cacheDisponivel) return aguardarSlotDownloadMemoria(prazoFinal);
+
+  for (;;) {
+    const { data, error } = await supabase
+      .from('sieg_rate_limit')
+      .select('ultima_chamada')
+      .eq('chave', 'baixar_xmls')
+      .maybeSingle();
+    if (error) throw new Error(`Falha ao ler controle de rate limit da SIEG no Supabase: ${error.message}`);
+
+    const ultima = data?.ultima_chamada ? new Date(data.ultima_chamada).getTime() : 0;
+    const agora = Date.now();
+    const liberadoEm = ultima + INTERVALO_MINIMO_DOWNLOAD_MS;
+
+    if (agora >= liberadoEm) {
+      const { error: erroGravar } = await supabase
+        .from('sieg_rate_limit')
+        .upsert({ chave: 'baixar_xmls', ultima_chamada: new Date().toISOString() });
+      if (erroGravar) throw new Error(`Falha ao gravar controle de rate limit da SIEG no Supabase: ${erroGravar.message}`);
+      return true;
+    }
+
+    const espera = liberadoEm - agora;
+    if (prazoFinal && agora + espera > prazoFinal) return false;
+    await new Promise((resolve) => setTimeout(resolve, Math.min(espera, 5000)));
+  }
+}
 
 // O JWT (gerado a partir de ClientId/SecretKey) vale 24h segundo a
 // documentação da SIEG. Cacheamos com uma margem de segurança de 1h para
@@ -64,7 +119,9 @@ async function obterJwt() {
 
   if (!response.ok) {
     const texto = await response.text().catch(() => '');
-    throw new Error(`Falha ao gerar JWT na SIEG (${response.status}): ${texto || response.statusText}`);
+    const erro = new Error(`Falha ao gerar JWT na SIEG (${response.status}): ${texto || response.statusText}`);
+    erro.transitorio = STATUS_TRANSITORIOS.includes(response.status);
+    throw erro;
   }
 
   const token = await response.json(); // a API devolve o token como uma string JSON, ex: "eyJhbGciOi..."
@@ -113,11 +170,20 @@ async function chamarApiV1(caminho, body, aguardarSlot, prazoFinal) {
     });
   } catch (err) {
     if (err.name === 'AbortError') throw new PrazoExcedidoError();
+    // Falha de rede na própria chamada (não uma resposta de erro da SIEG) —
+    // normalmente uma instabilidade passageira, vale tentar de novo.
+    err.transitorio = true;
     throw err;
   } finally {
     if (timeoutId) clearTimeout(timeoutId);
   }
 }
+
+// Códigos de erro tratados como temporários — quem chamou pode tentar de
+// novo (na próxima página/próxima chamada) em vez de encerrar a busca
+// inteira. 429 é o que motivou isso: mesmo com o controle de intervalo
+// entre chamadas, uma rajada real ainda pode esbarrar no limite da SIEG.
+const STATUS_TRANSITORIOS = [408, 425, 429, 500, 502, 503, 504];
 
 /**
  * Conta quantos XMLs de cada tipo existem para o filtro informado.
@@ -156,14 +222,16 @@ async function fetchPage({ xmlType, dataEmissaoInicio, dataEmissaoFim, cnpjEmit,
   if (cnpjEmit) body.CnpjEmit = cnpjEmit;
   if (cnpjDest) body.CnpjDest = cnpjDest;
 
-  const response = await chamarApiV1('/api/v1/baixar-xmls', body, aguardarSlotDownload, prazoFinal);
+  const response = await chamarApiV1('/api/v1/baixar-xmls', body, aguardarSlotDownloadPersistente, prazoFinal);
 
   if (response.status === 404) {
     return []; // "Nenhum arquivo XML localizado" — fim dos resultados para esse filtro.
   }
   if (!response.ok) {
     const texto = await response.text().catch(() => '');
-    throw new Error(`SIEG baixar-xmls respondeu ${response.status}: ${texto || response.statusText}`);
+    const erro = new Error(`SIEG baixar-xmls respondeu ${response.status}: ${texto || response.statusText}`);
+    erro.transitorio = STATUS_TRANSITORIOS.includes(response.status);
+    throw erro;
   }
 
   const buffer = Buffer.from(await response.arrayBuffer());

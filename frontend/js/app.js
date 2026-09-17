@@ -620,8 +620,11 @@ async function buscarPainelComEspera(query) {
     const detalhe = painel.documentosNoComboAtual ? `, ${painel.documentosNoComboAtual} documentos já baixados no tipo atual` : '';
     const ateData = painel.dataMaisRecenteBaixada ? `, já chegou até ${formatDate(painel.dataMaisRecenteBaixada)}` : '';
     const fechaParenteses = progresso ? ')' : '';
+    // Erros transitórios (ex.: 429 da SIEG) não interrompem o polling — só
+    // avisam, já que a próxima tentativa já tenta de novo sozinha.
+    const aviso = painel.avisoTransitorio ? ' Aguardando a SIEG liberar (limite temporário atingido), tentando de novo automaticamente.' : '';
     setStatus(
-      `Buscando na SIEG...${progresso}${detalhe}${ateData}${fechaParenteses} — isso pode levar alguns minutos dependendo do volume.`,
+      `Buscando na SIEG...${progresso}${detalhe}${ateData}${fechaParenteses} — isso pode levar alguns minutos dependendo do volume.${aviso}`,
       false,
       true
     );

@@ -139,6 +139,17 @@ alter table painel_cache
 ```
 )
 
+Rode também esta terceira tabela — controle do intervalo entre chamadas de
+download à SIEG entre invocações da função (ver "Rate limit persistido"
+abaixo):
+
+```sql
+create table sieg_rate_limit (
+  chave text primary key,
+  ultima_chamada timestamptz not null
+);
+```
+
 E configure na Vercel:
 
 - `SUPABASE_URL` — a Project URL do projeto (Project Settings → API Keys).
@@ -176,6 +187,27 @@ fica desligado e a busca volta a ser síncrona (todos os combos de uma vez)
 Use o filtro **"Tipo de documento"** (Todos/NFe/NFCe) pra reduzir de 4 para
 2 combos quando não precisar dos dois tipos — corta o tempo total pela
 metade.
+
+### Rate limit persistido (por que a tabela `sieg_rate_limit`)
+
+Na Vercel, cada requisição a `/api/painel` pode ser atendida por uma
+instância de função diferente (ou por uma instância reiniciada depois de
+ficar ociosa) — instâncias de função não compartilham memória entre si.
+Um limitador de taxa guardado só na memória do processo (como o usado pra
+`/contar-xmls`) não é suficiente pra `/baixar-xmls`: uma instância "nova"
+não sabe que outra já fez uma chamada há poucos segundos, e pode disparar
+antes da hora, estourando o limite real da SIEG (erro 429) — foi
+exatamente isso que aconteceu numa busca de alto volume. Por isso a data/
+hora da última chamada de download fica persistida na tabela
+`sieg_rate_limit`, e toda nova chamada verifica esse valor antes de
+prosseguir. Sem `SUPABASE_URL`/`SUPABASE_SECRET_KEY` (dev local), cai de
+volta no limitador em memória — só existe um processo.
+
+Mesmo assim, um 429 isolado ainda pode acontecer (rajada real, outra
+integração usando a mesma API Key, etc.) — nesse caso a busca não é mais
+marcada como erro permanente: o progresso já feito fica salvo e a próxima
+tentativa (poll do front-end) tenta de novo sozinha, com uma pausa
+transitória visível na mensagem de status.
 
 ## Endpoints do backend
 

@@ -220,6 +220,23 @@ painelRouter.get('/', async (req, res) => {
         }
       }
     } catch (err) {
+      // Erros transitórios (429 da SIEG, 5xx, falha de rede) não encerram a
+      // busca — o combo em andamento nesta tentativa simplesmente não
+      // avançou, mas o progresso já salvo (combos concluídos + parcial
+      // anterior) continua valendo, e a próxima chamada (poll) tenta de
+      // novo sozinha. Sem isso, um 429 isolado marcava a busca inteira como
+      // "erro" pra sempre, e clicar em "Buscar" de novo só repetia o mesmo
+      // erro salvo (o botão não força reinício).
+      if (err.transitorio) {
+        await salvarProgresso(cnpj, dataInicio, dataFim, tipo, [...combosConcluidos], docsAcumulados, comboParcial);
+        return res.json({
+          status: 'buscando',
+          periodo: { dataInicio, dataFim },
+          progresso: `${combosConcluidos.size}/${combos.length}`,
+          documentosNoComboAtual: comboParcial?.docs?.length || 0,
+          avisoTransitorio: err.message,
+        });
+      }
       await salvarErro(cnpj, dataInicio, dataFim, tipo, err.message);
       return res.json({ status: 'erro', periodo: { dataInicio, dataFim }, erro: err.message });
     }
