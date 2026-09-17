@@ -262,18 +262,17 @@ async function atualizar() {
   setStatus('Carregando...');
   try {
     const query = `cnpj=${encodeURIComponent(cnpj)}&mes=${encodeURIComponent(mes)}`;
-    const [xmls, sequence, tax, reforma] = await Promise.all([
-      apiGet(`/api/xmls?${query}`),
-      apiGet(`/api/analysis/sequence?${query}`),
-      apiGet(`/api/analysis/tax?${query}`),
-      apiGet(`/api/analysis/reforma-tributaria?${query}`),
-    ]);
+    // Uma única chamada que busca os XMLs da SIEG uma vez só e monta todas as
+    // análises a partir do mesmo resultado — evita repetir a busca completa
+    // 4x (documentos, sequência, tributos, reforma) e estourar o limite real
+    // de 2 requisições/minuto da SIEG numa única atualização de tela.
+    const painel = await apiGet(`/api/painel?${query}`);
 
-    renderDocumentos(xmls.documentos);
-    const temQuebra = renderSequencia(sequence.grupos);
-    renderTributos(tax.meses);
-    renderReforma(reforma);
-    renderResumo(xmls, temQuebra);
+    renderDocumentos(painel.xmls.documentos);
+    const temQuebra = renderSequencia(painel.sequence.grupos);
+    renderTributos(painel.tax.meses);
+    renderReforma(painel.reforma);
+    renderResumo(painel.xmls, temQuebra);
 
     setStatus(`Atualizado às ${new Date().toLocaleTimeString('pt-BR')}.`);
   } catch (err) {

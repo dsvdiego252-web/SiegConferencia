@@ -8,6 +8,7 @@ import { clientsRouter } from './routes/clients.js';
 import { xmlsRouter } from './routes/xmls.js';
 import { analysisRouter } from './routes/analysis.js';
 import { reconciliationRouter } from './routes/reconciliation.js';
+import { painelRouter } from './routes/painel.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FRONTEND_DIR = path.join(__dirname, '..', '..', 'frontend');
@@ -199,6 +200,7 @@ app.use('/api/clients', clientsRouter);
 app.use('/api/xmls', xmlsRouter);
 app.use('/api/analysis', analysisRouter);
 app.use('/api/reconciliation', reconciliationRouter);
+app.use('/api/painel', painelRouter);
 
 app.use(express.static(FRONTEND_DIR));
 
