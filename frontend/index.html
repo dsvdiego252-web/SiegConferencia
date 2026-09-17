@@ -26,8 +26,12 @@
         <select id="clienteSelect"></select>
       </div>
       <div class="field">
-        <label for="mesInput">Mês</label>
-        <input id="mesInput" type="month" />
+        <label for="dataInicioInput">De</label>
+        <input id="dataInicioInput" type="date" />
+      </div>
+      <div class="field">
+        <label for="dataFimInput">Até</label>
+        <input id="dataFimInput" type="date" />
       </div>
       <div class="field">
         <label for="tipoDocSelect">Tipo de documento</label>
@@ -40,21 +44,7 @@
       <div class="field field-button">
         <button id="btnAtualizar">Atualizar</button>
       </div>
-      <details class="add-client">
-        <summary>+ período personalizado (mais rápido que o mês inteiro)</summary>
-        <div class="add-client-form">
-          <div class="field">
-            <label for="dataInicioInput">De</label>
-            <input id="dataInicioInput" type="date" />
-          </div>
-          <div class="field">
-            <label for="dataFimInput">Até</label>
-            <input id="dataFimInput" type="date" />
-          </div>
-          <button id="btnLimparPeriodo" type="button">Limpar (usar o mês)</button>
-        </div>
-        <p class="hint">Preenchendo os dois campos acima, a busca usa esse período específico em vez do mês inteiro — útil pra reduzir o volume e acelerar clientes com muitas notas (ex.: só a primeira quinzena).</p>
-      </details>
+      <p class="hint field-full">Dica: pra ver o mês inteiro, coloque o dia 1 em "De" e o último dia do mês em "Até". Períodos menores buscam mais rápido em clientes com bastante volume.</p>
       <details class="add-client">
         <summary>+ cadastrar cliente</summary>
         <div class="add-client-form">
@@ -87,11 +77,46 @@
         <span class="summary-value" id="summaryGaps">0</span>
         <span class="summary-label">Quebras de sequência</span>
       </div>
+      <div class="summary-card" id="summaryInconsistentesCard">
+        <span class="summary-value" id="summaryInconsistentes">0</span>
+        <span class="summary-label">Notas inconsistentes</span>
+      </div>
+    </section>
+
+    <section class="panel summary" id="valuesPanel" hidden>
+      <div class="summary-card">
+        <span class="summary-value" id="valorEntrada">R$ 0,00</span>
+        <span class="summary-label">Valor total entrada</span>
+      </div>
+      <div class="summary-card">
+        <span class="summary-value" id="valorSaida">R$ 0,00</span>
+        <span class="summary-label">Valor total saída</span>
+      </div>
+      <div class="summary-card" id="valorSaldoCard">
+        <span class="summary-value" id="valorSaldo">R$ 0,00</span>
+        <span class="summary-label">Saldo (saída − entrada)</span>
+      </div>
+      <div class="summary-card">
+        <span class="summary-value" id="valorIcmsEntrada">R$ 0,00</span>
+        <span class="summary-label">ICMS entrada</span>
+      </div>
+      <div class="summary-card">
+        <span class="summary-value" id="valorIcmsSaida">R$ 0,00</span>
+        <span class="summary-label">ICMS saída</span>
+      </div>
+      <div class="summary-card">
+        <span class="summary-value" id="valorPisCofinsEntrada">R$ 0,00</span>
+        <span class="summary-label">PIS+COFINS entrada</span>
+      </div>
+      <div class="summary-card">
+        <span class="summary-value" id="valorPisCofinsSaida">R$ 0,00</span>
+        <span class="summary-label">PIS+COFINS saída</span>
+      </div>
     </section>
 
     <section class="panel" id="sequencePanel" hidden>
       <h2>Quebras de sequência (documentos de saída)</h2>
-      <p class="hint">Agrupado por emitente + tipo de documento + série. Números faltantes dentro do intervalo emitido no mês.</p>
+      <p class="hint">Agrupado por emitente + tipo de documento + série. Números faltantes dentro do intervalo emitido no período.</p>
       <div class="table-wrap">
         <table id="sequenceTable">
           <thead>
@@ -111,11 +136,24 @@
     </section>
 
     <section class="panel" id="documentsPanel" hidden>
-      <h2>Documentos integrados no mês</h2>
+      <div class="panel-header">
+        <h2>Documentos integrados no período</h2>
+        <div class="field">
+          <label for="situacaoFiltroSelect">Situação</label>
+          <select id="situacaoFiltroSelect">
+            <option value="todos">Todos</option>
+            <option value="ok">OK</option>
+            <option value="inconsistente">Inconsistentes</option>
+            <option value="cancelada">Canceladas</option>
+          </select>
+        </div>
+      </div>
+      <p class="hint">Clique numa linha pra ver os itens e impostos do documento.</p>
       <div class="table-wrap">
         <table id="documentsTable">
           <thead>
             <tr>
+              <th>Situação</th>
               <th>Operação</th>
               <th>Tipo</th>
               <th>Nº</th>
@@ -129,6 +167,7 @@
           <tbody></tbody>
         </table>
       </div>
+      <div class="pagination" id="documentsPagination"></div>
     </section>
 
     <section class="panel" id="taxPanel" hidden>
@@ -192,33 +231,14 @@
           <tbody></tbody>
         </table>
       </div>
-      <details style="margin-top: 12px;">
-        <summary class="hint" style="cursor: pointer;">Ver detalhamento por documento</summary>
-        <div class="table-wrap" style="margin-top: 10px;">
-          <table id="reformaDetalheTable">
-            <thead>
-              <tr>
-                <th>Tipo</th>
-                <th>Nº</th>
-                <th>Série</th>
-                <th>Emissão</th>
-                <th>Emitente</th>
-                <th>Itens conformes</th>
-                <th>Situação</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </details>
     </section>
 
     <section class="panel">
       <h2>Conferência Domínio x SIEG</h2>
       <p class="hint">
-        Envie a planilha exportada do Domínio (XLSX ou CSV) com as notas do mês. O sistema cruza com os
-        documentos da SIEG e aponta o que está pendente de lançamento, o que só existe no Domínio, e onde os
-        valores não batem — sem precisar de acesso liberado à API da SIEG para esse cruzamento específico.
+        Envie a planilha exportada do Domínio (XLSX ou CSV) com as notas do período selecionado acima. O sistema
+        cruza com os documentos da SIEG e aponta o que está pendente de lançamento, o que só existe no Domínio, e
+        onde os valores não batem — sem precisar de acesso liberado à API da SIEG para esse cruzamento específico.
       </p>
       <div class="filters" style="padding: 0;">
         <div class="field">
@@ -292,6 +312,16 @@
       </div>
     </section>
   </main>
+
+  <div id="docModalOverlay" class="modal-overlay" hidden>
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="docModalTitulo">Documento</h2>
+        <button id="btnFecharModal" class="modal-close" type="button" aria-label="Fechar">&times;</button>
+      </div>
+      <div class="modal-body" id="docModalCorpo"></div>
+    </div>
+  </div>
 
   <script src="js/app.js"></script>
 </body>

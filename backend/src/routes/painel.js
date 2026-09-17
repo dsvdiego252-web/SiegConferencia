@@ -30,23 +30,70 @@ function normalizarTipo(tipoParam) {
   return tipoParam === 'nfe' || tipoParam === 'nfce' ? tipoParam : 'todos';
 }
 
+function round2(n) {
+  return Math.round((n + Number.EPSILON) * 100) / 100;
+}
+
+// "OK" — documento normal; "cancelada" — cancelada na SEFAZ; "inconsistente"
+// — desde a vigência da Reforma Tributária, mas sem os campos de IBS/CBS
+// completos (situação vem de reformaTributariaAnalyzer.js).
+function situacaoDocumento(doc, situacaoReforma) {
+  if (doc.cancelada) return 'cancelada';
+  if (situacaoReforma === 'parcial' || situacaoReforma === 'sem_adequacao') return 'inconsistente';
+  return 'ok';
+}
+
 function montarPainelDeClassificados(classificados) {
-  const documentos = classificados.map(({ doc, operacao }) => ({
-    chave: doc.chave,
-    operacao,
-    tipoDocumento: doc.tipoDocumento,
-    numero: doc.numero,
-    serie: doc.serie,
-    dataEmissao: doc.dataEmissao,
-    naturezaOperacao: doc.naturezaOperacao,
-    cancelada: doc.cancelada,
-    emitente: doc.emitente,
-    destinatario: doc.destinatario,
-    valorTotal: doc.valorTotal,
-    qtdItens: doc.itens.length,
-  }));
+  const reforma = analisarConformidadeReforma(classificados);
+  const situacaoReformaPorChave = new Map(reforma.porDocumento.map((d) => [d.chave, d.situacao]));
+
+  const documentos = classificados.map(({ doc, operacao }) => {
+    const situacaoReforma = situacaoReformaPorChave.get(doc.chave) || null;
+    return {
+      chave: doc.chave,
+      operacao,
+      tipoDocumento: doc.tipoDocumento,
+      numero: doc.numero,
+      serie: doc.serie,
+      dataEmissao: doc.dataEmissao,
+      naturezaOperacao: doc.naturezaOperacao,
+      cancelada: doc.cancelada,
+      emitente: doc.emitente,
+      destinatario: doc.destinatario,
+      valorTotal: doc.valorTotal,
+      valorIcmsTotal: doc.valorIcmsTotal,
+      qtdItens: doc.itens.length,
+      itens: doc.itens,
+      situacaoReforma,
+      situacao: situacaoDocumento(doc, situacaoReforma),
+    };
+  });
 
   const docsSaida = classificados.filter((c) => c.operacao === 'saida').map((c) => c.doc);
+
+  const valores = { entrada: { valor: 0, icms: 0, pis: 0, cofins: 0 }, saida: { valor: 0, icms: 0, pis: 0, cofins: 0 } };
+  for (const { doc, operacao } of classificados) {
+    if (operacao !== 'entrada' && operacao !== 'saida') continue;
+    valores[operacao].valor += doc.valorTotal;
+    valores[operacao].icms += doc.valorIcmsTotal;
+    for (const item of doc.itens) {
+      valores[operacao].pis += item.pis.valor;
+      valores[operacao].cofins += item.cofins.valor;
+    }
+  }
+  const resumoValores = {
+    entrada: {
+      valor: round2(valores.entrada.valor),
+      icms: round2(valores.entrada.icms),
+      pisCofins: round2(valores.entrada.pis + valores.entrada.cofins),
+    },
+    saida: {
+      valor: round2(valores.saida.valor),
+      icms: round2(valores.saida.icms),
+      pisCofins: round2(valores.saida.pis + valores.saida.cofins),
+    },
+    saldo: round2(valores.saida.valor - valores.entrada.valor),
+  };
 
   return {
     xmls: {
@@ -54,11 +101,14 @@ function montarPainelDeClassificados(classificados) {
       totalEntrada: documentos.filter((d) => d.operacao === 'entrada').length,
       totalSaida: documentos.filter((d) => d.operacao === 'saida').length,
       totalDesconhecida: documentos.filter((d) => d.operacao === 'desconhecida').length,
+      totalInconsistentes: documentos.filter((d) => d.situacao === 'inconsistente').length,
+      totalCanceladas: documentos.filter((d) => d.situacao === 'cancelada').length,
       documentos,
     },
+    valores: resumoValores,
     sequence: { grupos: detectarQuebrasDeSequencia(docsSaida) },
     tax: { meses: cruzarTributacao(classificados) },
-    reforma: analisarConformidadeReforma(classificados),
+    reforma,
   };
 }
 

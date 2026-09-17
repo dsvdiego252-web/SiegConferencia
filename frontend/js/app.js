@@ -1,11 +1,9 @@
 const els = {
   apiBaseUrl: document.getElementById('apiBaseUrl'),
   clienteSelect: document.getElementById('clienteSelect'),
-  mesInput: document.getElementById('mesInput'),
   tipoDocSelect: document.getElementById('tipoDocSelect'),
   dataInicioInput: document.getElementById('dataInicioInput'),
   dataFimInput: document.getElementById('dataFimInput'),
-  btnLimparPeriodo: document.getElementById('btnLimparPeriodo'),
   btnAtualizar: document.getElementById('btnAtualizar'),
   novoClienteCnpj: document.getElementById('novoClienteCnpj'),
   novoClienteNome: document.getElementById('novoClienteNome'),
@@ -19,10 +17,23 @@ const els = {
   summarySaida: document.getElementById('summarySaida'),
   summaryGaps: document.getElementById('summaryGaps'),
   summaryGapsCard: document.getElementById('summaryGapsCard'),
+  summaryInconsistentes: document.getElementById('summaryInconsistentes'),
+  summaryInconsistentesCard: document.getElementById('summaryInconsistentesCard'),
+  valuesPanel: document.getElementById('valuesPanel'),
+  valorEntrada: document.getElementById('valorEntrada'),
+  valorSaida: document.getElementById('valorSaida'),
+  valorSaldo: document.getElementById('valorSaldo'),
+  valorSaldoCard: document.getElementById('valorSaldoCard'),
+  valorIcmsEntrada: document.getElementById('valorIcmsEntrada'),
+  valorIcmsSaida: document.getElementById('valorIcmsSaida'),
+  valorPisCofinsEntrada: document.getElementById('valorPisCofinsEntrada'),
+  valorPisCofinsSaida: document.getElementById('valorPisCofinsSaida'),
   sequencePanel: document.getElementById('sequencePanel'),
   sequenceTableBody: document.querySelector('#sequenceTable tbody'),
   documentsPanel: document.getElementById('documentsPanel'),
   documentsTableBody: document.querySelector('#documentsTable tbody'),
+  documentsPagination: document.getElementById('documentsPagination'),
+  situacaoFiltroSelect: document.getElementById('situacaoFiltroSelect'),
   taxPanel: document.getElementById('taxPanel'),
   taxTableBody: document.querySelector('#taxTable tbody'),
   reformaSummaryPanel: document.getElementById('reformaSummaryPanel'),
@@ -35,7 +46,6 @@ const els = {
   reformaPanel: document.getElementById('reformaPanel'),
   reformaDataCorte: document.getElementById('reformaDataCorte'),
   reformaResumoTableBody: document.querySelector('#reformaResumoTable tbody'),
-  reformaDetalheTableBody: document.querySelector('#reformaDetalheTable tbody'),
   dominioFileInput: document.getElementById('dominioFileInput'),
   btnConferirDominio: document.getElementById('btnConferirDominio'),
   reconciliationStatus: document.getElementById('reconciliationStatus'),
@@ -51,6 +61,10 @@ const els = {
   reconResumoTableBody: document.querySelector('#reconResumoTable tbody'),
   reconciliationDetailPanel: document.getElementById('reconciliationDetailPanel'),
   reconDetailTableBody: document.querySelector('#reconDetailTable tbody'),
+  docModalOverlay: document.getElementById('docModalOverlay'),
+  docModalTitulo: document.getElementById('docModalTitulo'),
+  docModalCorpo: document.getElementById('docModalCorpo'),
+  btnFecharModal: document.getElementById('btnFecharModal'),
 };
 
 function apiBase() {
@@ -97,9 +111,18 @@ function formatDate(iso) {
   return new Date(iso).toLocaleDateString('pt-BR');
 }
 
-function currentMonthDefault() {
+function formatDateInput(date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function primeiroDiaMesAtual() {
   const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  return formatDateInput(new Date(now.getFullYear(), now.getMonth(), 1));
+}
+
+function ultimoDiaMesAtual() {
+  const now = new Date();
+  return formatDateInput(new Date(now.getFullYear(), now.getMonth() + 1, 0));
 }
 
 async function carregarClientes(selecionarCnpj) {
@@ -114,7 +137,7 @@ async function carregarClientes(selecionarCnpj) {
   if (selecionarCnpj) els.clienteSelect.value = selecionarCnpj;
 }
 
-function renderResumo({ totalDocumentos, totalEntrada, totalSaida }, temQuebra) {
+function renderResumo({ totalDocumentos, totalEntrada, totalSaida, totalInconsistentes }, temQuebra) {
   els.summaryPanel.hidden = false;
   els.summaryTotal.textContent = totalDocumentos;
   els.summaryEntrada.textContent = totalEntrada;
@@ -122,18 +145,61 @@ function renderResumo({ totalDocumentos, totalEntrada, totalSaida }, temQuebra) 
   els.summaryGaps.textContent = temQuebra ? 'Sim' : 'Não';
   els.summaryGapsCard.classList.toggle('has-gaps', temQuebra);
   els.summaryGapsCard.classList.toggle('no-gaps', !temQuebra);
+  els.summaryInconsistentes.textContent = totalInconsistentes;
+  els.summaryInconsistentesCard.classList.toggle('alerta', totalInconsistentes > 0);
+}
+
+function renderValores(valores) {
+  els.valuesPanel.hidden = false;
+  els.valorEntrada.textContent = formatMoney(valores.entrada.valor);
+  els.valorSaida.textContent = formatMoney(valores.saida.valor);
+  els.valorSaldo.textContent = formatMoney(valores.saldo);
+  els.valorSaldoCard.classList.toggle('alerta', valores.saldo < 0);
+  els.valorIcmsEntrada.textContent = formatMoney(valores.entrada.icms);
+  els.valorIcmsSaida.textContent = formatMoney(valores.saida.icms);
+  els.valorPisCofinsEntrada.textContent = formatMoney(valores.entrada.pisCofins);
+  els.valorPisCofinsSaida.textContent = formatMoney(valores.saida.pisCofins);
+}
+
+const ROTULO_SITUACAO = { ok: 'OK', inconsistente: 'Inconsistente', cancelada: 'Cancelada' };
+const DOCUMENTS_PAGE_SIZE = 20;
+
+let documentosCarregados = [];
+let paginaDocumentosAtual = 1;
+
+function documentosFiltrados() {
+  const filtro = els.situacaoFiltroSelect.value;
+  if (filtro === 'todos') return documentosCarregados;
+  return documentosCarregados.filter((d) => d.situacao === filtro);
 }
 
 function renderDocumentos(documentos) {
+  documentosCarregados = documentos;
+  paginaDocumentosAtual = 1;
   els.documentsPanel.hidden = false;
+  renderPaginaDocumentos();
+}
+
+function renderPaginaDocumentos() {
+  const filtrados = documentosFiltrados();
+  const totalPaginas = Math.max(1, Math.ceil(filtrados.length / DOCUMENTS_PAGE_SIZE));
+  if (paginaDocumentosAtual > totalPaginas) paginaDocumentosAtual = totalPaginas;
+
   els.documentsTableBody.innerHTML = '';
-  if (!documentos.length) {
-    els.documentsTableBody.innerHTML = '<tr class="empty-row"><td colspan="8">Nenhum documento integrado no período.</td></tr>';
+  if (!filtrados.length) {
+    els.documentsTableBody.innerHTML = '<tr class="empty-row"><td colspan="9">Nenhum documento encontrado com esse filtro.</td></tr>';
+    els.documentsPagination.innerHTML = '';
     return;
   }
-  for (const d of documentos) {
+
+  const inicio = (paginaDocumentosAtual - 1) * DOCUMENTS_PAGE_SIZE;
+  const pagina = filtrados.slice(inicio, inicio + DOCUMENTS_PAGE_SIZE);
+
+  for (const d of pagina) {
     const tr = document.createElement('tr');
+    tr.className = `row-clickable row-${d.situacao}`;
     tr.innerHTML = `
+      <td><span class="badge badge-situacao-${d.situacao}">${ROTULO_SITUACAO[d.situacao]}</span></td>
       <td><span class="badge badge-${d.operacao}">${d.operacao}</span></td>
       <td>${d.tipoDocumento}</td>
       <td>${d.numero}</td>
@@ -143,8 +209,98 @@ function renderDocumentos(documentos) {
       <td>${d.destinatario.nome || d.destinatario.cnpj}</td>
       <td>${formatMoney(d.valorTotal)}</td>
     `;
+    tr.addEventListener('click', () => abrirModalDocumento(d));
     els.documentsTableBody.appendChild(tr);
   }
+
+  els.documentsPagination.innerHTML = '';
+  if (totalPaginas > 1) {
+    const btnAnterior = document.createElement('button');
+    btnAnterior.type = 'button';
+    btnAnterior.textContent = '← Anterior';
+    btnAnterior.disabled = paginaDocumentosAtual === 1;
+    btnAnterior.addEventListener('click', () => {
+      paginaDocumentosAtual -= 1;
+      renderPaginaDocumentos();
+    });
+
+    const btnProxima = document.createElement('button');
+    btnProxima.type = 'button';
+    btnProxima.textContent = 'Próxima →';
+    btnProxima.disabled = paginaDocumentosAtual === totalPaginas;
+    btnProxima.addEventListener('click', () => {
+      paginaDocumentosAtual += 1;
+      renderPaginaDocumentos();
+    });
+
+    const info = document.createElement('span');
+    info.textContent = `Página ${paginaDocumentosAtual} de ${totalPaginas} (${filtrados.length} documentos)`;
+
+    els.documentsPagination.append(btnAnterior, info, btnProxima);
+  }
+}
+
+function abrirModalDocumento(doc) {
+  els.docModalTitulo.textContent = `${doc.tipoDocumento} nº ${doc.numero} — série ${doc.serie}`;
+
+  const linhasItens = doc.itens
+    .map((item) => {
+      const reforma = item.reformaTributaria;
+      const reformaTexto = reforma?.presente
+        ? `CST ${reforma.cst ?? '-'} · ClassTrib ${reforma.classTrib ?? '-'}${reforma.cBenef ? ` · cBenef ${reforma.cBenef}` : ''}`
+        : 'Sem campos da Reforma Tributária';
+      return `
+        <tr>
+          <td>${item.codigo}<br><span class="hint">${item.descricao}</span></td>
+          <td>${item.ncm || '-'}</td>
+          <td>${item.cfop || '-'}</td>
+          <td>${item.quantidade}</td>
+          <td>${formatMoney(item.valorProduto)}</td>
+          <td>${formatMoney(item.icms.valor)} <span class="hint">(CST ${item.icms.cst ?? '-'})</span></td>
+          <td>${formatMoney(item.pis.valor + item.cofins.valor)}</td>
+          <td class="hint">${reformaTexto}</td>
+        </tr>
+      `;
+    })
+    .join('');
+
+  els.docModalCorpo.innerHTML = `
+    <dl>
+      <dt>Situação</dt><dd><span class="badge badge-situacao-${doc.situacao}">${ROTULO_SITUACAO[doc.situacao]}</span></dd>
+      <dt>Chave de acesso</dt><dd>${doc.chave || '-'}</dd>
+      <dt>Emissão</dt><dd>${formatDate(doc.dataEmissao)}</dd>
+      <dt>Natureza da operação</dt><dd>${doc.naturezaOperacao || '-'}</dd>
+      <dt>Emitente</dt><dd>${doc.emitente.nome || '-'} (${doc.emitente.cnpj || '-'})</dd>
+      <dt>Destinatário</dt><dd>${doc.destinatario.nome || '-'} (${doc.destinatario.cnpj || '-'})</dd>
+      <dt>Valor total</dt><dd>${formatMoney(doc.valorTotal)}</dd>
+      <dt>ICMS total</dt><dd>${formatMoney(doc.valorIcmsTotal)}</dd>
+    </dl>
+    <h3>Itens (${doc.itens.length})</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Produto</th>
+            <th>NCM</th>
+            <th>CFOP</th>
+            <th>Qtd.</th>
+            <th>Valor</th>
+            <th>ICMS</th>
+            <th>PIS+COFINS</th>
+            <th>Reforma Tributária</th>
+          </tr>
+        </thead>
+        <tbody>${linhasItens}</tbody>
+      </table>
+    </div>
+    <p class="hint" style="margin-top: 16px;">Esta é a informação já processada a partir do XML — o arquivo XML original não fica guardado, só os dados extraídos dele.</p>
+  `;
+
+  els.docModalOverlay.hidden = false;
+}
+
+function fecharModal() {
+  els.docModalOverlay.hidden = true;
 }
 
 function renderSequencia(grupos) {
@@ -230,28 +386,6 @@ function renderReforma(reforma) {
     `;
     els.reformaResumoTableBody.appendChild(tr);
   }
-
-  els.reformaDetalheTableBody.innerHTML = '';
-  if (!reforma.porDocumento.length) {
-    els.reformaDetalheTableBody.innerHTML = '<tr class="empty-row"><td colspan="7">Nada a detalhar.</td></tr>';
-    return;
-  }
-  const rotuloSituacao = { conforme: 'Conforme', parcial: 'Parcial', sem_adequacao: 'Sem adequação' };
-  const classeSituacao = { conforme: 'row-ok', parcial: 'row-pendente', sem_adequacao: 'row-gap' };
-  for (const d of reforma.porDocumento) {
-    const tr = document.createElement('tr');
-    tr.className = classeSituacao[d.situacao];
-    tr.innerHTML = `
-      <td>${d.tipoDocumento}</td>
-      <td>${d.numero}</td>
-      <td>${d.serie}</td>
-      <td>${formatDate(d.dataEmissao)}</td>
-      <td>${d.emitNome || d.emitCnpj}</td>
-      <td>${d.itensConformes} / ${d.totalItens}</td>
-      <td>${rotuloSituacao[d.situacao]}</td>
-    `;
-    els.reformaDetalheTableBody.appendChild(tr);
-  }
 }
 
 const POLL_INTERVALO_MS = 2000;
@@ -274,34 +408,30 @@ async function buscarPainelComEspera(query) {
   throw new Error('A busca está demorando mais que o esperado. Tente novamente em instantes.');
 }
 
+function periodoValido() {
+  return Boolean(els.dataInicioInput.value && els.dataFimInput.value);
+}
+
 function montarQueryPeriodo() {
-  const dataInicio = els.dataInicioInput.value;
-  const dataFim = els.dataFimInput.value;
-  if (dataInicio && dataFim) {
-    return `inicio=${encodeURIComponent(dataInicio)}&fim=${encodeURIComponent(dataFim)}`;
-  }
-  return null;
+  return `inicio=${encodeURIComponent(els.dataInicioInput.value)}&fim=${encodeURIComponent(els.dataFimInput.value)}`;
 }
 
 async function atualizar() {
   const cnpj = els.clienteSelect.value;
-  const mes = els.mesInput.value;
   const tipo = els.tipoDocSelect.value;
-  const queryPeriodo = montarQueryPeriodo();
   if (!cnpj) {
     setStatus('Cadastre ou selecione um cliente primeiro.', true);
     return;
   }
-  if (!queryPeriodo && !mes) {
-    setStatus('Selecione um mês (ou um período personalizado) para filtrar.', true);
+  if (!periodoValido()) {
+    setStatus('Preencha as datas "De" e "Até" para filtrar.', true);
     return;
   }
 
   els.btnAtualizar.disabled = true;
   setStatus('Buscando na SIEG...', false, true);
   try {
-    const periodo = queryPeriodo || `mes=${encodeURIComponent(mes)}`;
-    const query = `cnpj=${encodeURIComponent(cnpj)}&${periodo}&tipo=${encodeURIComponent(tipo)}`;
+    const query = `cnpj=${encodeURIComponent(cnpj)}&${montarQueryPeriodo()}&tipo=${encodeURIComponent(tipo)}`;
     const painel = await buscarPainelComEspera(query);
 
     renderDocumentos(painel.xmls.documentos);
@@ -309,9 +439,9 @@ async function atualizar() {
     renderTributos(painel.tax.meses);
     renderReforma(painel.reforma);
     renderResumo(painel.xmls, temQuebra);
+    renderValores(painel.valores);
 
-    const aviso = painel.desatualizado ? ' (atualizando em segundo plano — os números podem mudar em instantes)' : '';
-    setStatus(`Atualizado às ${new Date().toLocaleTimeString('pt-BR')}.${aviso}`);
+    setStatus(`Atualizado às ${new Date().toLocaleTimeString('pt-BR')}.`);
   } catch (err) {
     setStatus(err.message, true);
   } finally {
@@ -421,8 +551,6 @@ function renderReconciliation(resultado) {
 
 async function conferirDominio() {
   const cnpj = els.clienteSelect.value;
-  const mes = els.mesInput.value;
-  const queryPeriodo = montarQueryPeriodo();
   const arquivo = els.dominioFileInput.files[0];
 
   els.reconciliationStatus.classList.remove('error');
@@ -431,8 +559,8 @@ async function conferirDominio() {
     els.reconciliationStatus.textContent = 'Selecione um cliente primeiro.';
     return;
   }
-  if (!queryPeriodo && !mes) {
-    els.reconciliationStatus.textContent = 'Selecione um mês (ou um período personalizado) no filtro acima primeiro.';
+  if (!periodoValido()) {
+    els.reconciliationStatus.textContent = 'Preencha as datas "De" e "Até" no filtro acima primeiro.';
     return;
   }
   if (!arquivo) {
@@ -445,12 +573,8 @@ async function conferirDominio() {
   try {
     const formData = new FormData();
     formData.append('cnpj', cnpj);
-    if (els.dataInicioInput.value && els.dataFimInput.value) {
-      formData.append('inicio', els.dataInicioInput.value);
-      formData.append('fim', els.dataFimInput.value);
-    } else {
-      formData.append('mes', mes);
-    }
+    formData.append('inicio', els.dataInicioInput.value);
+    formData.append('fim', els.dataFimInput.value);
     formData.append('dominioFile', arquivo);
 
     const resultado = await apiPostForm('/api/reconciliation', formData);
@@ -465,13 +589,22 @@ async function conferirDominio() {
 }
 
 async function init() {
-  els.mesInput.value = currentMonthDefault();
+  els.dataInicioInput.value = primeiroDiaMesAtual();
+  els.dataFimInput.value = ultimoDiaMesAtual();
+
   els.btnAtualizar.addEventListener('click', atualizar);
   els.btnAdicionarCliente.addEventListener('click', adicionarCliente);
   els.btnConferirDominio.addEventListener('click', conferirDominio);
-  els.btnLimparPeriodo.addEventListener('click', () => {
-    els.dataInicioInput.value = '';
-    els.dataFimInput.value = '';
+  els.situacaoFiltroSelect.addEventListener('change', () => {
+    paginaDocumentosAtual = 1;
+    renderPaginaDocumentos();
+  });
+  els.btnFecharModal.addEventListener('click', fecharModal);
+  els.docModalOverlay.addEventListener('click', (evento) => {
+    if (evento.target === els.docModalOverlay) fecharModal();
+  });
+  document.addEventListener('keydown', (evento) => {
+    if (evento.key === 'Escape') fecharModal();
   });
 
   try {

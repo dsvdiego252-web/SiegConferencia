@@ -185,8 +185,13 @@ metade.
     endpoint (mesmos parâmetros) em alguns segundos; cada chamada avança
     mais um combo.
   - `{ "status": "erro", "erro": "..." }` — a busca falhou.
-  - `{ "status": "pronto", "xmls": {...}, "sequence": {...}, "tax": {...},
-    "reforma": {...} }` — resultado pronto.
+  - `{ "status": "pronto", "xmls": {...}, "valores": {...}, "sequence":
+    {...}, "tax": {...}, "reforma": {...} }` — resultado pronto. Cada item
+    de `xmls.documentos` inclui `itens` (produtos/impostos completos, pro
+    front-end mostrar o detalhamento sem nova chamada) e `situacao`
+    (`ok`/`inconsistente`/`cancelada` — inconsistente = desde a vigência da
+    Reforma Tributária mas sem os campos de IBS/CBS completos). `valores`
+    traz os totais de entrada/saída (valor, ICMS, PIS+COFINS) do período.
   Passe `forcar=1` pra ignorar o cache e recomeçar a busca do zero.
 - `GET /api/xmls`, `GET /api/analysis/sequence`, `GET /api/analysis/tax`,
   `GET /api/analysis/reforma-tributaria` (todos com `cnpj=...&mes=AAAA-MM`)
