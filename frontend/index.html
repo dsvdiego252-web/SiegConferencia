@@ -41,6 +41,21 @@
         <button id="btnAtualizar">Atualizar</button>
       </div>
       <details class="add-client">
+        <summary>+ período personalizado (mais rápido que o mês inteiro)</summary>
+        <div class="add-client-form">
+          <div class="field">
+            <label for="dataInicioInput">De</label>
+            <input id="dataInicioInput" type="date" />
+          </div>
+          <div class="field">
+            <label for="dataFimInput">Até</label>
+            <input id="dataFimInput" type="date" />
+          </div>
+          <button id="btnLimparPeriodo" type="button">Limpar (usar o mês)</button>
+        </div>
+        <p class="hint">Preenchendo os dois campos acima, a busca usa esse período específico em vez do mês inteiro — útil pra reduzir o volume e acelerar clientes com muitas notas (ex.: só a primeira quinzena).</p>
+      </details>
+      <details class="add-client">
         <summary>+ cadastrar cliente</summary>
         <div class="add-client-form">
           <input id="novoClienteCnpj" type="text" placeholder="CNPJ (somente números)" maxlength="14" />

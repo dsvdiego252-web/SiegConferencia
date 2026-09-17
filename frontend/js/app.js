@@ -3,6 +3,9 @@ const els = {
   clienteSelect: document.getElementById('clienteSelect'),
   mesInput: document.getElementById('mesInput'),
   tipoDocSelect: document.getElementById('tipoDocSelect'),
+  dataInicioInput: document.getElementById('dataInicioInput'),
+  dataFimInput: document.getElementById('dataFimInput'),
+  btnLimparPeriodo: document.getElementById('btnLimparPeriodo'),
   btnAtualizar: document.getElementById('btnAtualizar'),
   novoClienteCnpj: document.getElementById('novoClienteCnpj'),
   novoClienteNome: document.getElementById('novoClienteNome'),
@@ -271,23 +274,34 @@ async function buscarPainelComEspera(query) {
   throw new Error('A busca está demorando mais que o esperado. Tente novamente em instantes.');
 }
 
+function montarQueryPeriodo() {
+  const dataInicio = els.dataInicioInput.value;
+  const dataFim = els.dataFimInput.value;
+  if (dataInicio && dataFim) {
+    return `inicio=${encodeURIComponent(dataInicio)}&fim=${encodeURIComponent(dataFim)}`;
+  }
+  return null;
+}
+
 async function atualizar() {
   const cnpj = els.clienteSelect.value;
   const mes = els.mesInput.value;
   const tipo = els.tipoDocSelect.value;
+  const queryPeriodo = montarQueryPeriodo();
   if (!cnpj) {
     setStatus('Cadastre ou selecione um cliente primeiro.', true);
     return;
   }
-  if (!mes) {
-    setStatus('Selecione um mês para filtrar.', true);
+  if (!queryPeriodo && !mes) {
+    setStatus('Selecione um mês (ou um período personalizado) para filtrar.', true);
     return;
   }
 
   els.btnAtualizar.disabled = true;
   setStatus('Buscando na SIEG...', false, true);
   try {
-    const query = `cnpj=${encodeURIComponent(cnpj)}&mes=${encodeURIComponent(mes)}&tipo=${encodeURIComponent(tipo)}`;
+    const periodo = queryPeriodo || `mes=${encodeURIComponent(mes)}`;
+    const query = `cnpj=${encodeURIComponent(cnpj)}&${periodo}&tipo=${encodeURIComponent(tipo)}`;
     const painel = await buscarPainelComEspera(query);
 
     renderDocumentos(painel.xmls.documentos);
@@ -408,6 +422,7 @@ function renderReconciliation(resultado) {
 async function conferirDominio() {
   const cnpj = els.clienteSelect.value;
   const mes = els.mesInput.value;
+  const queryPeriodo = montarQueryPeriodo();
   const arquivo = els.dominioFileInput.files[0];
 
   els.reconciliationStatus.classList.remove('error');
@@ -416,8 +431,8 @@ async function conferirDominio() {
     els.reconciliationStatus.textContent = 'Selecione um cliente primeiro.';
     return;
   }
-  if (!mes) {
-    els.reconciliationStatus.textContent = 'Selecione um mês no filtro acima primeiro.';
+  if (!queryPeriodo && !mes) {
+    els.reconciliationStatus.textContent = 'Selecione um mês (ou um período personalizado) no filtro acima primeiro.';
     return;
   }
   if (!arquivo) {
@@ -430,7 +445,12 @@ async function conferirDominio() {
   try {
     const formData = new FormData();
     formData.append('cnpj', cnpj);
-    formData.append('mes', mes);
+    if (els.dataInicioInput.value && els.dataFimInput.value) {
+      formData.append('inicio', els.dataInicioInput.value);
+      formData.append('fim', els.dataFimInput.value);
+    } else {
+      formData.append('mes', mes);
+    }
     formData.append('dominioFile', arquivo);
 
     const resultado = await apiPostForm('/api/reconciliation', formData);
@@ -449,6 +469,10 @@ async function init() {
   els.btnAtualizar.addEventListener('click', atualizar);
   els.btnAdicionarCliente.addEventListener('click', adicionarCliente);
   els.btnConferirDominio.addEventListener('click', conferirDominio);
+  els.btnLimparPeriodo.addEventListener('click', () => {
+    els.dataInicioInput.value = '';
+    els.dataFimInput.value = '';
+  });
 
   try {
     await carregarClientes();
