@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SIEG Conferência Fiscal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -335,16 +338,16 @@
         <h2 id="clienteModalTitulo">Cadastrar cliente</h2>
         <button id="btnFecharModalCliente" class="modal-close" type="button" aria-label="Fechar">&times;</button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body form-stack">
         <div class="field">
           <label for="novoClienteCnpj">CNPJ (somente números)</label>
           <input id="novoClienteCnpj" type="text" maxlength="14" />
         </div>
-        <div class="field" style="margin-top: 12px;">
+        <div class="field">
           <label for="novoClienteNome">Nome do cliente</label>
           <input id="novoClienteNome" type="text" />
         </div>
-        <div class="field" style="margin-top: 12px;">
+        <div class="field">
           <label for="novoClienteRegime">Regime tributário</label>
           <select id="novoClienteRegime">
             <option value="">Não informado</option>
@@ -353,9 +356,9 @@
             <option value="lucro_presumido">Lucro Presumido</option>
             <option value="lucro_real">Lucro Real</option>
           </select>
+          <p class="hint">O regime tributário define o prazo de obrigatoriedade dos campos da Reforma Tributária (Simples/MEI só a partir de 01/2027; demais regimes, 01/2026).</p>
         </div>
-        <p class="hint">O regime tributário define o prazo de obrigatoriedade dos campos da Reforma Tributária (Simples/MEI só a partir de 01/2027; demais regimes, 01/2026).</p>
-        <div class="field" style="margin-top: 12px;">
+        <div class="field">
           <label>Atividade / perfil fiscal</label>
           <div class="checkbox-group">
             <label class="checkbox-option"><input type="checkbox" class="novo-cliente-atividade" value="comercio_varejo" /> Comércio/Varejo</label>
@@ -365,7 +368,7 @@
           </div>
           <p class="hint">Pode marcar mais de uma (ex.: comércio + serviço = misto).</p>
         </div>
-        <div class="field" style="margin-top: 12px;">
+        <div class="field">
           <label for="novoClienteSegmento">Segmento (opcional)</label>
           <input id="novoClienteSegmento" type="text" list="segmentoOpcoes" placeholder="Ex.: Farmácia, Supermercado..." />
           <datalist id="segmentoOpcoes">
@@ -382,7 +385,7 @@
           </datalist>
           <p class="hint">Só auxilia classificações — a tributação é decidida pelo regime, documento, NCM/NBS, CFOP e CST, não pelo segmento.</p>
         </div>
-        <button id="btnAdicionarCliente" type="button" style="margin-top: 8px;">Adicionar</button>
+        <button id="btnAdicionarCliente" type="button">Adicionar</button>
         <p id="clienteModalErro" class="status error" hidden></p>
       </div>
     </div>

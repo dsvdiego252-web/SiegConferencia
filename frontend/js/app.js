@@ -416,6 +416,39 @@ function badgeValidacaoCalculo(validacaoMatematica) {
   return `<span class="badge ${classe}">${ROTULO_STATUS_CALCULO[validacaoMatematica.status]}</span>`;
 }
 
+const ROTULO_CAMPO_CALCULO = { produto: 'Produto', icms: 'ICMS', pis: 'PIS', cofins: 'COFINS' };
+const ROTULO_TOTAL_CALCULO = { produtos: 'Total de produtos', icms: 'Total de ICMS', pis: 'Total de PIS', cofins: 'Total de COFINS' };
+
+// Explica EM QUE o cálculo diverge — a badge sozinha só diz que há
+// divergência, sem dizer qual item/campo/valor. Lista cada campo cujo
+// valor recalculado (quantidade×valorUnitário ou base×alíquota) não bate
+// com o que o XML informou, item por item, e depois os totais do
+// documento — a mesma comparação que dá o status, só que legível.
+function detalheDivergenciasCalculo(validacaoMatematica, itensDoc) {
+  if (!validacaoMatematica || validacaoMatematica.status === 'CORRETO') return '';
+  const linhas = [];
+
+  validacaoMatematica.itens.forEach((itemCalc, indice) => {
+    for (const campo of ['produto', 'icms', 'pis', 'cofins']) {
+      const c = itemCalc[campo];
+      if (c && c.status !== 'CORRETO') {
+        const nomeItem = itensDoc?.[indice]?.descricao || `item ${itemCalc.numeroItem}`;
+        linhas.push(`<strong>${nomeItem}</strong> — ${ROTULO_CAMPO_CALCULO[campo]}: informado ${formatMoney(c.xml)}, esperado ${formatMoney(c.esperado)}`);
+      }
+    }
+  });
+
+  for (const [campo, rotulo] of Object.entries(ROTULO_TOTAL_CALCULO)) {
+    const t = validacaoMatematica.totais[campo];
+    if (t && t.status !== 'CORRETO') {
+      linhas.push(`${rotulo} do documento: soma dos itens ${formatMoney(t.somaItens)}, total informado ${formatMoney(t.totalDocumento)}`);
+    }
+  }
+
+  if (!linhas.length) return '';
+  return `<ul class="detalhe-divergencias">${linhas.map((l) => `<li>${l}</li>`).join('')}</ul>`;
+}
+
 const ROTULO_STATUS_RTC = {
   CORRETO: 'coerente com a tabela oficial',
   REVISAO_MANUAL: 'revisão manual',
@@ -490,7 +523,7 @@ function abrirModalDocumento(doc) {
   els.docModalCorpo.innerHTML = `
     <dl>
       <dt>Situação</dt><dd><span class="badge badge-situacao-${doc.situacao}">${ROTULO_SITUACAO[doc.situacao]}</span></dd>
-      <dt>Validação matemática</dt><dd>${badgeValidacaoCalculo(doc.validacaoMatematica)}</dd>
+      <dt>Validação matemática</dt><dd>${badgeValidacaoCalculo(doc.validacaoMatematica)}${detalheDivergenciasCalculo(doc.validacaoMatematica, doc.itens)}</dd>
       <dt>Conferência RTC (IBS/CBS)</dt><dd>${badgeValidacaoReformaDocumento(doc.validacaoReforma)}</dd>
       <dt>Chave de acesso</dt><dd>${doc.chave || '-'}</dd>
       <dt>Emissão</dt><dd>${formatDate(doc.dataEmissao)}</dd>
