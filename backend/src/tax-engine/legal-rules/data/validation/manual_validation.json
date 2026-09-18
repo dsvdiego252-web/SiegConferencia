@@ -1,0 +1,19 @@
+{
+  "decision_options": [
+    "CONFIRMAR BENEFÍCIO SUGERIDO",
+    "CONFIRMAR REDUÇÃO 60% — ANEXO VIII ITEM 7",
+    "CONFIRMAR ALÍQUOTA ZERO — ART. 147",
+    "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "MANTER EM REVISÃO",
+    "REMOVER DECISÃO MANUAL"
+  ],
+  "rules": {
+    "confirm_benefit": "Mantém o módulo, tratamento, reduções, CST e cClassTrib sugeridos pelo motor e altera o status final para CONFIRMADO MANUAL.",
+    "confirm_integral": "Substitui o tratamento final por tributação integral, CST 000 e cClassTrib 000001.",
+    "keep_review": "Não libera parametrização; mantém os campos finais em branco até nova análise.",
+    "remove_decision": "Restaura o status e os campos sugeridos originalmente pelo motor.",
+    "ncm_9619_ambiguous": "Quando a NCM 96190000 tiver duas alternativas, o botão genérico de confirmar benefício fica indisponível. O usuário deve escolher expressamente Anexo VIII item 7 / 200035 ou art. 147 / 200013.",
+    "confirm_ncm_9619_diaper": "Grava Anexo VIII, item 7, redução de 60%, CST 200 e cClassTrib 200035.",
+    "confirm_ncm_9619_menstrual": "Grava art. 147, itens 1; 2; 3, alíquota zero, CST 200 e cClassTrib 200013."
+  }
+}

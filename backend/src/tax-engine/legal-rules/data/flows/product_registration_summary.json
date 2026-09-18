@@ -1,0 +1,28 @@
+{
+  "enabled": true,
+  "cards": [
+    "Produtos com tributação integral",
+    "Produtos com redução de 100%",
+    "Produtos com redução de 60%",
+    "Produtos com alíquota zero",
+    "Produtos com Imposto Seletivo"
+  ],
+  "percentage_basis": "Quantidade total de produtos do cadastro importado.",
+  "selective_tax_overlap": "O Imposto Seletivo é adicional e pode aparecer junto com outro tratamento de IBS/CBS.",
+  "separate_sections": {
+    "tax_result": [
+      "Tributação integral",
+      "Redução de 100%",
+      "Redução de 60%",
+      "Alíquota zero",
+      "Imposto Seletivo"
+    ],
+    "validation_status": [
+      "Todos os produtos",
+      "Confirmados",
+      "Pendentes para validar",
+      "Status finais individualizados"
+    ]
+  },
+  "behavior": "Os cards de resultado tributário são adicionais e não substituem os cards de acompanhamento e tratamento da validação."
+}

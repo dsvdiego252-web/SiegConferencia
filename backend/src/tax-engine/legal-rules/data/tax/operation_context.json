@@ -1,0 +1,66 @@
+{
+  "buyer_types": [
+    {
+      "value": "CONSUMIDOR_FINAL",
+      "label": "Consumidor final / venda comum",
+      "public_or_cebas": false
+    },
+    {
+      "value": "COMERCIO_REVENDA",
+      "label": "Comércio / revenda",
+      "public_or_cebas": false
+    },
+    {
+      "value": "ORGAO_PUBLICO",
+      "label": "Administração pública / autarquia / fundação pública",
+      "public_or_cebas": true
+    },
+    {
+      "value": "ENTIDADE_CEBAS_SUS",
+      "label": "Entidade de saúde imune com CEBAS/SUS",
+      "public_or_cebas": true
+    },
+    {
+      "value": "NAO_INFORMADO",
+      "label": "Não informado — manter condições em validação",
+      "public_or_cebas": false
+    }
+  ],
+  "default": "CONSUMIDOR_FINAL",
+  "article_147_buyer_independent": true,
+  "note": "O art. 147 depende da natureza menstrual do produto, não do adquirente. O perfil do adquirente é utilizado somente em benefícios condicionados à operação.",
+  "conditional_treatments": {
+    "Anexo IV": {
+      "eligible": [
+        "ORGAO_PUBLICO",
+        "ENTIDADE_CEBAS_SUS"
+      ],
+      "cclass": "200005",
+      "fallback": "200030"
+    },
+    "Anexo V": {
+      "eligible": [
+        "ORGAO_PUBLICO",
+        "ENTIDADE_CEBAS_SUS"
+      ],
+      "cclass": "200008",
+      "fallback": "200031"
+    },
+    "Anexo VI": {
+      "eligible": [
+        "ORGAO_PUBLICO",
+        "ENTIDADE_CEBAS_SUS"
+      ],
+      "cclass": "200011",
+      "fallback": "200033"
+    },
+    "Medicamentos": {
+      "eligible": [
+        "ORGAO_PUBLICO",
+        "ENTIDADE_CEBAS_SUS"
+      ],
+      "cclass": "200010",
+      "fallback": "200032"
+    }
+  }
+}

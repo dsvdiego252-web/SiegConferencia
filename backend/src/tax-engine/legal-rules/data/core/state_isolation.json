@@ -1,0 +1,7 @@
+{
+  "products": "batch_products",
+  "sales": "sales_validation",
+  "simple_inputs": "simple_input",
+  "simple_outputs": "simple_output",
+  "rule": "No dataset is automatically copied between modules."
+}

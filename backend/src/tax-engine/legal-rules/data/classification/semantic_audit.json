@@ -1,0 +1,2125 @@
+{
+  "enabled": true,
+  "scope": "Cobertura dos capítulos 01 a 97, com exceção dos capítulos especiais 36 e 93, mantidos em revisão manual.",
+  "families": {
+    "ANIMAIS_VIVOS": {
+      "label": "Animais vivos",
+      "chapters": [
+        "01"
+      ],
+      "terms": [
+        "BOVINO VIVO",
+        "SUINO VIVO",
+        "AVE VIVA",
+        "PINTAINHO",
+        "EQUINO",
+        "OVINO",
+        "CAPRINO"
+      ]
+    },
+    "CARNES": {
+      "label": "Carnes",
+      "chapters": [
+        "02"
+      ],
+      "terms": [
+        "CARNE",
+        "BOVIN",
+        "SUIN",
+        "ACEM",
+        "ALCATRA",
+        "PATINHO",
+        "PICANHA",
+        "COSTELA",
+        "PERNIL",
+        "LOMBO",
+        "FRANGO",
+        "COXA",
+        "SOBRECOXA",
+        "PEITO DE FRANGO",
+        "CORDEIRO",
+        "CABRITO",
+        "MIUDO",
+        "FIGADO"
+      ]
+    },
+    "PESCADOS": {
+      "label": "Pescados",
+      "chapters": [
+        "03"
+      ],
+      "terms": [
+        "PEIXE",
+        "PESCADO",
+        "TILAPIA",
+        "SARDINHA",
+        "ATUM",
+        "SALMAO",
+        "CAMARAO",
+        "BACALHAU",
+        "FILE DE PEIXE",
+        "POLVO",
+        "LULA"
+      ]
+    },
+    "LATICINIOS_OVOS_MEL": {
+      "label": "Laticínios, ovos e mel",
+      "chapters": [
+        "04"
+      ],
+      "terms": [
+        "LEITE",
+        "QUEIJO",
+        "IOGURTE",
+        "MANTEIGA",
+        "REQUEIJAO",
+        "CREME DE LEITE",
+        "BEBIDA LACTEA",
+        "OVO",
+        "OVOS",
+        "MEL"
+      ]
+    },
+    "PRODUTOS_ANIMAIS": {
+      "label": "Outros produtos de origem animal",
+      "chapters": [
+        "05"
+      ],
+      "terms": [
+        "OSSO",
+        "SEBO",
+        "PENA",
+        "CRINA",
+        "CASCO",
+        "CORAL",
+        "ESPONJA ANIMAL"
+      ]
+    },
+    "PLANTAS_FLORES": {
+      "label": "Plantas e flores",
+      "chapters": [
+        "06"
+      ],
+      "terms": [
+        "PLANTA",
+        "MUDA",
+        "FLOR",
+        "ROSA",
+        "ORQUIDEA",
+        "FOLHAGEM",
+        "BULBO",
+        "SEMENTEIRA"
+      ]
+    },
+    "HORTALICAS": {
+      "label": "Hortaliças, legumes e tubérculos",
+      "chapters": [
+        "07"
+      ],
+      "terms": [
+        "BATATA",
+        "CEBOLA",
+        "TOMATE",
+        "ALHO",
+        "CENOURA",
+        "ALFACE",
+        "MANDIOCA",
+        "AIPIM",
+        "MACAXEIRA",
+        "BETERRABA",
+        "ABOBORA",
+        "ABOBRINHA",
+        "CHUCHU",
+        "PEPINO",
+        "PIMENTAO",
+        "COUVE",
+        "REPOLHO",
+        "BROCOLIS",
+        "COUVE FLOR",
+        "INHAME",
+        "QUIABO",
+        "ERVILHA",
+        "FEIJAO VAGEM",
+        "ASPARGO",
+        "ALCACHOFRA",
+        "HORTALICA",
+        "LEGUME"
+      ]
+    },
+    "FRUTAS": {
+      "label": "Frutas",
+      "chapters": [
+        "08"
+      ],
+      "terms": [
+        "MACA",
+        "BANANA",
+        "LARANJA",
+        "UVA",
+        "MANGA",
+        "AMEIXA",
+        "MORANGO",
+        "ABACAXI",
+        "PERA",
+        "PESSEGO",
+        "MELANCIA",
+        "MELAO",
+        "MAMAO",
+        "LIMAO",
+        "TANGERINA",
+        "MEXERICA",
+        "MARACUJA",
+        "GOIABA",
+        "ABACATE",
+        "COCO",
+        "KIWI",
+        "CAQUI",
+        "CEREJA",
+        "FRUTA"
+      ]
+    },
+    "CAFE_CHA_ESPECIARIAS": {
+      "label": "Café, chá e especiarias",
+      "chapters": [
+        "09"
+      ],
+      "terms": [
+        "CAFE",
+        "CHA",
+        "MATE",
+        "ERVA MATE",
+        "PIMENTA",
+        "CANELA",
+        "CRAVO",
+        "NOZ MOSCADA",
+        "CURCUMA",
+        "ACAFRAO",
+        "GENGIBRE"
+      ]
+    },
+    "CEREAIS": {
+      "label": "Cereais",
+      "chapters": [
+        "10"
+      ],
+      "terms": [
+        "ARROZ",
+        "MILHO",
+        "TRIGO",
+        "AVEIA",
+        "CEVADA",
+        "CENTEIO",
+        "SORGO",
+        "QUINOA",
+        "CEREAL EM GRAO"
+      ]
+    },
+    "FARINHAS_MOAGEM": {
+      "label": "Farinhas e produtos da moagem",
+      "chapters": [
+        "11"
+      ],
+      "terms": [
+        "FARINHA",
+        "FUBA",
+        "SEMOLA",
+        "AMIDO",
+        "FECULA",
+        "MALTE",
+        "FARELO DE TRIGO"
+      ]
+    },
+    "SEMENTES_OLEAGINOSAS": {
+      "label": "Sementes e oleaginosas",
+      "chapters": [
+        "12"
+      ],
+      "terms": [
+        "SOJA",
+        "AMENDOIM",
+        "SEMENTE",
+        "GIRASSOL",
+        "LINHACA",
+        "GERGELIM",
+        "CASTANHA",
+        "NOZ",
+        "AMENDOA",
+        "CHIA"
+      ]
+    },
+    "GOMAS_RESINAS": {
+      "label": "Gomas, resinas e extratos vegetais",
+      "chapters": [
+        "13"
+      ],
+      "terms": [
+        "GOMA",
+        "RESINA",
+        "EXTRATO VEGETAL",
+        "PECTINA",
+        "AGAR AGAR"
+      ]
+    },
+    "MATERIAIS_VEGETAIS": {
+      "label": "Materiais vegetais diversos",
+      "chapters": [
+        "14"
+      ],
+      "terms": [
+        "BAMBU",
+        "PALHA",
+        "VIME",
+        "JUNCO",
+        "RATAN",
+        "FIBRA VEGETAL"
+      ]
+    },
+    "OLEOS_GORDURAS": {
+      "label": "Óleos e gorduras",
+      "chapters": [
+        "15"
+      ],
+      "terms": [
+        "OLEO DE SOJA",
+        "OLEO DE GIRASSOL",
+        "OLEO DE MILHO",
+        "AZEITE",
+        "GORDURA",
+        "MARGARINA",
+        "BANHA",
+        "OLEO VEGETAL",
+        "OLEO DE COCO"
+      ]
+    },
+    "PREPARADOS_CARNES_PESCADOS": {
+      "label": "Preparações de carnes e pescados",
+      "chapters": [
+        "16"
+      ],
+      "terms": [
+        "SALSICHA",
+        "LINGUICA",
+        "MORTADELA",
+        "PRESUNTO",
+        "SALAME",
+        "CARNE ENLATADA",
+        "ATUM ENLATADO",
+        "SARDINHA ENLATADA",
+        "HAMBURGUER",
+        "EMPANADO",
+        "NUGGET"
+      ]
+    },
+    "ACUCARES": {
+      "label": "Açúcares e confeitaria",
+      "chapters": [
+        "17"
+      ],
+      "terms": [
+        "ACUCAR",
+        "MELACO",
+        "CARAMELO",
+        "BALA",
+        "BOMBOM SEM CACAU",
+        "CONFEITO",
+        "PASTILHA"
+      ]
+    },
+    "CACAU_CHOCOLATE": {
+      "label": "Cacau e chocolates",
+      "chapters": [
+        "18"
+      ],
+      "terms": [
+        "CACAU",
+        "CHOCOLATE",
+        "ACHOCOLATADO",
+        "BOMBOM",
+        "TRUFA DE CHOCOLATE"
+      ]
+    },
+    "PADARIA_MASSAS": {
+      "label": "Padaria, massas e biscoitos",
+      "chapters": [
+        "19"
+      ],
+      "terms": [
+        "MACARRAO",
+        "MASSA ALIMENTICIA",
+        "BISCOITO",
+        "BOLACHA",
+        "PAO",
+        "BOLO",
+        "TORRADA",
+        "WAFFER",
+        "CEREAL MATINAL",
+        "LASANHA",
+        "PANETONE"
+      ]
+    },
+    "CONSERVAS_VEGETAIS": {
+      "label": "Preparações de hortaliças e frutas",
+      "chapters": [
+        "20"
+      ],
+      "terms": [
+        "CONSERVA",
+        "PICLES",
+        "MILHO VERDE",
+        "ERVILHA EM CONSERVA",
+        "PALMITO",
+        "GELEIA",
+        "DOCE DE FRUTA",
+        "POLPA DE FRUTA",
+        "SUCO CONCENTRADO",
+        "MOLHO DE TOMATE"
+      ]
+    },
+    "PREPARACOES_ALIMENTICIAS": {
+      "label": "Preparações alimentícias diversas",
+      "chapters": [
+        "21"
+      ],
+      "terms": [
+        "MOLHO",
+        "MAIONESE",
+        "KETCHUP",
+        "MOSTARDA",
+        "TEMPERO",
+        "CALDO",
+        "SOPA",
+        "SORVETE",
+        "LEVEDURA",
+        "PREPARADO ALIMENTICIO",
+        "COMPLEMENTO ALIMENTAR"
+      ]
+    },
+    "BEBIDAS": {
+      "label": "Bebidas",
+      "chapters": [
+        "22"
+      ],
+      "terms": [
+        "AGUA",
+        "REFRIGERANTE",
+        "REFRI",
+        "SUCO",
+        "NECTAR",
+        "CERVEJA",
+        "VINHO",
+        "BEBIDA",
+        "ENERGETICO",
+        "ISOTONICO",
+        "AGUA TONICA",
+        "DESTILADO",
+        "CACHACA",
+        "VODKA",
+        "WHISKY"
+      ]
+    },
+    "RACOES_RESIDUOS": {
+      "label": "Rações e resíduos alimentares",
+      "chapters": [
+        "23"
+      ],
+      "terms": [
+        "RACAO",
+        "ALIMENTO PARA CAES",
+        "ALIMENTO PARA GATOS",
+        "PET FOOD",
+        "FARELO",
+        "TORTA DE SOJA",
+        "RESIDUO DE CERVEJARIA"
+      ]
+    },
+    "TABACO": {
+      "label": "Produtos do tabaco",
+      "chapters": [
+        "24"
+      ],
+      "terms": [
+        "TABACO",
+        "CIGARRO",
+        "CHARUTO",
+        "FUMO"
+      ]
+    },
+    "MINERAIS": {
+      "label": "Sal, enxofre, pedras e minerais",
+      "chapters": [
+        "25"
+      ],
+      "terms": [
+        "SAL",
+        "ENXOFRE",
+        "AREIA",
+        "PEDRA",
+        "GESSO",
+        "CAL",
+        "CIMENTO CLINQUER"
+      ]
+    },
+    "MINERIOS": {
+      "label": "Minérios e escórias",
+      "chapters": [
+        "26"
+      ],
+      "terms": [
+        "MINERIO",
+        "ESCORIA",
+        "CINZA MINERAL"
+      ]
+    },
+    "COMBUSTIVEIS": {
+      "label": "Combustíveis e óleos minerais",
+      "chapters": [
+        "27"
+      ],
+      "terms": [
+        "GASOLINA",
+        "DIESEL",
+        "QUEROSENE",
+        "OLEO LUBRIFICANTE",
+        "PARAFINA",
+        "GLP",
+        "GAS LIQUEFEITO",
+        "CARVAO MINERAL"
+      ]
+    },
+    "QUIMICOS_INORGANICOS": {
+      "label": "Produtos químicos inorgânicos",
+      "chapters": [
+        "28"
+      ],
+      "terms": [
+        "ACIDO",
+        "HIDROXIDO",
+        "CARBONATO",
+        "SULFATO",
+        "CLORO",
+        "SODA CAUSTICA",
+        "AGUA OXIGENADA"
+      ]
+    },
+    "QUIMICOS_ORGANICOS": {
+      "label": "Produtos químicos orgânicos",
+      "chapters": [
+        "29"
+      ],
+      "terms": [
+        "ALCOOL ETILICO",
+        "ACETONA",
+        "GLICEROL",
+        "ACIDO CITRICO",
+        "MENTOL",
+        "VITAMINA PURA"
+      ]
+    },
+    "MEDICAMENTOS": {
+      "label": "Medicamentos",
+      "chapters": [
+        "30"
+      ],
+      "terms": [
+        "MEDICAMENTO",
+        "REMEDIO",
+        "COMPRIMIDO",
+        "CAPSULA",
+        "XAROPE",
+        "POMADA",
+        "SOLUCAO ORAL",
+        "GOTAS",
+        "INJETAVEL",
+        "DIPIRONA",
+        "PARACETAMOL",
+        "IBUPROFENO",
+        "AMOXICILINA",
+        "LOSARTANA",
+        "OMEPRAZOL",
+        "ANTIBIOTICO",
+        "ANALGESICO",
+        "FARMACO",
+        "COMPRIMIDOS",
+        "CPR",
+        "COMP",
+        "CAPSULAS",
+        "CAPS",
+        "SUSPENSAO",
+        "CREME DERMATOLOGICO",
+        "COLIRIO",
+        "SPRAY",
+        "AEROSSOL",
+        "AMPOLA",
+        "SUPOSITORIO",
+        "DRAGEA",
+        "PASTILHA",
+        "SACHE",
+        "MANIPULADO",
+        "FORMULA MAGISTRAL",
+        "DICLOFENACO",
+        "NIMESULIDA",
+        "AZITROMICINA",
+        "CEFALEXINA",
+        "ENALAPRIL",
+        "ATENOLOL",
+        "AMLODIPINO",
+        "METFORMINA",
+        "GLIBENCLAMIDA",
+        "PANTOPRAZOL",
+        "SIMVASTATINA",
+        "ATORVASTATINA",
+        "LORATADINA",
+        "CETIRIZINA",
+        "PREDNISONA",
+        "DEXAMETASONA",
+        "FLUCONAZOL",
+        "ACICLOVIR",
+        "IVERMECTINA",
+        "ALBENDAZOL",
+        "CLONAZEPAM",
+        "SERTRALINA",
+        "FLUOXETINA",
+        "ESCITALOPRAM",
+        "LEVOTIROXINA",
+        "DORFLEX",
+        "NOVALGINA",
+        "TYLENOL",
+        "ADVIL",
+        "BUSCOPAN",
+        "NEOSALDINA",
+        "BENEGRIP",
+        "CIMEGRIPE",
+        "LUFTAL",
+        "ALLEGRA",
+        "CLARITIN"
+      ]
+    },
+    "FERTILIZANTES": {
+      "label": "Fertilizantes",
+      "chapters": [
+        "31"
+      ],
+      "terms": [
+        "FERTILIZANTE",
+        "ADUBO",
+        "UREIA AGRICOLA",
+        "NPK",
+        "FOSFATO AGRICOLA"
+      ]
+    },
+    "TINTAS": {
+      "label": "Tintas, vernizes e pigmentos",
+      "chapters": [
+        "32"
+      ],
+      "terms": [
+        "TINTA",
+        "VERNIZ",
+        "PIGMENTO",
+        "CORANTE",
+        "MASSA CORRIDA",
+        "ESMALTE SINTETICO"
+      ]
+    },
+    "HIGIENE_PERFUMARIA": {
+      "label": "Higiene pessoal e perfumaria",
+      "chapters": [
+        "33"
+      ],
+      "terms": [
+        "CREME DENTAL",
+        "PASTA DE DENTE",
+        "SHAMPOO",
+        "CONDICIONADOR",
+        "PERFUME",
+        "DESODORANTE",
+        "FIO DENTAL",
+        "ENXAGUANTE BUCAL",
+        "HIDRATANTE",
+        "PROTETOR SOLAR",
+        "COLONIA",
+        "GEL CAPILAR"
+      ]
+    },
+    "LIMPEZA": {
+      "label": "Limpeza, sabões e ceras",
+      "chapters": [
+        "34"
+      ],
+      "terms": [
+        "DETERGENTE",
+        "SABAO EM PO",
+        "SABAO",
+        "DESINFETANTE",
+        "AMACIANTE",
+        "AGUA SANITARIA",
+        "LIMPADOR",
+        "ALVEJANTE",
+        "LAVA ROUPAS",
+        "LAVA LOUCAS",
+        "CERA",
+        "PASTA DE LIMPEZA"
+      ]
+    },
+    "PROTEINAS_COLAS": {
+      "label": "Proteínas, gelatinas e colas",
+      "chapters": [
+        "35"
+      ],
+      "terms": [
+        "GELATINA",
+        "COLA",
+        "ADESIVO",
+        "CASEINA",
+        "ALBUMINA",
+        "ENZIMA"
+      ]
+    },
+    "FOTOGRAFIA": {
+      "label": "Produtos fotográficos",
+      "chapters": [
+        "37"
+      ],
+      "terms": [
+        "FILME FOTOGRAFICO",
+        "PAPEL FOTOGRAFICO",
+        "REVELADOR FOTOGRAFICO"
+      ]
+    },
+    "QUIMICOS_DIVERSOS": {
+      "label": "Produtos químicos diversos",
+      "chapters": [
+        "38"
+      ],
+      "terms": [
+        "INSETICIDA",
+        "FUNGICIDA",
+        "HERBICIDA",
+        "DESENGRIPANTE",
+        "FLUIDO DE FREIO",
+        "ADITIVO QUIMICO",
+        "CARVAO ATIVADO",
+        "DESODORIZADOR DE AMBIENTE"
+      ]
+    },
+    "PLASTICOS": {
+      "label": "Plásticos e suas obras",
+      "chapters": [
+        "39"
+      ],
+      "terms": [
+        "PLASTICO",
+        "SACOLA",
+        "FILME PVC",
+        "POTE PLASTICO",
+        "GARRAFA PLASTICA",
+        "TUBO PVC",
+        "MANGUEIRA PLASTICA",
+        "FITA ADESIVA PLASTICA"
+      ]
+    },
+    "BORRACHA": {
+      "label": "Borracha e suas obras",
+      "chapters": [
+        "40"
+      ],
+      "terms": [
+        "BORRACHA",
+        "PNEU",
+        "CAMARA DE AR",
+        "LUVA DE BORRACHA",
+        "MANGUEIRA DE BORRACHA"
+      ]
+    },
+    "COUROS": {
+      "label": "Couros e peles",
+      "chapters": [
+        "41"
+      ],
+      "terms": [
+        "COURO",
+        "PELE CURTIDA"
+      ]
+    },
+    "ARTEFATOS_COURO": {
+      "label": "Artefatos de couro e viagem",
+      "chapters": [
+        "42"
+      ],
+      "terms": [
+        "BOLSA",
+        "MOCHILA",
+        "MALA",
+        "CARTEIRA",
+        "CINTO DE COURO",
+        "ESTOJO"
+      ]
+    },
+    "PELES": {
+      "label": "Peles com pelo",
+      "chapters": [
+        "43"
+      ],
+      "terms": [
+        "PELE COM PELO",
+        "PELETERIA",
+        "PELE SINTETICA"
+      ]
+    },
+    "MADEIRA": {
+      "label": "Madeira e suas obras",
+      "chapters": [
+        "44"
+      ],
+      "terms": [
+        "MADEIRA",
+        "TABUA",
+        "PAINEL MDF",
+        "COMPENSADO",
+        "PALITO DE MADEIRA",
+        "CARVAO VEGETAL"
+      ]
+    },
+    "CORTICA": {
+      "label": "Cortiça",
+      "chapters": [
+        "45"
+      ],
+      "terms": [
+        "CORTICA",
+        "ROLHA DE CORTICA"
+      ]
+    },
+    "CESTARIA": {
+      "label": "Cestaria e fibras trançadas",
+      "chapters": [
+        "46"
+      ],
+      "terms": [
+        "CESTO",
+        "CESTA",
+        "ESTEIRA",
+        "TRANCADO DE PALHA",
+        "VIME"
+      ]
+    },
+    "CELULOSE": {
+      "label": "Pastas de madeira e celulose",
+      "chapters": [
+        "47"
+      ],
+      "terms": [
+        "CELULOSE",
+        "PASTA DE MADEIRA",
+        "PAPEL RECICLADO EM APARAS"
+      ]
+    },
+    "PAPEL": {
+      "label": "Papel, cartão e embalagens",
+      "chapters": [
+        "48"
+      ],
+      "terms": [
+        "PAPEL",
+        "PAPEL HIGIENICO",
+        "GUARDANAPO",
+        "TOALHA DE PAPEL",
+        "CAIXA DE PAPELAO",
+        "CADERNO",
+        "ETIQUETA DE PAPEL",
+        "COPO DE PAPEL"
+      ]
+    },
+    "IMPRESSOS": {
+      "label": "Livros e impressos",
+      "chapters": [
+        "49"
+      ],
+      "terms": [
+        "LIVRO",
+        "REVISTA",
+        "JORNAL",
+        "FIGURINHA",
+        "ALBUM",
+        "MAPA IMPRESSO",
+        "CARTAO POSTAL"
+      ]
+    },
+    "SEDA": {
+      "label": "Seda",
+      "chapters": [
+        "50"
+      ],
+      "terms": [
+        "SEDA",
+        "FIO DE SEDA",
+        "TECIDO DE SEDA"
+      ]
+    },
+    "LA": {
+      "label": "Lã e pelos finos",
+      "chapters": [
+        "51"
+      ],
+      "terms": [
+        "LA",
+        "FIO DE LA",
+        "TECIDO DE LA"
+      ]
+    },
+    "ALGODAO": {
+      "label": "Algodão",
+      "chapters": [
+        "52"
+      ],
+      "terms": [
+        "ALGODAO",
+        "FIO DE ALGODAO",
+        "TECIDO DE ALGODAO"
+      ]
+    },
+    "FIBRAS_VEGETAIS": {
+      "label": "Outras fibras têxteis vegetais",
+      "chapters": [
+        "53"
+      ],
+      "terms": [
+        "LINHO",
+        "JUTA",
+        "CANHAMO TEXTIL",
+        "FIBRA DE COCO TEXTIL"
+      ]
+    },
+    "FILAMENTOS_SINTETICOS": {
+      "label": "Filamentos sintéticos",
+      "chapters": [
+        "54"
+      ],
+      "terms": [
+        "POLIESTER",
+        "NYLON",
+        "FILAMENTO SINTETICO"
+      ]
+    },
+    "FIBRAS_SINTETICAS": {
+      "label": "Fibras sintéticas descontínuas",
+      "chapters": [
+        "55"
+      ],
+      "terms": [
+        "FIBRA SINTETICA",
+        "FIO ACRILICO",
+        "POLIESTER DESCONTINUO"
+      ]
+    },
+    "PASTAS_FELTROS": {
+      "label": "Pastas, feltros e cordoaria",
+      "chapters": [
+        "56"
+      ],
+      "terms": [
+        "FELTRO",
+        "NAO TECIDO",
+        "CORDA",
+        "BARBANTE",
+        "ESPONJA TEXTIL"
+      ]
+    },
+    "TAPETES": {
+      "label": "Tapetes e revestimentos têxteis",
+      "chapters": [
+        "57"
+      ],
+      "terms": [
+        "TAPETE",
+        "CARPETE",
+        "CAPACHO"
+      ]
+    },
+    "TECIDOS_ESPECIAIS": {
+      "label": "Tecidos especiais e rendas",
+      "chapters": [
+        "58"
+      ],
+      "terms": [
+        "RENDA",
+        "BORDADO",
+        "FITA TEXTIL",
+        "VELUDO"
+      ]
+    },
+    "TECIDOS_REVESTIDOS": {
+      "label": "Tecidos revestidos e técnicos",
+      "chapters": [
+        "59"
+      ],
+      "terms": [
+        "LONA",
+        "TECIDO IMPREGNADO",
+        "FITA ISOLANTE TEXTIL",
+        "TECIDO EMBORRACHADO"
+      ]
+    },
+    "MALHAS": {
+      "label": "Tecidos de malha",
+      "chapters": [
+        "60"
+      ],
+      "terms": [
+        "MALHA",
+        "TECIDO DE MALHA"
+      ]
+    },
+    "VESTUARIO_MALHA": {
+      "label": "Vestuário de malha",
+      "chapters": [
+        "61"
+      ],
+      "terms": [
+        "CAMISETA",
+        "CAMISA DE MALHA",
+        "MOLETOM",
+        "CUECA",
+        "MEIA",
+        "BLUSA DE MALHA"
+      ]
+    },
+    "VESTUARIO_TECIDO": {
+      "label": "Vestuário de tecido",
+      "chapters": [
+        "62"
+      ],
+      "terms": [
+        "CALCA",
+        "BERMUDA",
+        "VESTIDO",
+        "JAQUETA",
+        "CAMISA SOCIAL",
+        "PALETO"
+      ]
+    },
+    "ARTEFATOS_TEXTEIS": {
+      "label": "Outros artefatos têxteis",
+      "chapters": [
+        "63"
+      ],
+      "terms": [
+        "LENÇOL",
+        "TOALHA",
+        "COBERTOR",
+        "CORTINA",
+        "PANO DE PRATO",
+        "SACO TEXTIL"
+      ]
+    },
+    "CALCADOS": {
+      "label": "Calçados",
+      "chapters": [
+        "64"
+      ],
+      "terms": [
+        "SAPATO",
+        "TENIS",
+        "SANDALIA",
+        "CHINELO",
+        "BOTA",
+        "CALCADO"
+      ]
+    },
+    "CHAPEUS": {
+      "label": "Chapéus e acessórios",
+      "chapters": [
+        "65"
+      ],
+      "terms": [
+        "CHAPEU",
+        "BONE",
+        "TOUCA"
+      ]
+    },
+    "GUARDA_CHUVAS": {
+      "label": "Guarda-chuvas e bengalas",
+      "chapters": [
+        "66"
+      ],
+      "terms": [
+        "GUARDA CHUVA",
+        "SOMBRINHA",
+        "BENGALA"
+      ]
+    },
+    "PENAS_CABELOS": {
+      "label": "Penas e cabelos preparados",
+      "chapters": [
+        "67"
+      ],
+      "terms": [
+        "PENA ORNAMENTAL",
+        "FLOR ARTIFICIAL",
+        "PERUCA",
+        "CABELO ARTIFICIAL"
+      ]
+    },
+    "PEDRA_CIMENTO": {
+      "label": "Obras de pedra, gesso e cimento",
+      "chapters": [
+        "68"
+      ],
+      "terms": [
+        "TIJOLO DE CIMENTO",
+        "TELHA DE CIMENTO",
+        "GESSO",
+        "LIXA",
+        "PEDRA ARTIFICIAL",
+        "CAIXA D AGUA DE CIMENTO"
+      ]
+    },
+    "CERAMICA": {
+      "label": "Produtos cerâmicos",
+      "chapters": [
+        "69"
+      ],
+      "terms": [
+        "CERAMICA",
+        "PORCELANA",
+        "PRATO",
+        "XICARA",
+        "AZULEJO",
+        "TIJOLO CERAMICO",
+        "VASO SANITARIO"
+      ]
+    },
+    "VIDRO": {
+      "label": "Vidro e suas obras",
+      "chapters": [
+        "70"
+      ],
+      "terms": [
+        "VIDRO",
+        "COPO DE VIDRO",
+        "GARRAFA DE VIDRO",
+        "ESPELHO",
+        "POTE DE VIDRO"
+      ]
+    },
+    "JOALHERIA": {
+      "label": "Joalheria e metais preciosos",
+      "chapters": [
+        "71"
+      ],
+      "terms": [
+        "OURO",
+        "PRATA",
+        "JOIA",
+        "BIJUTERIA FINA",
+        "PEDRA PRECIOSA",
+        "ANEL",
+        "COLAR"
+      ]
+    },
+    "FERRO_ACO": {
+      "label": "Ferro e aço",
+      "chapters": [
+        "72"
+      ],
+      "terms": [
+        "FERRO",
+        "ACO",
+        "CHAPA DE ACO",
+        "BARRA DE FERRO"
+      ]
+    },
+    "OBRAS_FERRO_ACO": {
+      "label": "Obras de ferro ou aço",
+      "chapters": [
+        "73"
+      ],
+      "terms": [
+        "PANELA DE ACO",
+        "TALHER DE ACO",
+        "PARAFUSO",
+        "PREGO",
+        "CADEADO",
+        "CORRENTE",
+        "LATA DE ACO"
+      ]
+    },
+    "COBRE": {
+      "label": "Cobre e suas obras",
+      "chapters": [
+        "74"
+      ],
+      "terms": [
+        "COBRE",
+        "FIO DE COBRE",
+        "TUBO DE COBRE"
+      ]
+    },
+    "NIQUEL": {
+      "label": "Níquel e suas obras",
+      "chapters": [
+        "75"
+      ],
+      "terms": [
+        "NIQUEL",
+        "CHAPA DE NIQUEL"
+      ]
+    },
+    "ALUMINIO": {
+      "label": "Alumínio e suas obras",
+      "chapters": [
+        "76"
+      ],
+      "terms": [
+        "ALUMINIO",
+        "PANELA DE ALUMINIO",
+        "PAPEL ALUMINIO",
+        "LATA DE ALUMINIO",
+        "PERFIL DE ALUMINIO"
+      ]
+    },
+    "CHUMBO": {
+      "label": "Chumbo e suas obras",
+      "chapters": [
+        "78"
+      ],
+      "terms": [
+        "CHUMBO",
+        "BARRA DE CHUMBO"
+      ]
+    },
+    "ZINCO": {
+      "label": "Zinco e suas obras",
+      "chapters": [
+        "79"
+      ],
+      "terms": [
+        "ZINCO",
+        "CHAPA DE ZINCO"
+      ]
+    },
+    "ESTANHO": {
+      "label": "Estanho e suas obras",
+      "chapters": [
+        "80"
+      ],
+      "terms": [
+        "ESTANHO",
+        "SOLDA DE ESTANHO"
+      ]
+    },
+    "OUTROS_METAIS": {
+      "label": "Outros metais comuns",
+      "chapters": [
+        "81"
+      ],
+      "terms": [
+        "TITANIO",
+        "TUNGSTENIO",
+        "MAGNESIO",
+        "MANGANES",
+        "CROMO"
+      ]
+    },
+    "FERRAMENTAS": {
+      "label": "Ferramentas e cutelaria",
+      "chapters": [
+        "82"
+      ],
+      "terms": [
+        "FERRAMENTA",
+        "ALICATE",
+        "CHAVE DE FENDA",
+        "MARTELO",
+        "SERRA",
+        "BROCA",
+        "TALHER",
+        "TESOURA"
+      ]
+    },
+    "ARTEFATOS_METAIS": {
+      "label": "Artefatos diversos de metais",
+      "chapters": [
+        "83"
+      ],
+      "terms": [
+        "FECHADURA",
+        "DOBRADICA",
+        "COFRE",
+        "ARQUIVO DE METAL",
+        "PLACA DE METAL",
+        "MOLA DE METAL"
+      ]
+    },
+    "MAQUINAS": {
+      "label": "Máquinas e aparelhos mecânicos",
+      "chapters": [
+        "84"
+      ],
+      "terms": [
+        "MAQUINA",
+        "MOTOR",
+        "BOMBA",
+        "COMPRESSOR",
+        "REFRIGERADOR",
+        "FREEZER",
+        "LIQUIDIFICADOR",
+        "VENTILADOR",
+        "FILTRO",
+        "ROLAMENTO"
+      ]
+    },
+    "ELETRICOS": {
+      "label": "Máquinas e materiais elétricos",
+      "chapters": [
+        "85"
+      ],
+      "terms": [
+        "ELETRICO",
+        "ELETRONICO",
+        "CELULAR",
+        "TELEVISAO",
+        "RADIO",
+        "LAMPADA",
+        "BATERIA",
+        "PILHA",
+        "CABO ELETRICO",
+        "FONE DE OUVIDO",
+        "COMPUTADOR"
+      ]
+    },
+    "FERROVIARIOS": {
+      "label": "Veículos ferroviários",
+      "chapters": [
+        "86"
+      ],
+      "terms": [
+        "TREM",
+        "VAGAO",
+        "LOCOMOTIVA",
+        "TRILHO"
+      ]
+    },
+    "VEICULOS": {
+      "label": "Veículos e autopeças",
+      "chapters": [
+        "87"
+      ],
+      "terms": [
+        "AUTOMOVEL",
+        "CARRO",
+        "MOTO",
+        "CAMINHAO",
+        "BICICLETA",
+        "PNEU AUTOMOTIVO",
+        "AMORTECEDOR",
+        "PASTILHA DE FREIO",
+        "AUTOPECA"
+      ]
+    },
+    "AERONAVES": {
+      "label": "Aeronaves e suas partes",
+      "chapters": [
+        "88"
+      ],
+      "terms": [
+        "AVIAO",
+        "HELICOPTERO",
+        "AERONAVE",
+        "DRONE"
+      ]
+    },
+    "EMBARCACOES": {
+      "label": "Embarcações",
+      "chapters": [
+        "89"
+      ],
+      "terms": [
+        "BARCO",
+        "NAVIO",
+        "LANCHA",
+        "JET SKI",
+        "EMBARCACAO"
+      ]
+    },
+    "INSTRUMENTOS": {
+      "label": "Instrumentos ópticos e médicos",
+      "chapters": [
+        "90"
+      ],
+      "terms": [
+        "OCULOS",
+        "LENTE",
+        "TERMOMETRO",
+        "BALANCA",
+        "MICROSCOPIO",
+        "APARELHO MEDICO",
+        "SERINGA",
+        "MEDIDOR"
+      ]
+    },
+    "RELOGIOS": {
+      "label": "Relógios",
+      "chapters": [
+        "91"
+      ],
+      "terms": [
+        "RELOGIO",
+        "DESPERTADOR",
+        "CRONOMETRO"
+      ]
+    },
+    "INSTRUMENTOS_MUSICAIS": {
+      "label": "Instrumentos musicais",
+      "chapters": [
+        "92"
+      ],
+      "terms": [
+        "VIOLAO",
+        "GUITARRA",
+        "TECLADO MUSICAL",
+        "PIANO",
+        "BATERIA MUSICAL",
+        "INSTRUMENTO MUSICAL"
+      ]
+    },
+    "MOVEIS": {
+      "label": "Móveis, colchões e luminárias",
+      "chapters": [
+        "94"
+      ],
+      "terms": [
+        "MOVEL",
+        "CADEIRA",
+        "MESA",
+        "ARMARIO",
+        "COLCHAO",
+        "TRAVESSEIRO",
+        "LUMINARIA",
+        "SOFA"
+      ]
+    },
+    "BRINQUEDOS_ESPORTES": {
+      "label": "Brinquedos e artigos esportivos",
+      "chapters": [
+        "95"
+      ],
+      "terms": [
+        "BRINQUEDO",
+        "BONECA",
+        "BOLA",
+        "JOGO",
+        "VIDEOGAME",
+        "ARTIGO ESPORTIVO",
+        "RAQUETE",
+        "PISCINA INFLAVEL"
+      ]
+    },
+    "DIVERSOS": {
+      "label": "Artigos manufaturados diversos",
+      "chapters": [
+        "96"
+      ],
+      "terms": [
+        "CANETA",
+        "LAPIS",
+        "ESCOVA",
+        "PENTE",
+        "ISQUEIRO",
+        "GARRAFA TERMICA",
+        "VASSOURA",
+        "RODO",
+        "FRALDA",
+        "ABSORVENTE",
+        "FRALDAS",
+        "FRALDA BEBE",
+        "FRALDA INFANTIL",
+        "FRALDA ADULTO",
+        "FRALDA GERIATRICA",
+        "INCONTINENCIA",
+        "PANTS",
+        "ROUPA INTIMA DESCARTAVEL",
+        "BABYSEC",
+        "PAMPERS",
+        "HUGGIES",
+        "MAMYPOKO",
+        "MAMY POKO",
+        "POM POM",
+        "TURMA DA MONICA",
+        "CREMER",
+        "CAPRICHO",
+        "TENA",
+        "BIGFRAL",
+        "PLENITUD",
+        "BIOFRAL",
+        "CONFORT MASTER",
+        "PERSONAL BABY",
+        "LOONEY TUNES",
+        "PARENTEX",
+        "TAMPAO",
+        "TAMPON",
+        "COLETOR MENSTRUAL",
+        "CALCINHA ABSORVENTE",
+        "PROTETOR DIARIO",
+        "PROTETOR INTIMO",
+        "MENSTRUAL",
+        "ALWAYS",
+        "INTIMUS",
+        "CAREFREE",
+        "ALWAYS FREE",
+        "LADY SOFT",
+        "SYM",
+        "FEMININO",
+        "FEMININA",
+        "INTIMO",
+        "INTIMA",
+        "NOTURNO",
+        "DIURNO",
+        "COM ABAS",
+        "SEM ABAS",
+        "ADULTCARE",
+        "GERIATRICO",
+        "GERIATRICA",
+        "GERIATR",
+        "ADULTO",
+        "MASCULINO",
+        "UNISSEX",
+        "POS OPERATORIO"
+      ]
+    },
+    "ARTE_COLECAO": {
+      "label": "Objetos de arte e coleção",
+      "chapters": [
+        "97"
+      ],
+      "terms": [
+        "OBRA DE ARTE",
+        "QUADRO ARTISTICO",
+        "ESCULTURA",
+        "ANTIGUIDADE",
+        "COLECAO"
+      ]
+    }
+  },
+  "prefix_profiles": [
+    {
+      "prefixes": [
+        "0201",
+        "0202"
+      ],
+      "family": "CARNES",
+      "label": "Carne bovina",
+      "terms": [
+        "BOVIN",
+        "ACEM",
+        "ALCATRA",
+        "PATINHO",
+        "PICANHA",
+        "COSTELA BOVINA",
+        "MAMINHA",
+        "CONTRA FILE",
+        "COXAO MOLE",
+        "COXAO DURO"
+      ]
+    },
+    {
+      "prefixes": [
+        "0203"
+      ],
+      "family": "CARNES",
+      "label": "Carne suína",
+      "terms": [
+        "SUIN",
+        "PORCO",
+        "LOMBO",
+        "PERNIL",
+        "BISTECA",
+        "COSTELA SUINA"
+      ]
+    },
+    {
+      "prefixes": [
+        "0204"
+      ],
+      "family": "CARNES",
+      "label": "Carne ovina ou caprina",
+      "terms": [
+        "OVIN",
+        "CAPRIN",
+        "CORDEIRO",
+        "CABRITO"
+      ]
+    },
+    {
+      "prefixes": [
+        "0207"
+      ],
+      "family": "CARNES",
+      "label": "Carne de aves",
+      "terms": [
+        "FRANGO",
+        "GALINHA",
+        "PERU",
+        "AVE",
+        "COXA",
+        "SOBRECOXA",
+        "PEITO DE FRANGO"
+      ]
+    },
+    {
+      "prefixes": [
+        "0407",
+        "0408"
+      ],
+      "family": "LATICINIOS_OVOS_MEL",
+      "label": "Ovos",
+      "terms": [
+        "OVO",
+        "OVOS"
+      ]
+    },
+    {
+      "prefixes": [
+        "0701"
+      ],
+      "family": "HORTALICAS",
+      "label": "Batatas",
+      "terms": [
+        "BATATA"
+      ]
+    },
+    {
+      "prefixes": [
+        "0702"
+      ],
+      "family": "HORTALICAS",
+      "label": "Tomates",
+      "terms": [
+        "TOMATE"
+      ]
+    },
+    {
+      "prefixes": [
+        "0703"
+      ],
+      "family": "HORTALICAS",
+      "label": "Cebolas e alhos",
+      "terms": [
+        "CEBOLA",
+        "ALHO",
+        "ALHO PORO"
+      ]
+    },
+    {
+      "prefixes": [
+        "0714"
+      ],
+      "family": "HORTALICAS",
+      "label": "Raízes e tubérculos",
+      "terms": [
+        "MANDIOCA",
+        "AIPIM",
+        "MACAXEIRA",
+        "INHAME",
+        "BATATA DOCE",
+        "CARÁ"
+      ]
+    },
+    {
+      "prefixes": [
+        "0803"
+      ],
+      "family": "FRUTAS",
+      "label": "Bananas",
+      "terms": [
+        "BANANA"
+      ]
+    },
+    {
+      "prefixes": [
+        "0804"
+      ],
+      "family": "FRUTAS",
+      "label": "Frutas tropicais",
+      "terms": [
+        "TAMARA",
+        "FIGO",
+        "ABACAXI",
+        "ABACATE",
+        "GOIABA",
+        "MANGA",
+        "MANGOSTAO"
+      ]
+    },
+    {
+      "prefixes": [
+        "0805"
+      ],
+      "family": "FRUTAS",
+      "label": "Cítricos",
+      "terms": [
+        "LARANJA",
+        "LIMAO",
+        "TANGERINA",
+        "MEXERICA",
+        "TORANJA"
+      ]
+    },
+    {
+      "prefixes": [
+        "0806"
+      ],
+      "family": "FRUTAS",
+      "label": "Uvas",
+      "terms": [
+        "UVA"
+      ]
+    },
+    {
+      "prefixes": [
+        "0808"
+      ],
+      "family": "FRUTAS",
+      "label": "Maçãs e peras",
+      "terms": [
+        "MACA",
+        "PERA"
+      ]
+    },
+    {
+      "prefixes": [
+        "0901"
+      ],
+      "family": "CAFE_CHA_ESPECIARIAS",
+      "label": "Café",
+      "terms": [
+        "CAFE"
+      ]
+    },
+    {
+      "prefixes": [
+        "1006"
+      ],
+      "family": "CEREAIS",
+      "label": "Arroz",
+      "terms": [
+        "ARROZ"
+      ]
+    },
+    {
+      "prefixes": [
+        "1509"
+      ],
+      "family": "OLEOS_GORDURAS",
+      "label": "Azeite de oliva",
+      "terms": [
+        "AZEITE",
+        "OLEO DE OLIVA"
+      ]
+    },
+    {
+      "prefixes": [
+        "1701"
+      ],
+      "family": "ACUCARES",
+      "label": "Açúcar",
+      "terms": [
+        "ACUCAR"
+      ]
+    },
+    {
+      "prefixes": [
+        "1902"
+      ],
+      "family": "PADARIA_MASSAS",
+      "label": "Massas alimentícias",
+      "terms": [
+        "MACARRAO",
+        "MASSA",
+        "LASANHA",
+        "ESPAGUETE",
+        "PENNE",
+        "PARAFUSO"
+      ]
+    },
+    {
+      "prefixes": [
+        "1905"
+      ],
+      "family": "PADARIA_MASSAS",
+      "label": "Produtos de padaria e biscoitos",
+      "terms": [
+        "PAO",
+        "BISCOITO",
+        "BOLACHA",
+        "BOLO",
+        "TORRADA",
+        "WAFER",
+        "PANETONE"
+      ]
+    },
+    {
+      "prefixes": [
+        "2103"
+      ],
+      "family": "PREPARACOES_ALIMENTICIAS",
+      "label": "Molhos e condimentos",
+      "terms": [
+        "MOLHO",
+        "MAIONESE",
+        "KETCHUP",
+        "MOSTARDA",
+        "TEMPERO"
+      ]
+    },
+    {
+      "prefixes": [
+        "220110",
+        "220190"
+      ],
+      "family": "BEBIDAS",
+      "label": "Águas",
+      "terms": [
+        "AGUA MINERAL",
+        "AGUA SEM GAS",
+        "AGUA COM GAS",
+        "AGUA POTAVEL"
+      ]
+    },
+    {
+      "prefixes": [
+        "220210"
+      ],
+      "family": "BEBIDAS",
+      "label": "Refrigerantes",
+      "terms": [
+        "REFRIGERANTE",
+        "REFRI",
+        "COCA COLA",
+        "COCA-COLA",
+        "FANTA",
+        "SPRITE",
+        "PEPSI",
+        "GUARANA",
+        "KUAT",
+        "DOLLY",
+        "SUKITA",
+        "ITUBAINA",
+        "TUBAINA",
+        "SODA LIMONADA"
+      ]
+    },
+    {
+      "prefixes": [
+        "220299"
+      ],
+      "family": "BEBIDAS",
+      "label": "Outras bebidas não alcoólicas",
+      "terms": [
+        "ENERGETICO",
+        "ISOTONICO",
+        "BEBIDA NAO ALCOOLICA",
+        "NECTAR",
+        "BEBIDA DE FRUTA",
+        "BEBIDA VEGETAL",
+        "AGUA TONICA"
+      ]
+    },
+    {
+      "prefixes": [
+        "2203"
+      ],
+      "family": "BEBIDAS",
+      "label": "Cervejas",
+      "terms": [
+        "CERVEJA",
+        "CHOPE",
+        "CHOPP"
+      ]
+    },
+    {
+      "prefixes": [
+        "2204",
+        "2205"
+      ],
+      "family": "BEBIDAS",
+      "label": "Vinhos e vermutes",
+      "terms": [
+        "VINHO",
+        "VERMUTE",
+        "ESPUMANTE"
+      ]
+    },
+    {
+      "prefixes": [
+        "2208"
+      ],
+      "family": "BEBIDAS",
+      "label": "Bebidas destiladas",
+      "terms": [
+        "CACHACA",
+        "VODKA",
+        "WHISKY",
+        "GIN",
+        "RUM",
+        "LICOR",
+        "DESTILADO"
+      ]
+    },
+    {
+      "prefixes": [
+        "2309"
+      ],
+      "family": "RACOES_RESIDUOS",
+      "label": "Rações para animais",
+      "terms": [
+        "RACAO",
+        "ALIMENTO PARA CAES",
+        "ALIMENTO PARA GATOS",
+        "PET FOOD",
+        "SACHÊ PARA GATOS",
+        "SACHE PARA CAES"
+      ]
+    },
+    {
+      "prefixes": [
+        "3003",
+        "3004"
+      ],
+      "family": "MEDICAMENTOS",
+      "label": "Medicamentos dosados ou preparados",
+      "terms": [
+        "MEDICAMENTO",
+        "REMEDIO",
+        "COMPRIMIDO",
+        "CAPSULA",
+        "XAROPE",
+        "POMADA",
+        "GOTAS",
+        "DIPIRONA",
+        "PARACETAMOL",
+        "IBUPROFENO",
+        "AMOXICILINA",
+        "LOSARTANA",
+        "OMEPRAZOL",
+        "FARMACO",
+        "COMPRIMIDOS",
+        "CPR",
+        "COMP",
+        "CAPSULAS",
+        "CAPS",
+        "SUSPENSAO",
+        "SOLUCAO ORAL",
+        "CREME DERMATOLOGICO",
+        "COLIRIO",
+        "SPRAY",
+        "AEROSSOL",
+        "AMPOLA",
+        "INJETAVEL",
+        "SUPOSITORIO",
+        "DRAGEA",
+        "PASTILHA",
+        "SACHE",
+        "MANIPULADO",
+        "FORMULA MAGISTRAL",
+        "DICLOFENACO",
+        "NIMESULIDA",
+        "AZITROMICINA",
+        "CEFALEXINA",
+        "ENALAPRIL",
+        "ATENOLOL",
+        "AMLODIPINO",
+        "METFORMINA",
+        "GLIBENCLAMIDA",
+        "PANTOPRAZOL",
+        "SIMVASTATINA",
+        "ATORVASTATINA",
+        "LORATADINA",
+        "CETIRIZINA",
+        "PREDNISONA",
+        "DEXAMETASONA",
+        "FLUCONAZOL",
+        "ACICLOVIR",
+        "IVERMECTINA",
+        "ALBENDAZOL",
+        "CLONAZEPAM",
+        "SERTRALINA",
+        "FLUOXETINA",
+        "ESCITALOPRAM",
+        "LEVOTIROXINA",
+        "DORFLEX",
+        "NOVALGINA",
+        "TYLENOL",
+        "ADVIL",
+        "BUSCOPAN",
+        "NEOSALDINA",
+        "BENEGRIP",
+        "CIMEGRIPE",
+        "LUFTAL",
+        "ALLEGRA",
+        "CLARITIN"
+      ]
+    },
+    {
+      "prefixes": [
+        "3306"
+      ],
+      "family": "HIGIENE_PERFUMARIA",
+      "label": "Higiene bucal",
+      "terms": [
+        "CREME DENTAL",
+        "PASTA DE DENTE",
+        "FIO DENTAL",
+        "ENXAGUANTE BUCAL",
+        "COLGATE",
+        "SENSODYNE",
+        "ORAL B",
+        "ORAL-B"
+      ]
+    },
+    {
+      "prefixes": [
+        "3305"
+      ],
+      "family": "HIGIENE_PERFUMARIA",
+      "label": "Cuidados capilares",
+      "terms": [
+        "SHAMPOO",
+        "CONDICIONADOR",
+        "CREME DE PENTEAR",
+        "TINTURA CAPILAR",
+        "GEL CAPILAR"
+      ]
+    },
+    {
+      "prefixes": [
+        "3401"
+      ],
+      "family": "LIMPEZA",
+      "label": "Sabões e sabonetes",
+      "terms": [
+        "SABAO",
+        "SABONETE"
+      ]
+    },
+    {
+      "prefixes": [
+        "3402"
+      ],
+      "family": "LIMPEZA",
+      "label": "Detergentes e preparações de limpeza",
+      "terms": [
+        "DETERGENTE",
+        "LAVA LOUCAS",
+        "LAVA ROUPAS",
+        "LIMPADOR",
+        "DESENGORDURANTE",
+        "AMACIANTE"
+      ]
+    },
+    {
+      "prefixes": [
+        "4818"
+      ],
+      "family": "PAPEL",
+      "label": "Papel para higiene e uso doméstico",
+      "terms": [
+        "PAPEL HIGIENICO",
+        "TOALHA DE PAPEL",
+        "GUARDANAPO",
+        "LENCO DE PAPEL"
+      ]
+    },
+    {
+      "prefixes": [
+        "9619"
+      ],
+      "family": "DIVERSOS",
+      "label": "Absorventes, fraldas e artigos semelhantes",
+      "terms": [
+        "FRALDA",
+        "FRALDAS",
+        "FRALDA BEBE",
+        "FRALDA INFANTIL",
+        "FRALDA ADULTO",
+        "FRALDA GERIATRICA",
+        "INCONTINENCIA",
+        "PANTS",
+        "ROUPA INTIMA DESCARTAVEL",
+        "BABYSEC",
+        "PAMPERS",
+        "HUGGIES",
+        "MAMYPOKO",
+        "MAMY POKO",
+        "POM POM",
+        "TURMA DA MONICA",
+        "CREMER",
+        "CAPRICHO",
+        "TENA",
+        "BIGFRAL",
+        "PLENITUD",
+        "BIOFRAL",
+        "CONFORT MASTER",
+        "PERSONAL BABY",
+        "LOONEY TUNES",
+        "PARENTEX",
+        "ABSORVENTE",
+        "TAMPAO",
+        "TAMPON",
+        "COLETOR MENSTRUAL",
+        "CALCINHA ABSORVENTE",
+        "PROTETOR DIARIO",
+        "PROTETOR INTIMO",
+        "MENSTRUAL",
+        "ALWAYS",
+        "INTIMUS",
+        "CAREFREE",
+        "ALWAYS FREE",
+        "LADY SOFT",
+        "SYM",
+        "FEMININO",
+        "FEMININA",
+        "INTIMO",
+        "INTIMA",
+        "NOTURNO",
+        "DIURNO",
+        "COM ABAS",
+        "SEM ABAS",
+        "ADULTCARE",
+        "GERIATRICO",
+        "GERIATRICA",
+        "GERIATR",
+        "ADULTO",
+        "MASCULINO",
+        "UNISSEX",
+        "POS OPERATORIO"
+      ]
+    }
+  ],
+  "automatic_confirmation_policy": {
+    "confirm_when": "NCM e descrição são compatíveis e a única pendência é a identificação descritiva do produto.",
+    "keep_pending_when": [
+      "lista externa",
+      "registro sanitário",
+      "Anvisa",
+      "finalidade",
+      "adquirente",
+      "órgão público",
+      "documentação",
+      "programa oficial",
+      "ato vigente"
+    ],
+    "examples": {
+      "refrigerante": "NCM 220210 + REFRIGERANTE/REFRI/COCA-COLA/FANTA/SPRITE = compatível e sem validação manual quando não houver outra condição.",
+      "hortifruti": "NCM 07/08 + descrição específica da hortaliça ou fruta = compatível.",
+      "medicamento": "NCM 30 + descrição de medicamento confirma a família, mas não elimina exigência de lista, registro ou condição legal."
+    },
+    "medication_rule": "NCM 3003/3004 com descrição compatível: confirmar art. 133, redução de 60%, CST 200 e cClassTrib 200032."
+  },
+  "official_sources": [
+    "https://www.gov.br/receitafederal/pt-br/assuntos/aduana-e-comercio-exterior/classificacao-fiscal-de-mercadorias/ncm",
+    "https://www.gov.br/receitafederal/pt-br/assuntos/aduana-e-comercio-exterior/classificacao-fiscal-de-mercadorias/download-ncm-nomenclatura-comum-do-mercosul",
+    "https://www2.camara.leg.br/legin/fed/leicom/2025/leicomplementar-214-16-janeiro-2025-796905-normaatualizada-pl.pdf",
+    "https://dfe-portal.svrs.rs.gov.br/Cff/ClassificacaoTributaria"
+  ]
+}

@@ -1,0 +1,250 @@
+[
+  {
+    "module": "Anexo I",
+    "item": "*",
+    "title": "Cesta Básica Nacional de Alimentos",
+    "conditions": [
+      "A NCM está abrangida pela regra específica do Anexo I.",
+      "A descrição corresponde ao produto legal e não a uma exclusão da mesma NCM.",
+      "A apresentação e a composição não descaracterizam o produto.",
+      "Não existe regra mais específica ou bloqueador aplicável."
+    ],
+    "confirm": "Confirmar alíquota zero, CST 200 e cClassTrib 200003.",
+    "reject": "Confirmar tributação integral ou encaminhar ao anexo aplicável."
+  },
+  {
+    "module": "Anexo VII",
+    "item": "16",
+    "title": "Hortícolas pré-cozidos ou cozidos — posições 20.04, 20.05 e 2002.10.00",
+    "conditions": [
+      "A NCM pertence às posições 20.04 ou 20.05, ou é 2002.10.00.",
+      "A mercadoria é efetivamente um produto hortícola.",
+      "O produto é somente pré-cozido ou cozido em água ou vapor.",
+      "Não existe adição de sal, salmoura, açúcar, temperos, conservantes, estabilizantes ou outras substâncias.",
+      "A lista de ingredientes e o rótulo foram conferidos."
+    ],
+    "confirm": "Confirmar redução de 60%, CST 200 e cClassTrib 200034.",
+    "reject": "Quando houver sal ou outra substância adicionada, confirmar tributação integral, CST 000 e cClassTrib 000001."
+  },
+  {
+    "module": "Anexo VII",
+    "item": "*",
+    "title": "Alimentos com redução de 60%",
+    "conditions": [
+      "A NCM e a descrição correspondem ao item legal.",
+      "A composição, apresentação e processamento atendem às limitações do item.",
+      "Não há exclusão expressa nem regra mais específica de alíquota zero.",
+      "Quando a composição for relevante, o rótulo ou ficha técnica foi conferido."
+    ],
+    "confirm": "Confirmar redução de 60%, CST 200 e cClassTrib 200034.",
+    "reject": "Confirmar tributação integral ou outro tratamento específico."
+  },
+  {
+    "module": "Anexo VIII",
+    "item": "*",
+    "title": "Higiene pessoal e limpeza",
+    "conditions": [
+      "A NCM e a descrição correspondem ao produto legal.",
+      "A finalidade e a apresentação são compatíveis com o item.",
+      "O produto não é de saúde menstrual abrangido pelo art. 147.",
+      "Não existe bloqueador ou exclusão específica."
+    ],
+    "confirm": "Confirmar redução de 60%, CST 200 e cClassTrib 200035.",
+    "reject": "Confirmar tributação integral ou art. 147, conforme o caso."
+  },
+  {
+    "module": "Art. 147",
+    "item": "*",
+    "title": "Cuidados básicos à saúde menstrual",
+    "conditions": [
+      "O produto é absorvente menstrual, tampão, coletor, calcinha absorvente ou item expressamente abrangido.",
+      "A descrição não corresponde a fralda infantil/adulta ou outro artigo da NCM 9619.",
+      "A regularização/comunicação sanitária aplicável foi conferida.",
+      "Marca, apresentação e rótulo coincidem com o cadastro."
+    ],
+    "confirm": "Confirmar alíquota zero, CST 200 e cClassTrib 200013.",
+    "reject": "Aplicar Anexo VIII ou tributação integral, conforme a natureza do produto."
+  },
+  {
+    "module": "Anexo IV",
+    "item": "*",
+    "title": "Dispositivos médicos — redução de 60%",
+    "conditions": [
+      "A descrição corresponde exatamente ao dispositivo médico do item legal.",
+      "Existe registro ou notificação ativa na Anvisa para o produto/modelo.",
+      "Titular, fabricante, finalidade e apresentação coincidem com o cadastro.",
+      "A operação não está em hipótese de alíquota zero do art. 144/Anexo XII."
+    ],
+    "confirm": "Confirmar redução de 60%, CST 200 e cClassTrib 200030.",
+    "reject": "Confirmar tributação integral ou outra regra de dispositivo médico."
+  },
+  {
+    "module": "Anexo XII",
+    "item": "*",
+    "title": "Dispositivos médicos — alíquota zero",
+    "conditions": [
+      "A descrição corresponde exatamente ao item do Anexo XII.",
+      "O produto está regularizado na Anvisa e a situação está ativa.",
+      "Fabricante, modelo, finalidade e apresentação foram conferidos.",
+      "Não há uso comum ou finalidade incompatível na mesma NCM."
+    ],
+    "confirm": "Confirmar alíquota zero, CST 200 e cClassTrib 200004.",
+    "reject": "Analisar Anexo IV ou tributação integral."
+  },
+  {
+    "module": "Anexo V",
+    "item": "*",
+    "title": "Dispositivos de acessibilidade — redução de 60%",
+    "conditions": [
+      "O produto corresponde exatamente ao dispositivo de acessibilidade descrito.",
+      "A finalidade é própria para pessoa com deficiência.",
+      "A ficha técnica comprova a função especial e não um equipamento comum da mesma NCM.",
+      "A operação não está em hipótese de alíquota zero do art. 145."
+    ],
+    "confirm": "Confirmar redução de 60%, CST 200 e cClassTrib 200031.",
+    "reject": "Confirmar tributação integral ou Anexo XIII, conforme o caso."
+  },
+  {
+    "module": "Anexo XIII",
+    "item": "*",
+    "title": "Dispositivos de acessibilidade — alíquota zero",
+    "conditions": [
+      "O produto corresponde exatamente ao item do Anexo XIII.",
+      "A finalidade de acessibilidade foi comprovada.",
+      "A ficha técnica e a apresentação coincidem com o cadastro.",
+      "Os requisitos do órgão público competente foram atendidos."
+    ],
+    "confirm": "Confirmar alíquota zero, CST 200 e cClassTrib 200007.",
+    "reject": "Analisar Anexo V ou tributação integral."
+  },
+  {
+    "module": "Anexo VI",
+    "item": "*",
+    "title": "Nutrição enteral/parenteral e erros inatos do metabolismo",
+    "conditions": [
+      "A descrição corresponde ao ingrediente, fórmula ou composição do item legal.",
+      "A finalidade é nutrição enteral, parenteral ou erro inato do metabolismo.",
+      "A categoria, o registro/processo e o rótulo foram validados na Anvisa.",
+      "A apresentação não é um alimento, bebida ou insumo comum da mesma NCM."
+    ],
+    "confirm": "Confirmar redução de 60%, CST 200 e cClassTrib 200033, salvo condição de alíquota zero do adquirente.",
+    "reject": "Confirmar tributação integral ou tratamento alimentar aplicável."
+  },
+  {
+    "module": "Medicamentos",
+    "item": "*",
+    "title": "Medicamentos — arts. 133 e 146",
+    "conditions": [
+      "O registro do medicamento está ativo na Anvisa.",
+      "Princípio ativo, apresentação, indicação e GTIN coincidem com o cadastro.",
+      "A situação na CMED e a lista oficial vigente foram conferidas.",
+      "Foi verificado se a operação é redução de 60% ou uma hipótese específica de alíquota zero."
+    ],
+    "confirm": "Aplicar o CST/cClassTrib correspondente à hipótese documental confirmada.",
+    "reject": "Manter em revisão ou confirmar tributação integral quando não houver tratamento especial."
+  },
+  {
+    "module": "Anexo IX",
+    "item": "*",
+    "title": "Insumos agropecuários e aquícolas",
+    "conditions": [
+      "O produto ou serviço corresponde ao insumo legal.",
+      "A finalidade agropecuária/aquícola foi comprovada.",
+      "Registro, autorização ou cadastro setorial aplicável foi conferido.",
+      "A operação foi analisada quanto a redução, diferimento ou condição específica."
+    ],
+    "confirm": "Confirmar o tratamento do Anexo IX e a regra da operação.",
+    "reject": "Confirmar tributação integral ou outro regime aplicável."
+  },
+  {
+    "module": "Anexo X",
+    "item": "*",
+    "title": "Produções artísticas, culturais, jornalísticas e audiovisuais",
+    "conditions": [
+      "A NBS/NCM e a descrição correspondem à produção ou serviço legal.",
+      "A condição de produção nacional foi comprovada quando exigida.",
+      "Direitos, licenciamento, execução ou fornecimento foram corretamente identificados.",
+      "A operação não está entre as exclusões ou itens vetados."
+    ],
+    "confirm": "Confirmar redução de 60%, CST 200 e cClassTrib 200039.",
+    "reject": "Confirmar tributação integral ou manter revisão."
+  },
+  {
+    "module": "Anexo XI",
+    "item": "*",
+    "title": "Soberania, segurança nacional e segurança cibernética",
+    "conditions": [
+      "O produto/serviço corresponde à hipótese legal e à finalidade de segurança.",
+      "O adquirente e a natureza da operação atendem à condição legal.",
+      "Para segurança cibernética, a estrutura societária e a participação brasileira foram comprovadas.",
+      "Não se trata de equipamento comum de comunicação ou tecnologia."
+    ],
+    "confirm": "Confirmar cClassTrib 200043 ou 200044, conforme a hipótese.",
+    "reject": "Confirmar tributação integral ou manter revisão."
+  },
+  {
+    "module": "Anexo XV",
+    "item": "*",
+    "title": "Produtos hortícolas, frutas e ovos — redução de 100%",
+    "conditions": [
+      "A NCM e a descrição correspondem ao produto do Anexo XV.",
+      "O produto não foi transformado ou preparado de forma incompatível.",
+      "A apresentação e o estado do produto atendem ao item legal.",
+      "Não existe exclusão ou classificação em outro anexo mais específico."
+    ],
+    "confirm": "Confirmar redução de 100% das alíquotas, CST 200 e cClassTrib 200014.",
+    "reject": "Confirmar tributação integral ou tratamento do alimento preparado."
+  },
+  {
+    "module": "Anexo II",
+    "item": "*",
+    "title": "Serviços de educação",
+    "conditions": [
+      "A NBS e o código da NFS-e correspondem à etapa/modalidade educacional.",
+      "A descrição representa a contraprestação do serviço educacional listado.",
+      "Outras operações, como material, alimentação e transporte, foram separadas.",
+      "Prouni, educação desportiva ou outra regra própria foram analisados separadamente."
+    ],
+    "confirm": "Confirmar redução de 60%, CST 200 e cClassTrib 200028 ou regra específica.",
+    "reject": "Confirmar tributação integral ou outro regime de serviço."
+  },
+  {
+    "module": "Anexo III",
+    "item": "*",
+    "title": "Serviços de saúde",
+    "conditions": [
+      "A NBS, o código da NFS-e e a descrição correspondem ao serviço de saúde listado.",
+      "A prestação efetiva foi separada de venda de medicamentos, materiais e dispositivos.",
+      "Registro profissional, credenciamento e documentação foram conferidos.",
+      "Glosas não pagas foram tratadas corretamente na base de cálculo."
+    ],
+    "confirm": "Confirmar redução de 60%, CST 200 e cClassTrib 200029.",
+    "reject": "Confirmar tributação integral ou regra da mercadoria/serviço correspondente."
+  },
+  {
+    "module": "Regra geral",
+    "item": "*",
+    "title": "Tributação integral",
+    "conditions": [
+      "A NCM/NBS é válida e a descrição é suficiente.",
+      "Todos os tratamentos especiais aplicáveis foram pesquisados e afastados.",
+      "Não existe imunidade, suspensão, diferimento ou regime específico da operação.",
+      "Não há indício relevante de NCM/NBS incorreta."
+    ],
+    "confirm": "Confirmar tributação integral, CST 000 e cClassTrib 000001.",
+    "reject": "Manter em revisão e complementar o cadastro."
+  },
+  {
+    "module": "*",
+    "item": "*",
+    "title": "Validação geral",
+    "conditions": [
+      "A NCM/NBS e a descrição foram conferidas.",
+      "As condições indicadas no motivo e na pendência do motor foram atendidas.",
+      "Documentos, rótulo, ficha técnica ou registro externo necessários foram anexados ou consultados.",
+      "A decisão e a evidência foram registradas para auditoria."
+    ],
+    "confirm": "Confirmar o tratamento sugerido quando todas as condições forem atendidas.",
+    "reject": "Confirmar tributação integral ou manter em revisão."
+  }
+]

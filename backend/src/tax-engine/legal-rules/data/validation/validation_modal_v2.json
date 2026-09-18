@@ -1,0 +1,14 @@
+{
+  "shows": [
+    "Módulo",
+    "Item",
+    "Base legal",
+    "Tratamento sugerido",
+    "Redução IBS/CBS",
+    "CST",
+    "cClassTrib",
+    "Motivo do motor",
+    "Pendência"
+  ],
+  "bulk": "Exibe os dados comuns dos produtos compatíveis selecionados."
+}

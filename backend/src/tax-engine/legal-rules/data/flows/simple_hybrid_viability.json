@@ -1,0 +1,57 @@
+{
+  "enabled": true,
+  "calculators": [
+    "Comércio",
+    "Prestadores de serviços"
+  ],
+  "automatic_tables": "Simples Nacional 2027 e 2028",
+  "normal_simple_logic": "DAS total calculado pela alíquota efetiva do Anexo da LC 123. Os benefícios setoriais da LC 214 não reduzem individualmente o DAS.",
+  "hybrid_logic": "DAS sem as parcelas de IBS e CBS, acrescido do IBS e da CBS apurados no regime regular, com reduções, alíquota zero e créditos.",
+  "sources": [
+    "https://www2.camara.leg.br/legin/fed/leicom/2025/leicomplementar-214-16-janeiro-2025-796905-normaatualizada-pl.html",
+    "https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/acoes-e-programas/programas-e-atividades/reforma-tributaria-do-consumo/curso/material-de-apoio/modulo-8-cfc-rtc-simples-nacional-mei-gustavo-salton-vf.pdf"
+  ],
+  "field_guidance": {
+    "additional_hybrid_cost": "Campo opcional para custos adicionais causados pela opção pelo regime regular do IBS e da CBS, como honorários, sistemas e conciliações.",
+    "normal_ibs_outside_das": "Ajuste opcional. Na maioria das empresas deve permanecer zerado. Preencher apenas quando houver IBS efetivamente apurado fora do DAS.",
+    "zero_and_full_reduction_inputs": "São informadas para conciliar o total das entradas, mas não compõem a base de crédito do adquirente.",
+    "other_credits": "Informar o valor do crédito de IBS ou CBS já apurado em outras aquisições permitidas, e não o valor bruto da despesa."
+  },
+  "period_totals": {
+    "enabled": true,
+    "default_months": 6,
+    "editable_months": true,
+    "layout": {
+      "revenue": "Faturamento acumulado",
+      "outputs": "Saídas acumuladas separadas por tratamento",
+      "inputs": "Entradas acumuladas separadas por tratamento",
+      "other_credits": "Outros créditos acumulados de IBS e CBS"
+    },
+    "removed_fields": [
+      "Custo adicional do híbrido acumulado no período",
+      "Composição mensal duplicada das saídas",
+      "Composição mensal duplicada das entradas"
+    ],
+    "other_credits_definition": "Valor acumulado de outros créditos de IBS ou CBS já apurados em aquisições creditáveis, além das entradas principais.",
+    "rbt12_unchanged": true
+  },
+  "interface_flow": [
+    "1. Enquadramento e cálculo do DAS",
+    "2. Movimento acumulado do período",
+    "3. Previsões do IBS/CBS e comparação"
+  ],
+  "das_tax_breakdown": {
+    "enabled": true,
+    "period": "2027 e 2028",
+    "shows": [
+      "IRPJ",
+      "CSLL",
+      "CBS",
+      "CPP, quando aplicável",
+      "ICMS ou ISS, quando aplicável",
+      "IBS"
+    ],
+    "values": "Percentual de repartição do DAS e valor mensal estimado",
+    "hybrid_status": "Indica quais tributos permanecem no DAS e quais saem no híbrido"
+  }
+}

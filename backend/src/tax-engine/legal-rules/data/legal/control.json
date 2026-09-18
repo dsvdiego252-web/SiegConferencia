@@ -1,0 +1,23 @@
+{
+  "base_version": "4.7",
+  "base_generated_at": "2026-07-29",
+  "lc214": {
+    "label": "LC 214/2025 — texto atualizado",
+    "url": "https://www2.camara.leg.br/legin/fed/leicom/2025/leicomplementar-214-16-janeiro-2025-796905-normaatualizada-pl.html"
+  },
+  "cclass_table": {
+    "label": "Tabela CST e cClassTrib",
+    "published_at": "2026-06-22",
+    "url": "https://dfe-portal.svrs.rs.gov.br/Cff/ClassificacaoTributaria"
+  },
+  "technical_report": {
+    "label": "IT 2025.002 RT — Tabela de Classificação Tributária v1.50",
+    "published_at": "2026-04-15",
+    "url": "https://dfe-portal.svrs.rs.gov.br/NFe/Documentos"
+  },
+  "nfe_technical_note": {
+    "label": "NT 2025.002 v1.50 — RTC",
+    "published_at": "2026-06-02",
+    "url": "https://dfe-portal.svrs.rs.gov.br/NFe/Documentos"
+  }
+}

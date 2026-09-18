@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "inputs": [
+    "IBS nominal (%)",
+    "CBS nominal (%)"
+  ],
+  "outputs": [
+    "Venda total",
+    "IBS estimado",
+    "% efetiva IBS sobre venda total",
+    "CBS estimada",
+    "% efetiva CBS sobre venda total",
+    "IBS + CBS",
+    "% efetiva total"
+  ],
+  "calculation": "Aplica a redução IBS/CBS de cada produto à venda consolidada e depois a alíquota nominal informada.",
+  "pending_policy": "Pendências/revisões são consideradas tributação integral até validação.",
+  "credit_note": "Estimativa sobre vendas antes da compensação de créditos das entradas."
+}

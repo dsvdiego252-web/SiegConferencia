@@ -1,0 +1,32 @@
+{
+  "module_id": "rtc_xml_output_schema",
+  "version": "1.0",
+  "schema": {
+    "grupo_ibscbs_presente": "boolean",
+    "cst_xml": "string|null",
+    "cst_esperado": "string|null",
+    "cst_status": "string",
+    "cclasstrib_xml": "string|null",
+    "cclasstrib_esperado": "string|null",
+    "cclasstrib_status": "string",
+    "tratamento_xml": "string|null",
+    "tratamento_esperado": "string|null",
+    "possui_beneficio": "boolean",
+    "beneficio_esperado": "string|null",
+    "beneficio_xml": "string|null",
+    "vbc_xml": "number|null",
+    "vbc_calculada": "number|null",
+    "ibs_uf": "object",
+    "ibs_municipio": "object",
+    "ibs_total": "object",
+    "cbs": "object",
+    "diferimento": "object",
+    "credito_presumido": "object",
+    "imposto_seletivo": "object",
+    "campos_obrigatorios_ausentes": "array",
+    "campos_informados_indevidamente": "array",
+    "erros_calculo": "array",
+    "divergencias": "array",
+    "status": "string"
+  }
+}

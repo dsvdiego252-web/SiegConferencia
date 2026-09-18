@@ -1,0 +1,10 @@
+{
+  "status": "TRIBUTAÇÃO INTEGRAL — REGRA GERAL",
+  "treatment": "TRIBUTAÇÃO INTEGRAL",
+  "reduction_ibs": 0,
+  "reduction_cbs": 0,
+  "cst": "000",
+  "cclass_trib": "000001",
+  "scope": "Produtos com NCM válida, descrição suficiente e sem enquadramento em tratamento especial.",
+  "review_condition": "NCM ausente ou inválida, descrição insuficiente ou condição/regime específico pendente."
+}

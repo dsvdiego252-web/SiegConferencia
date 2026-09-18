@@ -1,0 +1,62 @@
+[
+  {
+    "category": "BEBIDAS ALCOÓLICAS",
+    "code": "2203",
+    "match_type": "PREFIXO",
+    "ncm_display": "22.03",
+    "legal_basis": "LC 214/2025, art. 409, §1º, IV; art. 422; Anexo XVII",
+    "condition": "Produto alcoólico acondicionado em embalagem primária em contato direto com o produto e destinada ao consumidor final.",
+    "rate": "PENDENTE DE LEI ORDINÁRIA",
+    "source": "https://www2.camara.leg.br/legin/fed/leicom/2025/leicomplementar-214-16-janeiro-2025-796905-normaatualizada-pl.pdf"
+  },
+  {
+    "category": "BEBIDAS ALCOÓLICAS",
+    "code": "2204",
+    "match_type": "PREFIXO",
+    "ncm_display": "22.04",
+    "legal_basis": "LC 214/2025, art. 409, §1º, IV; art. 422; Anexo XVII",
+    "condition": "Produto alcoólico acondicionado em embalagem primária em contato direto com o produto e destinada ao consumidor final.",
+    "rate": "PENDENTE DE LEI ORDINÁRIA",
+    "source": "https://www2.camara.leg.br/legin/fed/leicom/2025/leicomplementar-214-16-janeiro-2025-796905-normaatualizada-pl.pdf"
+  },
+  {
+    "category": "BEBIDAS ALCOÓLICAS",
+    "code": "2205",
+    "match_type": "PREFIXO",
+    "ncm_display": "22.05",
+    "legal_basis": "LC 214/2025, art. 409, §1º, IV; art. 422; Anexo XVII",
+    "condition": "Produto alcoólico acondicionado em embalagem primária em contato direto com o produto e destinada ao consumidor final.",
+    "rate": "PENDENTE DE LEI ORDINÁRIA",
+    "source": "https://www2.camara.leg.br/legin/fed/leicom/2025/leicomplementar-214-16-janeiro-2025-796905-normaatualizada-pl.pdf"
+  },
+  {
+    "category": "BEBIDAS ALCOÓLICAS",
+    "code": "2206",
+    "match_type": "PREFIXO",
+    "ncm_display": "22.06",
+    "legal_basis": "LC 214/2025, art. 409, §1º, IV; art. 422; Anexo XVII",
+    "condition": "Produto alcoólico acondicionado em embalagem primária em contato direto com o produto e destinada ao consumidor final.",
+    "rate": "PENDENTE DE LEI ORDINÁRIA",
+    "source": "https://www2.camara.leg.br/legin/fed/leicom/2025/leicomplementar-214-16-janeiro-2025-796905-normaatualizada-pl.pdf"
+  },
+  {
+    "category": "BEBIDAS ALCOÓLICAS",
+    "code": "2208",
+    "match_type": "PREFIXO",
+    "ncm_display": "22.08",
+    "legal_basis": "LC 214/2025, art. 409, §1º, IV; art. 422; Anexo XVII",
+    "condition": "Produto alcoólico acondicionado em embalagem primária em contato direto com o produto e destinada ao consumidor final.",
+    "rate": "PENDENTE DE LEI ORDINÁRIA",
+    "source": "https://www2.camara.leg.br/legin/fed/leicom/2025/leicomplementar-214-16-janeiro-2025-796905-normaatualizada-pl.pdf"
+  },
+  {
+    "category": "BEBIDAS AÇUCARADAS",
+    "code": "22021000",
+    "match_type": "EXATO",
+    "ncm_display": "2202.10.00",
+    "legal_basis": "LC 214/2025, art. 409, §1º, V; art. 422; Anexo XVII",
+    "condition": "Produto classificado exatamente na NCM 2202.10.00, conforme o Anexo XVII.",
+    "rate": "PENDENTE DE LEI ORDINÁRIA",
+    "source": "https://www2.camara.leg.br/legin/fed/leicom/2025/leicomplementar-214-16-janeiro-2025-796905-normaatualizada-pl.pdf"
+  }
+]

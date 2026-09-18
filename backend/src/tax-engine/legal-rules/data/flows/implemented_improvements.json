@@ -1,0 +1,34 @@
+{
+  "confidence_indicator": {
+    "enabled": true,
+    "levels": [
+      "ALTA",
+      "MÉDIA",
+      "BAIXA",
+      "NÃO INFORMADA"
+    ],
+    "note": "Mantém a coluna RTC_Confianca e adiciona cards e filtros."
+  },
+  "v4_12": {
+    "abs_ncm_9619": true,
+    "cmed_commercial_names": 5855,
+    "cmed_substances": 2438,
+    "abbreviated_pharmaceutical_forms": true,
+    "source_date": "2026-07-21"
+  },
+  "v4_14": {
+    "ncm_9619_audit_unified": true,
+    "fr_abbreviation_with_diaper_brand": true,
+    "diaper_brand_audit_terms": 17,
+    "regression_examples": [
+      "FR HUGGIES TRIPLA P C/38 (L)",
+      "FR HUGGIES TRIPLA XXG C/26 (L)",
+      "FR BABYSEC ULTRA G C/64"
+    ]
+  },
+  "v4_15": {
+    "fr_abbreviation_auto_confirmation": true,
+    "explicit_ncm_9619_manual_choice": true,
+    "generic_confirmation_blocked_for_ambiguous_treatment": true
+  }
+}

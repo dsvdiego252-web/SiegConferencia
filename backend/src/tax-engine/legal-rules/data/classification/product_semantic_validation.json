@@ -1,0 +1,22 @@
+{
+  "enabled": true,
+  "first_rule": {
+    "module": "Anexo I",
+    "item": "19",
+    "category": "Carnes e produtos de origem animal",
+    "positions": [
+      "0201",
+      "0202",
+      "0203",
+      "0204",
+      "0207"
+    ],
+    "logic": "A descrição reconhecida como carne confirma o tratamento. A espécie identificada na descrição é comparada com a espécie indicada pela NCM.",
+    "ncm_mismatch": "Quando o benefício é o mesmo, o tratamento pode ser confirmado preliminarmente, mas a NCM fica sinalizada para revisão."
+  },
+  "example": {
+    "ncm": "02031900",
+    "description": "ACÉM",
+    "result": "Benefício do Anexo I, item 19, confirmado preliminarmente; revisar NCM porque 0203 corresponde a carne suína e acém indica corte bovino."
+  }
+}

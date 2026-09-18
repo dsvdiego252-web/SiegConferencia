@@ -1,0 +1,28 @@
+{
+  "strategy": "pontuação por nome da coluna e perfil do conteúdo",
+  "priority": [
+    "DESCRICAO PRODUTO",
+    "DESCRICAO DO PRODUTO",
+    "DESCRICAO",
+    "NOME PRODUTO",
+    "PRODUTO"
+  ],
+  "numeric_column_protection": true,
+  "applies_to": [
+    "Produtos",
+    "Validação por vendas",
+    "Simples — entradas",
+    "Simples — saídas"
+  ],
+  "diagnostic_fields": [
+    "RTC_Versao_Motor",
+    "RTC_Coluna_Descricao_Usada"
+  ],
+  "reason": "Evita usar colunas de código como produto/ID no lugar da descrição comercial.",
+  "exclude_as_primary": [
+    "DESCRICAO NCM",
+    "DESCRICAO DA NCM",
+    "DESCRICAO FISCAL"
+  ],
+  "v4_28_fix": "A descrição comercial do produto tem precedência; Descrição NCM é apenas complemento e não é exibida como produto em Ver produtos."
+}

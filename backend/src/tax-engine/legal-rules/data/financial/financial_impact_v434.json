@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "composition": [
+    "Venda tributação integral",
+    "Venda com redução",
+    "Venda alíquota zero",
+    "Venda pendente/revisão"
+  ],
+  "percent_base": "Venda total",
+  "tax_outputs": [
+    "Débito IBS",
+    "% IBS sobre venda total",
+    "Débito CBS",
+    "% CBS sobre venda total",
+    "Débito IBS + CBS",
+    "% total sobre venda total"
+  ],
+  "pending_policy": "Pendências/revisões são tratadas como tributação integral somente para estimativa do débito até a validação."
+}

@@ -1,0 +1,33 @@
+{
+  "module_id": "audit_output_schema",
+  "version": "1.0",
+  "levels": [
+    "CRITICO",
+    "ALERTA",
+    "INFORMATIVO"
+  ],
+  "item_result_fields": [
+    "empresa",
+    "cnpj",
+    "documento",
+    "chave",
+    "numero_item",
+    "codigo_produto",
+    "descricao",
+    "tipo_operacao",
+    "ncm_xml",
+    "ncm_esperada",
+    "ncm_status",
+    "nbs",
+    "cfop_xml",
+    "cfop_esperado",
+    "regime_tributario",
+    "icms",
+    "pis_cofins",
+    "reforma_tributaria",
+    "divergencias",
+    "nivel_risco",
+    "fundamento_legal",
+    "status_final"
+  ]
+}

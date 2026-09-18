@@ -1,0 +1,52 @@
+{
+  "module_id": "tax_router",
+  "version": "1.0",
+  "routing_order": [
+    "identificar_empresa",
+    "identificar_regime",
+    "identificar_atividade",
+    "identificar_tipo_documento",
+    "identificar_natureza_operacao",
+    "acionar_modulos_especificos"
+  ],
+  "routes": [
+    {
+      "when": {
+        "document_family": [
+          "NFE",
+          "NFCE"
+        ],
+        "nature": "MERCADORIA"
+      },
+      "modules": [
+        "goods_engine",
+        "rtc_engine",
+        "math_validator",
+        "audit_center"
+      ]
+    },
+    {
+      "when": {
+        "document_family": [
+          "NFSE"
+        ],
+        "nature": "SERVICO"
+      },
+      "modules": [
+        "services_engine",
+        "rtc_engine",
+        "math_validator",
+        "audit_center"
+      ]
+    },
+    {
+      "when": {
+        "tax_regime": "SIMPLES_NACIONAL"
+      },
+      "append_modules": [
+        "simple_national_engine"
+      ]
+    }
+  ],
+  "rule": "Primeiro descobrir como deveria estar tributado; depois comparar com o documento."
+}

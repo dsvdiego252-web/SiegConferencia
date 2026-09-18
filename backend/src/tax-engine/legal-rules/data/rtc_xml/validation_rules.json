@@ -1,0 +1,81 @@
+{
+  "module_id": "rtc_xml_validation_rules",
+  "version": "1.0",
+  "rules": [
+    {
+      "id": "RTCXML001",
+      "rule": "Validar existência do grupo IBSCBS quando exigido pela operação."
+    },
+    {
+      "id": "RTCXML002",
+      "rule": "Validar combinação CST + cClassTrib na tabela oficial vigente para a data da operação."
+    },
+    {
+      "id": "RTCXML003",
+      "rule": "Determinar grupos obrigatórios, opcionais e proibidos a partir do CST/cClassTrib e seus indicadores."
+    },
+    {
+      "id": "RTCXML004",
+      "rule": "Gerar CAMPOS_RTC_AUSENTES somente para tags obrigatórias na hipótese concreta."
+    },
+    {
+      "id": "RTCXML005",
+      "rule": "Gerar CAMPO_RTC_INDEVIDO quando houver grupo/tag não permitido para a classificação."
+    },
+    {
+      "id": "RTCXML006",
+      "rule": "Comparar tratamento esperado pelo motor com tratamento informado no XML."
+    },
+    {
+      "id": "RTCXML007",
+      "rule": "Se houver redução, validar percentual de redução, alíquota nominal, alíquota efetiva, base e valor."
+    },
+    {
+      "id": "RTCXML008",
+      "rule": "Se houver diferimento, validar grupo, percentual, valor diferido e valor final."
+    },
+    {
+      "id": "RTCXML009",
+      "rule": "Se houver crédito presumido, validar código, percentual, valor, vigência e compatibilidade."
+    },
+    {
+      "id": "RTCXML010",
+      "rule": "Se houver monofasia, utilizar estrutura específica e não presumir tributação regular."
+    },
+    {
+      "id": "RTCXML011",
+      "rule": "Se houver Imposto Seletivo, validar incidência, CST/classificação, base/alíquota/quantidade e valor aplicável."
+    },
+    {
+      "id": "RTCXML012",
+      "rule": "Recalcular IBS UF, IBS Município, IBS total, CBS e IS quando aplicável."
+    },
+    {
+      "id": "RTCXML013",
+      "rule": "Conferir soma dos itens contra IBSCBSTot e demais totalizações aplicáveis."
+    },
+    {
+      "id": "RTCXML014",
+      "rule": "Respeitar tolerância de arredondamento prevista no leiaute/NT vigente."
+    },
+    {
+      "id": "RTCXML015",
+      "rule": "Aplicar regras por data de emissão; não usar automaticamente regra vigente hoje para documento antigo."
+    },
+    {
+      "id": "RTCXML016",
+      "rule": "Nunca concluir XML correto apenas porque a tag existe."
+    }
+  ],
+  "comparison_flow": [
+    "classificar_produto_ou_servico",
+    "determinar_tratamento_esperado",
+    "determinar_CST_esperado",
+    "determinar_cClassTrib_esperado",
+    "determinar_tags_exigidas",
+    "ler_XML",
+    "recalcular",
+    "comparar_esperado_x_informado",
+    "gerar_auditoria"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "module_id": "company_profile",
+  "version": "1.0",
+  "fields": {
+    "cnpj": {
+      "type": "string",
+      "required": true
+    },
+    "tax_regime": {
+      "type": "enum",
+      "required": true,
+      "values": [
+        "LUCRO_REAL",
+        "LUCRO_PRESUMIDO",
+        "SIMPLES_NACIONAL",
+        "MEI",
+        "OUTROS"
+      ]
+    },
+    "activity_profiles": {
+      "type": "array",
+      "required": true,
+      "values": [
+        "COMERCIO_VAREJO",
+        "ATACADO",
+        "INDUSTRIA",
+        "SERVICO",
+        "COMERCIO_SERVICO",
+        "INDUSTRIA_COMERCIO",
+        "MISTO"
+      ]
+    },
+    "segment": {
+      "type": "string",
+      "required": false
+    },
+    "document_types": {
+      "type": "array",
+      "required": true
+    }
+  },
+  "principle": "Segmento auxilia, mas não determina sozinho a tributação."
+}

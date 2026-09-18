@@ -1,0 +1,58 @@
+{
+  "module_id": "rtc_xml_field_catalog",
+  "version": "1.0",
+  "scope": [
+    "NFE",
+    "NFCE"
+  ],
+  "item_driver_fields": [
+    {
+      "path": "IBSCBS.CST",
+      "role": "driver",
+      "required": "quando aplicável"
+    },
+    {
+      "path": "IBSCBS.cClassTrib",
+      "role": "driver",
+      "required": "quando aplicável"
+    }
+  ],
+  "calculation_fields": [
+    {
+      "path": "gIBSCBS.vBC",
+      "required": "conforme CST/cClassTrib"
+    },
+    {
+      "path": "gIBSUF.pIBSUF",
+      "required": "conforme CST/cClassTrib"
+    },
+    {
+      "path": "gIBSUF.vIBSUF",
+      "required": "conforme CST/cClassTrib"
+    },
+    {
+      "path": "gIBSMun.pIBSMun",
+      "required": "conforme CST/cClassTrib"
+    },
+    {
+      "path": "gIBSMun.vIBSMun",
+      "required": "conforme CST/cClassTrib"
+    },
+    {
+      "path": "gIBSCBS.vIBS",
+      "required": "conforme CST/cClassTrib"
+    },
+    {
+      "path": "gCBS.pCBS",
+      "required": "conforme CST/cClassTrib"
+    },
+    {
+      "path": "gCBS.vCBS",
+      "required": "conforme CST/cClassTrib"
+    }
+  ],
+  "total_groups": [
+    "IBSCBSTot"
+  ],
+  "principle": "Não considerar todos os campos universalmente obrigatórios."
+}

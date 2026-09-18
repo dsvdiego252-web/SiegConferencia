@@ -1,0 +1,39 @@
+{
+  "enabled": true,
+  "name": "Validação Simples Nacional",
+  "purpose": "Simular a opção do Simples Nacional pelo regime regular do IBS e da CBS, comparando débitos estimados das saídas com créditos estimados das entradas.",
+  "sections": [
+    "Entradas",
+    "Saídas",
+    "Resumo"
+  ],
+  "editable_rates": [
+    "IBS",
+    "CBS"
+  ],
+  "default_rates": {
+    "IBS": 0,
+    "CBS": 0
+  },
+  "taxable_factors": {
+    "TRIBUTAÇÃO INTEGRAL": 1,
+    "REDUÇÃO 60%": 0.4,
+    "ALÍQUOTA ZERO": 0,
+    "REDUÇÃO 100%": 0,
+    "PENDENTE / REVISÃO": 0
+  },
+  "calculation": "Débito estimado das saídas menos crédito estimado das entradas, calculados separadamente para IBS e CBS.",
+  "assumptions": [
+    "As entradas tributadas são consideradas potencialmente creditáveis para a simulação.",
+    "Produtos pendentes ou em revisão não entram no cálculo até a validação.",
+    "A redução de 60% utiliza 40% da alíquota prevista.",
+    "Alíquota zero e redução de 100% não geram débito na operação simulada.",
+    "A simulação não substitui a apuração fiscal oficial."
+  ],
+  "legal_basis": "LC 214/2025, art. 41, §3º, e arts. 47 a 56",
+  "source": "https://www2.camara.leg.br/legin/fed/leicom/2025/leicomplementar-214-16-janeiro-2025-796905-normaatualizada-pl.html",
+  "effective_rate_on_revenue": {
+    "enabled": true,
+    "formula": "Total estimado de IBS e CBS a recolher dividido pelo faturamento total das saídas, multiplicado por 100."
+  }
+}

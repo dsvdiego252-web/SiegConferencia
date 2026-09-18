@@ -1,0 +1,33 @@
+{
+  "enabled": true,
+  "required_columns": [
+    "Código do produto",
+    "Descrição do produto",
+    "NCM",
+    "Valor total vendido"
+  ],
+  "optional_columns": [
+    "Quantidade vendida"
+  ],
+  "summary_categories": [
+    "TRIBUTAÇÃO INTEGRAL",
+    "ALÍQUOTA ZERO",
+    "REDUÇÃO 100%",
+    "REDUÇÃO 60%",
+    "PENDENTE / REVISÃO"
+  ],
+  "aggregation": "Consolida linhas repetidas pelo código do produto e NCM, somando valor e quantidade vendida.",
+  "purpose": "Apoiar análises do Simples Nacional e do regime híbrido com base na composição tributária efetiva das vendas.",
+  "manual_validation": {
+    "enabled": true,
+    "bulk_selection": true,
+    "same_rule_required": true,
+    "search_fields": [
+      "Código do produto",
+      "Descrição do produto",
+      "NCM"
+    ],
+    "legal_reference_clickable": true,
+    "card_reclassification": "Depois da decisão manual, o produto é transferido automaticamente para o card correspondente ao tratamento confirmado."
+  }
+}

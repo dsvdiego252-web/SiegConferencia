@@ -1,0 +1,153 @@
+{
+  "oats_annex_i": {
+    "ncm": [
+      "11041200",
+      "11042200"
+    ],
+    "description_confirm_terms": [
+      "AVEIA",
+      "OAT",
+      "OATS",
+      "FLOCO",
+      "FLOCOS",
+      "GRAO",
+      "GRAOS",
+      "LAMINADA",
+      "LAMINADO"
+    ],
+    "description_alert_terms": [
+      "FARINHA",
+      "FARELO",
+      "BEBIDA DE AVEIA",
+      "LEITE DE AVEIA",
+      "BISCOITO",
+      "COOKIE",
+      "GRANOLA"
+    ],
+    "module": "Anexo I",
+    "item": "17",
+    "treatment": "ALÍQUOTA ZERO",
+    "cst": "200",
+    "cclass": "200003",
+    "legal_basis": "LC 214/2025, art. 125 e Anexo I, item 17",
+    "direct_confirmation": true,
+    "rule": "NCM exata 11041200/11042200 confirma automaticamente o Anexo I, item 17, salvo quando a descrição contém apresentação incompatível (farinha, farelo, bebida, biscoito, cookie ou granola)."
+  },
+  "french_bread_annex_i": {
+    "ncm_bread": "19059090",
+    "ncm_mix": [
+      "19012010",
+      "19012090"
+    ],
+    "bread_confirm_terms": [
+      "PAO FRANCES"
+    ],
+    "bread_review_terms": [
+      "PAO DE SAL"
+    ],
+    "bread_exclude_examples": [
+      "PAO DE ALHO",
+      "PAO RECHEADO",
+      "PAO COM RECHEIO",
+      "PAO COM QUEIJO",
+      "PAO COM LINGUICA",
+      "PAO DE CALABRESA",
+      "PAO DE BATATA",
+      "PAO DOCE",
+      "PAO INTEGRAL",
+      "PAO DE FORMA",
+      "BISNAGUINHA",
+      "BAGUETE",
+      "PANETONE"
+    ],
+    "mix_confirm_terms": [
+      "PRE MISTURA PARA PAO FRANCES",
+      "PREMISTURA PARA PAO FRANCES",
+      "MISTURA PARA PAO FRANCES",
+      "MASSA PARA PAO FRANCES"
+    ],
+    "module": "Anexo I",
+    "item": "16",
+    "treatment": "ALÍQUOTA ZERO",
+    "cst": "200",
+    "cclass": "200003",
+    "legal_basis": "LC 214/2025, art. 125 e Anexo I, item 16",
+    "rule": "O código 19059090, isoladamente, não confirma o benefício. É obrigatória descrição compatível com pão francês."
+  },
+  "prepared_peanuts": {
+    "ncm": [
+      "20081100"
+    ],
+    "confirm_terms": [
+      "AMENDOIM"
+    ],
+    "alert_terms": [
+      "AMENDOIM CRU",
+      "AMENDOIM IN NATURA",
+      "AMENDOIM NATURAL CRU"
+    ],
+    "audit_result": "COMPATÍVEL",
+    "note": "Compatibilidade semântica para amendoins preparados/conservados; não confirma benefício tributário por si só."
+  },
+  "canned_sweet_corn": {
+    "ncm": [
+      "20058000"
+    ],
+    "confirm_terms": [
+      "MILHO",
+      "MILHO VERDE",
+      "MILHO DOCE",
+      "MILHO EM CONSERVA"
+    ],
+    "alert_terms": [
+      "MILHO PIPOCA",
+      "PIPOCA",
+      "FUBA",
+      "FARINHA DE MILHO",
+      "MILHO CRU SECO",
+      "MILHO EM GRAO SECO"
+    ],
+    "audit_result": "COMPATÍVEL",
+    "note": "Compatibilidade semântica para milho doce preparado/conservado não congelado; não confirma benefício tributário por si só."
+  },
+  "nail_polish_33043000": {
+    "ncm": [
+      "33043000"
+    ],
+    "confirm_terms": [
+      "ESM",
+      "ESMALTE",
+      "VERNIZ PARA UNHAS",
+      "BASE PARA UNHAS",
+      "REMOVEDOR DE ESMALTE",
+      "MANICURE",
+      "PEDICURE"
+    ],
+    "audit_result": "COMPATÍVEL",
+    "note": "Reconhece descrições abreviadas de esmaltes e outras preparações para manicuros/pedicuros na NCM 33043000; não concede benefício tributário por si só."
+  },
+  "dairy_beverage_annex_vii": {
+    "ncm": [
+      "22029900",
+      "04032000",
+      "04039000"
+    ],
+    "confirm_terms": [
+      "BEBIDA LACTEA",
+      "BEB LACTEA",
+      "BEB LACT",
+      "LEITE FERMENTADO",
+      "COMPOSTO LACTEO",
+      "IOGURTE",
+      "KEFIR",
+      "COALHADA"
+    ],
+    "module": "Anexo VII",
+    "item": "2",
+    "treatment": "REDUÇÃO 60%",
+    "cst": "200",
+    "cclass": "200034",
+    "note": "Para 22029900, descrição láctea explícita direciona ao Anexo VII item 2. Anexo VI itens 47/48 só se aplica às fórmulas especiais descritas nesses itens.",
+    "collision_safety": "Anexo VI 47/48 e Anexo VII 2 ficam bloqueados quando a descrição não contém os termos específicos de cada hipótese; a NCM 22029900 isolada não concede nenhum desses tratamentos."
+  }
+}

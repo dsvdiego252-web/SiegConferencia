@@ -1,0 +1,1419 @@
+[
+  {
+    "id": "rule-1786546364032",
+    "name": "OUTRO,BEBIDA N/ALCOOL,EXC.SUCO FRUTA,ETC",
+    "kind": "produto",
+    "ncm": "22029900",
+    "matchType": "exact",
+    "includeTerms": [
+      "ENERG"
+    ],
+    "excludeTerms": [],
+    "decision": "CONFIRMAR BENEFÍCIO SUGERIDO",
+    "evidence": "Energetico",
+    "reviewer": "Diego",
+    "final": {
+      "module": "Anexo VI",
+      "item": "47; 48",
+      "treatment": "REDUÇÃO 60%",
+      "ibs": 60,
+      "cbs": 60,
+      "cst": "200",
+      "cclass": "200033"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786557071760",
+    "name": "ESMALTES",
+    "kind": "produto",
+    "ncm": "33043000",
+    "matchType": "exact",
+    "includeTerms": [
+      "ESM"
+    ],
+    "excludeTerms": [],
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "Esmalte",
+    "reviewer": "Diego",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786560509872",
+    "name": "EXTRATO DE TOMATE",
+    "kind": "produto",
+    "ncm": "20029000",
+    "matchType": "exact",
+    "includeTerms": [
+      "EXT TOMATE",
+      "ELEFANTE",
+      "EXT"
+    ],
+    "excludeTerms": [],
+    "decision": "CONFIRMAR BENEFÍCIO SUGERIDO",
+    "evidence": "EXTRATO DE TOMATE",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Anexo VII",
+      "item": "13",
+      "treatment": "REDUÇÃO 60%",
+      "ibs": "60",
+      "cbs": "60",
+      "cst": "200",
+      "cclass": "200034"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786584238030",
+    "name": "ERVILHAS",
+    "kind": "produto",
+    "ncm": "20054000",
+    "matchType": "exact",
+    "includeTerms": [
+      "ERVILHA",
+      "ERVI"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR BENEFÍCIO SUGERIDO",
+    "evidence": "ERVILHA",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Anexo VII",
+      "item": "16",
+      "treatment": "REDUÇÃO 60%",
+      "ibs": 60,
+      "cbs": 60,
+      "cst": "200",
+      "cclass": "200034"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786640920585",
+    "name": "PALMITOS",
+    "kind": "produto",
+    "ncm": "20089100",
+    "matchType": "exact",
+    "includeTerms": [
+      "PALMITO"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "PALMITO",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786641070360",
+    "name": "FAROFA",
+    "kind": "produto",
+    "ncm": "19019090",
+    "matchType": "exact",
+    "includeTerms": [
+      "FAROFA"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "FAROFA",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786641314086",
+    "name": "NHOQUE",
+    "kind": "produto",
+    "ncm": "19021100",
+    "matchType": "exact",
+    "includeTerms": [
+      "NHOQUE"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR BENEFÍCIO SUGERIDO",
+    "evidence": "MASSA",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Anexo I",
+      "item": "15",
+      "treatment": "ALÍQUOTA ZERO",
+      "ibs": 100,
+      "cbs": 100,
+      "cst": "200",
+      "cclass": "200003"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786643109747",
+    "name": "AMENDOIM TEMPERADO",
+    "kind": "produto",
+    "ncm": "20081100",
+    "matchType": "exact",
+    "includeTerms": [
+      "SALSA",
+      "CEB",
+      "CEBOLA",
+      "ALHO",
+      "PIMENTA",
+      "PIM",
+      "ALHINHO",
+      "CHURRASCO",
+      "SALGADO",
+      "PEPPER",
+      "C SAL",
+      "AMENDOPEPPER"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_EDITED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "AMENDOIM TEMPERADO",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": "0",
+      "cbs": "0",
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786643915189",
+    "name": "SORVETES",
+    "kind": "produto",
+    "ncm": "21050010",
+    "matchType": "exact",
+    "includeTerms": [
+      "SORV",
+      "SORVETE"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR BENEFÍCIO SUGERIDO",
+    "evidence": "SORVETE",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Anexo IX",
+      "item": "21",
+      "treatment": "REDUÇÃO 60%",
+      "ibs": 60,
+      "cbs": 60,
+      "cst": "200",
+      "cclass": "200038"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786644004463",
+    "name": "POLPAS",
+    "kind": "produto",
+    "ncm": "20089900",
+    "matchType": "exact",
+    "includeTerms": [
+      "POLP",
+      "POLPA"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR BENEFÍCIO SUGERIDO",
+    "evidence": "POLPA",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Anexo VII",
+      "item": "11",
+      "treatment": "REDUÇÃO 60%",
+      "ibs": 60,
+      "cbs": 60,
+      "cst": "200",
+      "cclass": "200034"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786644061663",
+    "name": "MEL",
+    "kind": "produto",
+    "ncm": "04090000",
+    "matchType": "exact",
+    "includeTerms": [
+      "MEL"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR BENEFÍCIO SUGERIDO",
+    "evidence": "MEL",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Anexo VII",
+      "item": "3",
+      "treatment": "REDUÇÃO 60%",
+      "ibs": 60,
+      "cbs": 60,
+      "cst": "200",
+      "cclass": "200034"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786644182511",
+    "name": "MASSAS",
+    "kind": "produto",
+    "ncm": "19022000",
+    "matchType": "exact",
+    "includeTerms": [
+      "MASSA",
+      "CANELONE"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_EDITED_V4_30",
+    "decision": "CONFIRMAR BENEFÍCIO SUGERIDO",
+    "evidence": "MASSA",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Anexo VII",
+      "item": "9",
+      "treatment": "REDUÇÃO 60%",
+      "ibs": "60",
+      "cbs": "60",
+      "cst": "200",
+      "cclass": "200034"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786644682343",
+    "name": "GOMAS",
+    "kind": "produto",
+    "ncm": "17049020",
+    "matchType": "exact",
+    "includeTerms": [
+      "GOMA"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "GOMA",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786644784503",
+    "name": "NHOQUES",
+    "kind": "produto",
+    "ncm": "19022000",
+    "matchType": "exact",
+    "includeTerms": [
+      "NHOQUE"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR BENEFÍCIO SUGERIDO",
+    "evidence": "NHOQUE",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Anexo VII",
+      "item": "9",
+      "treatment": "REDUÇÃO 60%",
+      "ibs": 60,
+      "cbs": 60,
+      "cst": "200",
+      "cclass": "200034"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786644819633",
+    "name": "DOCES",
+    "kind": "produto",
+    "ncm": "19019020",
+    "matchType": "exact",
+    "includeTerms": [
+      "DOCE"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "DOCES",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786644877699",
+    "name": "SACOS DE LIXOS",
+    "kind": "produto",
+    "ncm": "39232910",
+    "matchType": "exact",
+    "includeTerms": [
+      "SACO",
+      "LIXO"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "SACO DE LIXO",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786644940502",
+    "name": "PAO DE FORMA",
+    "kind": "produto",
+    "ncm": "19059010",
+    "matchType": "exact",
+    "includeTerms": [
+      "PAO",
+      "FORMA"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR BENEFÍCIO SUGERIDO",
+    "evidence": "PAO DE FORMA",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Anexo VII",
+      "item": "12",
+      "treatment": "REDUÇÃO 60%",
+      "ibs": 60,
+      "cbs": 60,
+      "cst": "200",
+      "cclass": "200034"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786645430300",
+    "name": "PIMENTAS",
+    "kind": "produto",
+    "ncm": "20019000",
+    "matchType": "exact",
+    "includeTerms": [
+      "PIM",
+      "PIMENTA"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "PIMENTA",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786645505805",
+    "name": "BUCHAS",
+    "kind": "produto",
+    "ncm": "14049090",
+    "matchType": "exact",
+    "includeTerms": [
+      "BUCHA"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "BUCHA",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786645569360",
+    "name": "SALGADINHOS",
+    "kind": "produto",
+    "ncm": "19059090",
+    "matchType": "exact",
+    "includeTerms": [
+      "SALG",
+      "SALGADINHO",
+      "SALGADO"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "SALGADINHOS",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786645711815",
+    "name": "SUCOS NATURAIS",
+    "kind": "produto",
+    "ncm": "2009",
+    "matchType": "prefix",
+    "includeTerms": [
+      "SUCO",
+      "LARANJA",
+      "ABACAXI",
+      "GOIABA",
+      "LIMAO"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_EDITED_V4_30",
+    "decision": "CONFIRMAR BENEFÍCIO SUGERIDO",
+    "evidence": "SUCO",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Anexo VII",
+      "item": "10",
+      "treatment": "REDUÇÃO 60%",
+      "ibs": "60",
+      "cbs": "60",
+      "cst": "200",
+      "cclass": "200034"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786645813812",
+    "name": "GRANOLAS",
+    "kind": "produto",
+    "ncm": "19041000",
+    "matchType": "exact",
+    "includeTerms": [
+      "GRANOLA"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "GRANOLA",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786646092449",
+    "name": "IOGURTES",
+    "kind": "produto",
+    "ncm": "04032000",
+    "matchType": "exact",
+    "includeTerms": [
+      "IOG",
+      "IOGURT",
+      "IOGURTE"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR BENEFÍCIO SUGERIDO",
+    "evidence": "IOGURTE",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Anexo VII",
+      "item": "2",
+      "treatment": "REDUÇÃO 60%",
+      "ibs": 60,
+      "cbs": 60,
+      "cst": "200",
+      "cclass": "200034"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786708725437",
+    "name": "BUCHAS",
+    "kind": "produto",
+    "ncm": "14042010",
+    "matchType": "exact",
+    "includeTerms": [
+      "BUCHA"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "BUCHA",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786709034267",
+    "name": "PURURUCAS",
+    "kind": "produto",
+    "ncm": "16024900",
+    "matchType": "exact",
+    "includeTerms": [
+      "PURURUCA"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "PURURUCA",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786709114638",
+    "name": "SACOS",
+    "kind": "produto",
+    "ncm": "63071000",
+    "matchType": "exact",
+    "includeTerms": [
+      "SACO"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "SACO",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786709152283",
+    "name": "SACOS 1",
+    "kind": "produto",
+    "ncm": "52082100",
+    "matchType": "exact",
+    "includeTerms": [
+      "SACO"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "SACO",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786786028319",
+    "name": "CALDOS",
+    "kind": "produto",
+    "ncm": "21041011",
+    "matchType": "exact",
+    "includeTerms": [
+      "CALDO"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "CALDO",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786786282870",
+    "name": "CHICLETES",
+    "kind": "produto",
+    "ncm": "21069050",
+    "matchType": "exact",
+    "includeTerms": [
+      "CHICLE",
+      "CHICLETE"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "CHICLETE",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786789851468",
+    "name": "MAC INST",
+    "kind": "produto",
+    "ncm": "19023000",
+    "matchType": "exact",
+    "includeTerms": [
+      "MAC INST",
+      "MACARRAO"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR BENEFÍCIO SUGERIDO",
+    "evidence": "MAC INSTANTANEO",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Anexo VII",
+      "item": "9",
+      "treatment": "REDUÇÃO 60%",
+      "ibs": 60,
+      "cbs": 60,
+      "cst": "200",
+      "cclass": "200034"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786965140927",
+    "name": "LASANHAS",
+    "kind": "produto",
+    "ncm": "19022000",
+    "matchType": "exact",
+    "includeTerms": [
+      "LASANHA"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR BENEFÍCIO SUGERIDO",
+    "evidence": "LASANHA",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Anexo VII",
+      "item": "9",
+      "treatment": "REDUÇÃO 60%",
+      "ibs": 60,
+      "cbs": 60,
+      "cst": "200",
+      "cclass": "200034"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786966882215",
+    "name": "AGUA SANITARIA",
+    "kind": "produto",
+    "ncm": "28289011",
+    "matchType": "exact",
+    "includeTerms": [
+      "AGUA SANIT",
+      "SANITARIA",
+      "AGUA SANITARIA"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "AGUA SANITARIA",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786980085785",
+    "name": "ALGODAO",
+    "kind": "produto",
+    "ncm": "56012110",
+    "matchType": "exact",
+    "includeTerms": [
+      "ALGODAO"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "ALGODAO",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786987814680",
+    "name": "AMACIANTES",
+    "kind": "produto",
+    "ncm": "38099190",
+    "matchType": "exact",
+    "includeTerms": [
+      "AMAC",
+      "AMACIANT",
+      "AMACIANTE"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "AMACIANTE",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786988206340",
+    "name": "BALAS",
+    "kind": "produto",
+    "ncm": "21069050",
+    "matchType": "exact",
+    "includeTerms": [
+      "BALA"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "BALA",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1786991288220",
+    "name": "BISCOITOS",
+    "kind": "produto",
+    "ncm": "19053100",
+    "matchType": "exact",
+    "includeTerms": [
+      "BISC",
+      "BISCOITO"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "BISCOITO",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1787063669830",
+    "name": "BATATA PALHA",
+    "kind": "produto",
+    "ncm": "20052000",
+    "matchType": "exact",
+    "includeTerms": [
+      "BATATA PALHA",
+      "PALHA"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "BATATA PALHA",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1787064083936",
+    "name": "BODY SPLASH",
+    "kind": "produto",
+    "ncm": "33072010",
+    "matchType": "exact",
+    "includeTerms": [
+      "BODY SPLASH"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "BODY SPLASH",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1787064371426",
+    "name": "BINQUEDOS",
+    "kind": "produto",
+    "ncm": "95030099",
+    "matchType": "exact",
+    "includeTerms": [
+      "BRINQ",
+      "BRINQUEDO",
+      "CAMINH",
+      "CAMINHAO"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_EDITED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "BRINQUEDOS",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": "0",
+      "cbs": "0",
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1787064742219",
+    "name": "BRINQUEDOS 1",
+    "kind": "produto",
+    "ncm": "95044000",
+    "matchType": "exact",
+    "includeTerms": [
+      "BRINQ",
+      "BRINQUEDO"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "BRINQUEDO",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1787065154334",
+    "name": "BRINQUEDOS 2",
+    "kind": "produto",
+    "ncm": "95030098",
+    "matchType": "exact",
+    "includeTerms": [
+      "BRINQ",
+      "BRINQUEDO"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "BRINQUEDO",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1787065567876",
+    "name": "BRINQUEDOS 3",
+    "kind": "produto",
+    "ncm": "95030022",
+    "matchType": "prefix",
+    "includeTerms": [
+      "BRINQ",
+      "BRINQUEDO"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "BRINQUEDOS",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1787076862402",
+    "name": "ATUM",
+    "kind": "produto",
+    "ncm": "16041410",
+    "matchType": "exact",
+    "includeTerms": [
+      "ATUM"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "ATUM",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1787141605394",
+    "name": "ALGODAO",
+    "kind": "produto",
+    "ncm": "30059090",
+    "matchType": "exact",
+    "includeTerms": [
+      "ALGODAO"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "ALGODAO",
+    "reviewer": "ALGODAO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1787145274119",
+    "name": "APARELHO PRESTOBARBA",
+    "kind": "produto",
+    "ncm": "82121020",
+    "matchType": "exact",
+    "includeTerms": [
+      "AP BARB",
+      "APARELHO",
+      "BARBEADOR"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "APARELHO PRESTOBARBA",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1787246096773",
+    "name": "ASSADEIRAS",
+    "kind": "produto",
+    "ncm": "76151000",
+    "matchType": "exact",
+    "includeTerms": [
+      "ASSADEIRA"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "ASSADEIRA",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1787247477191",
+    "name": "BACIAS",
+    "kind": "produto",
+    "ncm": "39249000",
+    "matchType": "exact",
+    "includeTerms": [
+      "BACIA"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "BACIA",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1787252363422",
+    "name": "BALOES",
+    "kind": "produto",
+    "ncm": "95030099",
+    "matchType": "exact",
+    "includeTerms": [
+      "BALAO"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "BALAO",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1787252831412",
+    "name": "CANECAS",
+    "kind": "produto",
+    "ncm": "39241000",
+    "matchType": "exact",
+    "includeTerms": [
+      "CANECA"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "CANECA",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1787253766669",
+    "name": "CAPPUCCINO",
+    "kind": "produto",
+    "ncm": "21011200",
+    "matchType": "exact",
+    "includeTerms": [
+      "CAPPUCCINO"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR BENEFÍCIO SUGERIDO",
+    "evidence": "CAPPUCCINO",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Anexo I",
+      "item": "8",
+      "treatment": "ALÍQUOTA ZERO",
+      "ibs": 100,
+      "cbs": 100,
+      "cst": "200",
+      "cclass": "200003"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1788270039146",
+    "name": "ADOCANTES",
+    "kind": "produto",
+    "ncm": "21069090",
+    "matchType": "exact",
+    "includeTerms": [
+      "ADOCANTE",
+      "ADOC"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "ADOCANTE",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1788270839392",
+    "name": "ABRACADEIRAS",
+    "kind": "produto",
+    "ncm": "39269090",
+    "matchType": "exact",
+    "includeTerms": [
+      "ABRACADEIRA",
+      "ABRAC"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "ABRACADEIRA",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1788271826108",
+    "name": "PLASTICOS",
+    "kind": "produto",
+    "ncm": "39249000",
+    "matchType": "exact",
+    "includeTerms": [
+      "CESTO",
+      "CESTA",
+      "MAMADEIRA",
+      "LIXEIRA",
+      "POTE",
+      "CABIDE",
+      "PORTA",
+      "SUPORTE",
+      "SABONETEIRA",
+      "COPO",
+      "GARRAFA",
+      "GANCHO",
+      "ESCOVA",
+      "BALDE",
+      "BANDEJA",
+      "SALADEIRA",
+      "DISPENSER",
+      "FUNIL",
+      "KIT",
+      "PRENDEDOR",
+      "PULVERIZADOR",
+      "VARAL",
+      "RODO DE PIA",
+      "COLHER"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_EDITED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "PLASICOS",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": "0",
+      "cbs": "0",
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  },
+  {
+    "id": "rule-1788272279425",
+    "name": "CHICLETES",
+    "kind": "produto",
+    "ncm": "17041000",
+    "matchType": "exact",
+    "includeTerms": [
+      "CHICLE",
+      "CHICLETE"
+    ],
+    "excludeTerms": [],
+    "criteriaSource": "USER_TYPED_V4_30",
+    "decision": "CONFIRMAR TRIBUTAÇÃO INTEGRAL",
+    "evidence": "CHICLETE",
+    "reviewer": "DIEGO",
+    "final": {
+      "module": "Regra geral",
+      "item": "000001",
+      "treatment": "TRIBUTAÇÃO INTEGRAL",
+      "ibs": 0,
+      "cbs": 0,
+      "cst": "000",
+      "cclass": "000001"
+    },
+    "includeMode": "any"
+  }
+]

@@ -1,0 +1,39 @@
+{
+  "enabled": true,
+  "classification_keys": [
+    "Código do serviço NFS-e/municipal",
+    "NBS",
+    "Descrição real do serviço",
+    "Condição da operação"
+  ],
+  "classification_note": "O código municipal/NFS-e é usado como referência cadastral. O enquadramento tributário é determinado principalmente pela NBS, pela descrição real do serviço e pelas condições da operação.",
+  "supported_modules": [
+    "Anexo II — Serviços de educação",
+    "Anexo III — Serviços de saúde",
+    "Anexo IX — Insumos e serviços agropecuários/aquícolas",
+    "Anexo X — Produções artísticas, culturais, jornalísticas e audiovisuais",
+    "Anexo XI — Soberania, segurança nacional e segurança cibernética",
+    "Regra geral — tributação integral, sujeita à validação de regimes específicos"
+  ],
+  "official_sources": {
+    "lc214": "https://www2.camara.leg.br/legin/fed/leicom/2025/leicomplementar-214-16-janeiro-2025-796905-normaatualizada-pl.pdf",
+    "nbs": "https://www.gov.br/mdic/pt-br/assuntos/sdic/comercio-e-servicos/nbs-nomenclatura-brasileira-de-servicos",
+    "cclass_trib": "https://dfe-portal.svrs.rs.gov.br/Cff/ClassificacaoTributaria",
+    "nfse_rtc": "https://www.gov.br/nfse/pt-br/biblioteca/documentacao-tecnica/rtc"
+  },
+  "general_rule": {
+    "status": "CONFIRMADO — TRIBUTAÇÃO INTEGRAL",
+    "treatment": "TRIBUTAÇÃO INTEGRAL",
+    "cst": "000",
+    "cclass_trib": "000001",
+    "manual_validation_required": false,
+    "condition": "Aplicável quando nenhuma regra especial ou benefício da base for localizado para a NBS e a descrição informadas."
+  },
+  "summary_cards": [
+    "Todos os serviços",
+    "Serviços com redução",
+    "Serviços tributados",
+    "Serviços com alíquota zero",
+    "Pendentes / revisão"
+  ]
+}

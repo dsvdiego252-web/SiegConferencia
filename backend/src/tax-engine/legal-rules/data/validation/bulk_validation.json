@@ -1,0 +1,5 @@
+{
+  "enabled": true,
+  "same_rule_required": true,
+  "rule": "O lote precisa possuir o mesmo módulo, item, tratamento, CST e cClassTrib sugeridos."
+}

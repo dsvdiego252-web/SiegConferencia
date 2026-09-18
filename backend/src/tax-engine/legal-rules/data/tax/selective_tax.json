@@ -1,0 +1,7 @@
+{
+  "name": "Imposto Seletivo",
+  "status": "ALÍQUOTA PENDENTE DE LEI ORDINÁRIA",
+  "legal_basis": "LC 214/2025, arts. 409 e 422; Anexo XVII",
+  "source": "https://www2.camara.leg.br/legin/fed/leicom/2025/leicomplementar-214-16-janeiro-2025-796905-normaatualizada-pl.pdf",
+  "scope_note": "O destaque identifica produtos sujeitos ao Imposto Seletivo segundo o Anexo XVII. A alíquota não é calculada pelo motor enquanto não houver lei ordinária vigente com os percentuais aplicáveis."
+}

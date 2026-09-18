@@ -1,0 +1,10 @@
+{
+  "summary": "v4.27 — edição completa das regras reaproveitáveis e visualização dos produtos correspondentes.",
+  "changes": [
+    "Cada regra reaproveitável ganhou os botões Editar, Ver produtos e Excluir.",
+    "A edição permite alterar nome, NCM/prefixo, palavras obrigatórias, palavras impeditivas, módulo, item, tratamento, reduções, CST e cClassTrib.",
+    "Ver produtos lista todos os itens do cadastro atual que atendem aos critérios da regra e informa se aquela regra é a decisão final aplicada.",
+    "Ao editar ou excluir uma regra, o cadastro atual é restaurado para o resultado original do motor e as regras vigentes são reaplicadas com segurança.",
+    "Correspondência por prefixo de NCM foi corrigida para preservar prefixos como 2202 sem completar zeros à esquerda."
+  ]
+}

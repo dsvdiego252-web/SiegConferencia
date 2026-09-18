@@ -1,0 +1,11 @@
+{
+  "application_stage": "DURANTE A CLASSIFICAÇÃO, após auditoria/melhorias e antes da montagem do status final",
+  "ncm_matching": "usa coluna mapeada e também procura colunas NCM no registro",
+  "description_matching": "Itens separados por vírgula são alternativas (OU). Com a NCM correspondente, basta um item ser encontrado. Dentro de cada item/frase, todas as palavras são procuradas como prefixos em qualquer posição da descrição comercial normalizada.",
+  "required_terms": "Semântica OU entre itens separados por vírgula. Ex.: ENERG, ENERGETICO aplica se qualquer um aparecer. Ex.: EXT TOMATE é um único item/frase e exige EXT + TOMATE, permitindo conectores intermediários.",
+  "precedence": "Regra reaproveitável confirmada prevalece sobre a auditoria automática; o resultado original fica preservado para rastreabilidade.",
+  "management": "Regras podem ser editadas, excluídas, exportadas, importadas e inspecionadas no cadastro atual.",
+  "match_preview": "O botão Ver produtos usa os mesmos critérios de NCM, palavras obrigatórias e impeditivas usados pelo motor.",
+  "safe_reapply": "Ao editar/excluir, campos originais do motor são restaurados antes da reaplicação das regras.",
+  "diagnostics": "Ver produtos mostra todos os produtos da NCM/prefixo, quais termos alternativos foram encontrados e quais palavras impeditivas bloquearam."
+}

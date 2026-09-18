@@ -1,0 +1,9 @@
+{
+  "pending_reasons": true,
+  "registration_closure": true,
+  "ncm_description_audit": true,
+  "audit_trail_without_date": true,
+  "reusable_rules": true,
+  "financial_impact": true,
+  "legal_update_control": true
+}

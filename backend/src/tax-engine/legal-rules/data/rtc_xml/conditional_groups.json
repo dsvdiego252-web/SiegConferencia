@@ -1,0 +1,46 @@
+{
+  "module_id": "rtc_xml_conditional_groups",
+  "version": "1.0",
+  "groups": {
+    "reducao_aliquota": [
+      "gIBSUF.gRed.pRedAliq",
+      "gIBSUF.gRed.pAliqEfet",
+      "gIBSMun.gRed.pRedAliq",
+      "gIBSMun.gRed.pAliqEfet",
+      "gCBS.gRed.pRedAliq",
+      "gCBS.gRed.pAliqEfet"
+    ],
+    "diferimento": [
+      "gIBSUF.gDif.pDif",
+      "gIBSUF.gDif.vDif",
+      "gIBSMun.gDif.pDif",
+      "gIBSMun.gDif.vDif",
+      "gCBS.gDif.pDif",
+      "gCBS.gDif.vDif"
+    ],
+    "tributacao_regular": [
+      "gTribRegular"
+    ],
+    "devolucao": [
+      "gDevTrib"
+    ],
+    "credito_presumido": [
+      "grupo_credito_presumido_aplicavel"
+    ],
+    "monofasico": [
+      "grupo_monofasia_aplicavel"
+    ],
+    "imposto_seletivo": [
+      "IS.CSTIS",
+      "IS.cClassTribIS",
+      "demais_campos_IS_conforme_operacao"
+    ]
+  },
+  "decision_source": [
+    "CST",
+    "cClassTrib",
+    "indicadores_da_tabela_oficial",
+    "natureza_da_operacao",
+    "data_de_vigencia"
+  ]
+}
