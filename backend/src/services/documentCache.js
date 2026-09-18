@@ -97,6 +97,8 @@ function linhaParaDocumento(linha) {
     valorTotal: Number(linha.valor_total),
     valorIcmsTotal: Number(linha.valor_icms_total),
     valorProdutosTotal: Number(linha.valor_produtos_total),
+    valorPisTotal: Number(linha.valor_pis_total || 0),
+    valorCofinsTotal: Number(linha.valor_cofins_total || 0),
     itens: linha.itens || [],
   };
 }
@@ -142,6 +144,8 @@ export async function registrarSincronizacao(cnpjCliente, xmlType, direcao, data
       valor_total: doc.valorTotal,
       valor_icms_total: doc.valorIcmsTotal,
       valor_produtos_total: doc.valorProdutosTotal,
+      valor_pis_total: doc.valorPisTotal || 0,
+      valor_cofins_total: doc.valorCofinsTotal || 0,
       itens: doc.itens,
       atualizado_em: new Date().toISOString(),
     }));

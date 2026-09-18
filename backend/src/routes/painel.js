@@ -15,6 +15,7 @@ import { XmlType } from '../services/siegClient.js';
 import { obterCliente } from '../services/clientsStore.js';
 import { cacheDisponivel, lerCache, reiniciarBusca, salvarProgresso, salvarResultado, salvarErro, estaExpirado } from '../services/painelCache.js';
 import { registrarSincronizacao } from '../services/documentCache.js';
+import { validarDocumento } from '../tax-engine/math-validation/mathValidator.js';
 
 export const painelRouter = Router();
 
@@ -94,6 +95,11 @@ function montarPainelDeClassificados(classificados, dataCorteReforma) {
       itens: doc.itens,
       situacaoReforma,
       situacao: situacaoDocumento(doc, situacaoReforma),
+      // Motor de Validação Matemática (tax-engine) — independente da
+      // situação acima: recalcula produto/ICMS/PIS/COFINS a partir dos
+      // próprios campos do XML e confere se a aritmética fecha. Não tem
+      // relação com estar "adequado à reforma" ou não.
+      validacaoMatematica: doc.cancelada ? null : validarDocumento(doc),
     };
   });
 
@@ -131,6 +137,8 @@ function montarPainelDeClassificados(classificados, dataCorteReforma) {
       totalDesconhecida: documentos.filter((d) => d.operacao === 'desconhecida').length,
       totalInconsistentes: documentos.filter((d) => d.situacao === 'inconsistente').length,
       totalCanceladas: documentos.filter((d) => d.situacao === 'cancelada').length,
+      totalDivergenciaCalculo: documentos.filter((d) => d.validacaoMatematica && d.validacaoMatematica.status !== 'CORRETO')
+        .length,
       documentos,
     },
     valores: resumoValores,

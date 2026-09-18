@@ -170,6 +170,8 @@ create table documentos_fiscais (
   valor_total numeric not null default 0,
   valor_icms_total numeric not null default 0,
   valor_produtos_total numeric not null default 0,
+  valor_pis_total numeric not null default 0,
+  valor_cofins_total numeric not null default 0,
   itens jsonb not null default '[]'::jsonb,
   atualizado_em timestamptz not null default now()
 );
@@ -344,6 +346,59 @@ Restrições reais que moldam como isso funciona:
 Sem `SUPABASE_URL`/`SUPABASE_SECRET_KEY`/`CRON_SECRET` configurados, o
 endpoint responde `{"status":"ignorado"}` (ou fica inacessível, sem
 `CRON_SECRET`) e não faz nada — nunca falha nem afeta o resto do sistema.
+
+## Motor tributário (`backend/src/tax-engine/`)
+
+Início de uma arquitetura maior — um motor central de auditoria fiscal com
+módulos desacoplados por responsabilidade (mercadorias, serviços, Simples
+Nacional, Reforma Tributária, validação matemática, central de auditoria),
+substituindo aos poucos as análises soltas que existiam antes
+(`reformaTributariaAnalyzer.js`, `taxAnalyzer.js`). Princípio central de
+todo o motor: **primeiro determinar qual deveria ser a tributação correta,
+depois comparar com o que o XML informou** — nunca o contrário, e nunca
+"inventar" uma classificação fiscal (NCM, benefício, CST) sem uma fonte de
+regra confiável carregada no sistema.
+
+### Motor de Validação Matemática (`tax-engine/math-validation/`)
+
+Primeiro módulo implementado — de propósito, o mais simples de todos: não
+decide qual É a tributação correta (isso depende de tabelas fiscais
+oficiais — NCM×CEST, CST×cClassTrib etc. — que ainda não estão carregadas
+no sistema), só recalcula valores a partir dos próprios campos do XML
+(quantidade × valor unitário, base × alíquota) e confere se a aritmética do
+documento fecha. Por não depender de nenhuma regra fiscal externa, o
+resultado é 100% confiável desde já.
+
+Por item, recalcula e compara com o valor informado:
+- **Produto**: quantidade × valor unitário × valor do produto.
+- **ICMS / PIS / COFINS**: base de cálculo × alíquota × valor do imposto
+  (só quando o item tem base e alíquota informadas — itens isentos, com
+  substituição tributária etc. não têm como ser recalculados assim, e
+  ficam de fora do resultado em vez de gerar falso positivo comparando
+  contra zero).
+
+No documento inteiro, também confere se a soma dos itens reconcilia com os
+totais do cabeçalho (`vProd`, `vICMS`, `vPIS`, `vCOFINS`). Não reconcilia o
+valor final da nota (`vNF`) — a fórmula envolve frete/seguro/desconto/IPI
+em combinações que variam por documento, e fica pra quando isso for
+implementado com confirmação exata do leiaute.
+
+Classifica cada comparação em `CORRETO`, `DIVERGENCIA_ARREDONDAMENTO`
+(diferença pequena, dentro da tolerância configurável) ou
+`DIVERGENCIA_CALCULO`. O resultado (`validacaoMatematica`) já vem em cada
+documento de `/api/painel`, com um resumo (`totalDivergenciaCalculo`) e o
+card "Divergências de cálculo" no painel — clicável, como os cards da
+Reforma Tributária.
+
+**Próximos módulos planejados** (ainda não implementados): Motor de
+Mercadorias e de Serviços (determinar o tratamento correto por
+NCM/CFOP/descrição ou por código de serviço/NBS), Motor do Simples
+Nacional, evolução do Motor da Reforma Tributária para validar o *cálculo*
+do IBS/CBS (não só a presença dos campos), e a Central de Auditoria
+consolidando tudo por cliente. Esses módulos dependem de tabelas fiscais
+oficiais versionadas (CST×cClassTrib, NCM/CEST, listas de produtos
+monofásicos etc.) que ainda precisam ser carregadas no sistema — sem elas,
+o motor não deve "adivinhar" uma classificação fiscal.
 
 ## Endpoints do backend
 

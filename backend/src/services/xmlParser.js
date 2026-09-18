@@ -116,8 +116,18 @@ export function parseNfeXml(xmlString) {
         valor: toNumber(icms.vICMS),
         baseCalculo: toNumber(icms.vBC),
       },
-      pis: { cst: pis.CST ?? null, aliquota: toNumber(pis.pPIS), valor: toNumber(pis.vPIS) },
-      cofins: { cst: cofins.CST ?? null, aliquota: toNumber(cofins.pCOFINS), valor: toNumber(cofins.vCOFINS) },
+      pis: {
+        cst: pis.CST ?? null,
+        aliquota: toNumber(pis.pPIS),
+        valor: toNumber(pis.vPIS),
+        baseCalculo: toNumber(pis.vBC),
+      },
+      cofins: {
+        cst: cofins.CST ?? null,
+        aliquota: toNumber(cofins.pCOFINS),
+        valor: toNumber(cofins.vCOFINS),
+        baseCalculo: toNumber(cofins.vBC),
+      },
       reformaTributaria: extrairReformaTributaria(imposto),
     };
   });
@@ -139,6 +149,8 @@ export function parseNfeXml(xmlString) {
     valorTotal: toNumber(total.vNF),
     valorIcmsTotal: toNumber(total.vICMS),
     valorProdutosTotal: toNumber(total.vProd),
+    valorPisTotal: toNumber(total.vPIS),
+    valorCofinsTotal: toNumber(total.vCOFINS),
     itens,
   };
 }

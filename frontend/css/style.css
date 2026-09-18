@@ -397,6 +397,11 @@ tr.row-cancelada {
   color: #555;
 }
 
+.badge-erro {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
 .pagination {
   display: flex;
   align-items: center;

@@ -26,6 +26,8 @@ const els = {
   summaryGapsCard: document.getElementById('summaryGapsCard'),
   summaryInconsistentes: document.getElementById('summaryInconsistentes'),
   summaryInconsistentesCard: document.getElementById('summaryInconsistentesCard'),
+  summaryDivergenciaCalculo: document.getElementById('summaryDivergenciaCalculo'),
+  summaryDivergenciaCalculoCard: document.getElementById('summaryDivergenciaCalculoCard'),
   valuesPanel: document.getElementById('valuesPanel'),
   valorEntrada: document.getElementById('valorEntrada'),
   valorSaida: document.getElementById('valorSaida'),
@@ -166,7 +168,7 @@ async function carregarClientes(selecionarCnpj) {
   if (selecionarCnpj) els.clienteSelect.value = selecionarCnpj;
 }
 
-function renderResumo({ totalDocumentos, totalEntrada, totalSaida, totalInconsistentes }, temQuebra) {
+function renderResumo({ totalDocumentos, totalEntrada, totalSaida, totalInconsistentes, totalDivergenciaCalculo }, temQuebra) {
   els.summaryPanel.hidden = false;
   els.summaryTotal.textContent = totalDocumentos;
   els.summaryEntrada.textContent = totalEntrada;
@@ -176,6 +178,8 @@ function renderResumo({ totalDocumentos, totalEntrada, totalSaida, totalInconsis
   els.summaryGapsCard.classList.toggle('no-gaps', !temQuebra);
   els.summaryInconsistentes.textContent = totalInconsistentes;
   els.summaryInconsistentesCard.classList.toggle('alerta', totalInconsistentes > 0);
+  els.summaryDivergenciaCalculo.textContent = totalDivergenciaCalculo;
+  els.summaryDivergenciaCalculoCard.classList.toggle('alerta-leve', totalDivergenciaCalculo > 0);
 }
 
 function renderValores(valores) {
@@ -195,11 +199,15 @@ const DOCUMENTS_PAGE_SIZE = 20;
 
 let documentosCarregados = [];
 let paginaDocumentosAtual = 1;
-// Filtro disparado pelos cards de "Conformidade com a Reforma Tributária"
-// (não confundir com o dropdown "Situação" acima da tabela — são dimensões
-// diferentes): null (nenhum), 'qualquer' (todos analisados pela reforma),
-// ou o valor de situacaoReforma do documento ('conforme'/'parcial'/'sem_adequacao').
+// Filtros disparados pelos cards de resumo (não confundir com o dropdown
+// "Situação" acima da tabela — são dimensões diferentes, por isso só uma
+// fica ativa por vez pra não combinar e sumir com a lista sem explicação):
+// filtroReformaAtivo — null, 'qualquer' (todos analisados pela reforma), ou
+// o valor de situacaoReforma ('conforme'/'parcial'/'sem_adequacao').
+// filtroCalculoAtivo — true mostra só documentos com divergência do Motor
+// de Validação Matemática.
 let filtroReformaAtivo = null;
+let filtroCalculoAtivo = false;
 
 function documentosFiltrados() {
   let lista = documentosCarregados;
@@ -207,6 +215,7 @@ function documentosFiltrados() {
   if (filtroSituacao !== 'todos') lista = lista.filter((d) => d.situacao === filtroSituacao);
   if (filtroReformaAtivo === 'qualquer') lista = lista.filter((d) => d.situacaoReforma !== null);
   else if (filtroReformaAtivo) lista = lista.filter((d) => d.situacaoReforma === filtroReformaAtivo);
+  if (filtroCalculoAtivo) lista = lista.filter((d) => d.validacaoMatematica && d.validacaoMatematica.status !== 'CORRETO');
   return lista;
 }
 
@@ -227,9 +236,14 @@ function atualizarCardsReformaAtivos() {
   for (const [valor, card] of Object.entries(mapa)) {
     card?.classList.toggle('card-filtro-ativo', filtroReformaAtivo === valor);
   }
+  els.summaryDivergenciaCalculoCard.classList.toggle('card-filtro-ativo', filtroCalculoAtivo);
+
   if (filtroReformaAtivo) {
     els.filtroReformaIndicador.hidden = false;
     els.filtroReformaIndicadorTexto.textContent = `Filtro por card da Reforma Tributária ativo: "${ROTULO_FILTRO_REFORMA[filtroReformaAtivo]}" —`;
+  } else if (filtroCalculoAtivo) {
+    els.filtroReformaIndicador.hidden = false;
+    els.filtroReformaIndicadorTexto.textContent = 'Filtro ativo: documentos com divergência de cálculo —';
   } else {
     els.filtroReformaIndicador.hidden = true;
   }
@@ -237,6 +251,17 @@ function atualizarCardsReformaAtivos() {
 
 function aplicarFiltroReforma(valor) {
   filtroReformaAtivo = filtroReformaAtivo === valor ? null : valor;
+  filtroCalculoAtivo = false;
+  els.situacaoFiltroSelect.value = 'todos';
+  paginaDocumentosAtual = 1;
+  atualizarCardsReformaAtivos();
+  renderPaginaDocumentos();
+  els.documentsPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function aplicarFiltroCalculo() {
+  filtroCalculoAtivo = !filtroCalculoAtivo;
+  filtroReformaAtivo = null;
   els.situacaoFiltroSelect.value = 'todos';
   paginaDocumentosAtual = 1;
   atualizarCardsReformaAtivos();
@@ -246,6 +271,7 @@ function aplicarFiltroReforma(valor) {
 
 function limparFiltroReforma() {
   filtroReformaAtivo = null;
+  filtroCalculoAtivo = false;
   paginaDocumentosAtual = 1;
   atualizarCardsReformaAtivos();
   renderPaginaDocumentos();
@@ -255,6 +281,7 @@ function renderDocumentos(documentos) {
   documentosCarregados = documentos;
   paginaDocumentosAtual = 1;
   filtroReformaAtivo = null;
+  filtroCalculoAtivo = false;
   atualizarCardsReformaAtivos();
   els.documentsPanel.hidden = false;
   renderPaginaDocumentos();
@@ -351,12 +378,51 @@ function textoReformaItem(reforma) {
   return `<div class="reforma-info">${linhaCst}${linhaClassTrib}${linhaCbenef}${linhaBaseCalculo}${linhaIbs}${linhaCbs}${aviso}</div>`;
 }
 
+const ROTULO_STATUS_CALCULO = {
+  CORRETO: 'correto',
+  DIVERGENCIA_ARREDONDAMENTO: 'diferença de arredondamento',
+  DIVERGENCIA_CALCULO: 'divergência de cálculo',
+};
+
+// Linha de um campo recalculado pelo Motor de Validação Matemática (produto,
+// ICMS, PIS ou COFINS) — mostra o valor do XML e, quando diverge do que foi
+// recalculado a partir de quantidade/base/alíquota, o valor esperado ao lado.
+function linhaValidacaoCalculo(rotulo, campo) {
+  if (!campo) return '';
+  const classe = campo.status === 'CORRETO' ? '' : campo.status === 'DIVERGENCIA_ARREDONDAMENTO' ? 'reforma-aviso' : 'destaque-erro';
+  const detalhe = campo.status === 'CORRETO' ? '' : ` <span class="hint">(esperado ${formatMoney(campo.esperado)})</span>`;
+  return `<div><strong>${rotulo}:</strong> <span class="${classe}">${formatMoney(campo.xml)}</span>${detalhe}</div>`;
+}
+
+function textoValidacaoCalculoItem(validacao) {
+  if (!validacao) return '<span class="hint">Não avaliado (documento cancelado)</span>';
+  const linhas =
+    linhaValidacaoCalculo('Produto', validacao.produto) +
+    linhaValidacaoCalculo('ICMS', validacao.icms) +
+    linhaValidacaoCalculo('PIS', validacao.pis) +
+    linhaValidacaoCalculo('COFINS', validacao.cofins);
+  return `<div class="reforma-info">${linhas}</div>`;
+}
+
+function badgeValidacaoCalculo(validacaoMatematica) {
+  if (!validacaoMatematica) return '<span class="hint">Não avaliado (documento cancelado)</span>';
+  const classe =
+    validacaoMatematica.status === 'CORRETO'
+      ? 'badge-situacao-ok'
+      : validacaoMatematica.status === 'DIVERGENCIA_ARREDONDAMENTO'
+        ? 'badge-situacao-inconsistente'
+        : 'badge-erro';
+  return `<span class="badge ${classe}">${ROTULO_STATUS_CALCULO[validacaoMatematica.status]}</span>`;
+}
+
 function abrirModalDocumento(doc) {
   els.docModalTitulo.textContent = `${doc.tipoDocumento} nº ${doc.numero} — série ${doc.serie}`;
 
   const linhasItens = doc.itens
-    .map((item) => {
+    .map((item, indice) => {
       const reformaTexto = textoReformaItem(item.reformaTributaria);
+      const validacaoItem = doc.validacaoMatematica?.itens?.[indice] || null;
+      const calculoTexto = textoValidacaoCalculoItem(validacaoItem);
       return `
         <tr>
           <td>${item.codigo}<br><span class="hint">${item.descricao}</span></td>
@@ -367,6 +433,7 @@ function abrirModalDocumento(doc) {
           <td>${formatMoney(item.icms.valor)} <span class="hint">(CST ${item.icms.cst ?? '-'} · BC ${formatMoney(item.icms.baseCalculo)})</span></td>
           <td>${formatMoney(item.pis.valor + item.cofins.valor)}</td>
           <td class="reforma-col">${reformaTexto}</td>
+          <td class="reforma-col">${calculoTexto}</td>
         </tr>
       `;
     })
@@ -375,6 +442,7 @@ function abrirModalDocumento(doc) {
   els.docModalCorpo.innerHTML = `
     <dl>
       <dt>Situação</dt><dd><span class="badge badge-situacao-${doc.situacao}">${ROTULO_SITUACAO[doc.situacao]}</span></dd>
+      <dt>Validação matemática</dt><dd>${badgeValidacaoCalculo(doc.validacaoMatematica)}</dd>
       <dt>Chave de acesso</dt><dd>${doc.chave || '-'}</dd>
       <dt>Emissão</dt><dd>${formatDate(doc.dataEmissao)}</dd>
       <dt>Natureza da operação</dt><dd>${doc.naturezaOperacao || '-'}</dd>
@@ -396,6 +464,7 @@ function abrirModalDocumento(doc) {
             <th>ICMS</th>
             <th>PIS+COFINS</th>
             <th>Reforma Tributária</th>
+            <th>Validação Matemática</th>
           </tr>
         </thead>
         <tbody>${linhasItens}</tbody>
@@ -945,9 +1014,10 @@ async function init() {
   });
   els.btnConferirDominio.addEventListener('click', conferirDominio);
   els.situacaoFiltroSelect.addEventListener('change', () => {
-    // Muda de dimensão de filtro (Situação em vez do card da Reforma) —
-    // limpa o filtro de card pra não combinar os dois e sumir com a lista.
+    // Muda de dimensão de filtro (Situação em vez de um card) — limpa os
+    // filtros de card pra não combinar e sumir com a lista sem explicação.
     filtroReformaAtivo = null;
+    filtroCalculoAtivo = false;
     atualizarCardsReformaAtivos();
     paginaDocumentosAtual = 1;
     renderPaginaDocumentos();
@@ -956,6 +1026,7 @@ async function init() {
   els.reformaConformesCard.addEventListener('click', () => aplicarFiltroReforma('conforme'));
   els.reformaParciaisCard.addEventListener('click', () => aplicarFiltroReforma('parcial'));
   els.reformaSemAdequacaoCard.addEventListener('click', () => aplicarFiltroReforma('sem_adequacao'));
+  els.summaryDivergenciaCalculoCard.addEventListener('click', aplicarFiltroCalculo);
   els.btnLimparFiltroReforma.addEventListener('click', limparFiltroReforma);
   els.btnFecharModal.addEventListener('click', fecharModal);
   els.docModalOverlay.addEventListener('click', (evento) => {
