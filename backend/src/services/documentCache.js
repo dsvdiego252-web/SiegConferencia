@@ -103,17 +103,32 @@ function linhaParaDocumento(linha) {
   };
 }
 
+// O Supabase (PostgREST) limita cada resposta a 1000 linhas por padrão,
+// mesmo sem pedir — sem paginar explicitamente com .range(), um cliente de
+// alto volume (ex.: muitas vendas NFCe) tem seus documentos cacheados
+// cortados silenciosamente em 1000, sem erro nenhum. Precisa buscar em
+// páginas até vir menos que o tamanho pedido.
+const TAMANHO_PAGINA_SUPABASE = 1000;
+
 /** Documentos já cacheados relevantes pro combo (cliente como emitente ou destinatário, conforme a direção). */
 export async function buscarDocumentosCacheados(cnpjCliente, direcao, dataInicio, dataFim) {
   const coluna = direcao === 'emit' ? 'emit_cnpj' : 'dest_cnpj';
-  const { data, error } = await supabase
-    .from('documentos_fiscais')
-    .select('*')
-    .eq(coluna, cnpjCliente)
-    .gte('data_emissao_dia', dataInicio)
-    .lte('data_emissao_dia', dataFim);
-  if (error) throw new Error(`Falha ao ler documentos cacheados no Supabase: ${error.message}`);
-  return (data || []).map(linhaParaDocumento);
+  const todos = [];
+  let offset = 0;
+  for (;;) {
+    const { data, error } = await supabase
+      .from('documentos_fiscais')
+      .select('*')
+      .eq(coluna, cnpjCliente)
+      .gte('data_emissao_dia', dataInicio)
+      .lte('data_emissao_dia', dataFim)
+      .range(offset, offset + TAMANHO_PAGINA_SUPABASE - 1);
+    if (error) throw new Error(`Falha ao ler documentos cacheados no Supabase: ${error.message}`);
+    todos.push(...(data || []));
+    if (!data || data.length < TAMANHO_PAGINA_SUPABASE) break;
+    offset += TAMANHO_PAGINA_SUPABASE;
+  }
+  return todos.map(linhaParaDocumento);
 }
 
 /**
