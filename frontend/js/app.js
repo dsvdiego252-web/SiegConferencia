@@ -996,12 +996,24 @@ const POLL_MAX_TENTATIVAS = 150;
 // loop repete a chamada até o backend responder "pronto", sem depender de
 // nenhum mecanismo de "segundo plano" pra terminar o que não coube dentro
 // do tempo de execução de uma única requisição.
+//
+// "query" pode incluir forcar=1 pra ignorar o cache e recomeçar do zero —
+// mas isso só pode acontecer na PRIMEIRA chamada. Se `forcar=1` fosse
+// mandado em toda tentativa do loop (como chegou a ser antes desse
+// comentário), cada nova tentativa reiniciava a busca de novo, apagando o
+// progresso (combos concluídos, documentos já baixados) da tentativa
+// anterior — pra qualquer cliente cujo volume não coubesse inteiro numa
+// única requisição (o normal, dado o limite de 2 req/min da SIEG), a busca
+// nunca conseguia terminar: ficava se resetando a cada 2 segundos pra
+// sempre, e o resultado que aparecia dependia só de quanto essa tentativa
+// isolada tinha conseguido buscar antes do próximo reset.
 async function buscarPainelComEspera(query) {
   for (let tentativa = 0; tentativa < POLL_MAX_TENTATIVAS; tentativa += 1) {
     // "_" garante uma URL diferente a cada tentativa, pra nenhum cache
     // (navegador, CDN etc.) devolver uma resposta antiga em vez de deixar a
     // busca avançar de verdade no servidor.
-    const painel = await apiGet(`/api/painel?${query}&_=${Date.now()}`);
+    const queryDaTentativa = tentativa === 0 ? query : query.replace(/&forcar=1\b/, '');
+    const painel = await apiGet(`/api/painel?${queryDaTentativa}&_=${Date.now()}`);
     if (painel.status === 'pronto') return painel;
     if (painel.status === 'erro') throw new Error(painel.erro || 'Falha ao buscar dados na SIEG.');
     const progresso = painel.progresso ? ` (${painel.progresso} concluído` : '';
