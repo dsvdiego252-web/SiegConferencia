@@ -1,4 +1,4 @@
-const DATA_CORTE_PADRAO = '2026-01-01'; // início da obrigatoriedade dos campos de IBS/CBS (Regime Normal)
+export const DATA_CORTE_PADRAO = '2026-01-01'; // início da obrigatoriedade dos campos de IBS/CBS (Regime Normal)
 
 function preenchido(valor) {
   return valor !== null && valor !== undefined && valor !== '';

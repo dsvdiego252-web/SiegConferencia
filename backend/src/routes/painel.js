@@ -16,6 +16,7 @@ import { obterCliente } from '../services/clientsStore.js';
 import { cacheDisponivel, lerCache, reiniciarBusca, salvarProgresso, salvarResultado, salvarErro, estaExpirado } from '../services/painelCache.js';
 import { registrarSincronizacao } from '../services/documentCache.js';
 import { validarDocumento } from '../tax-engine/math-validation/mathValidator.js';
+import { validarReformaDocumento } from '../tax-engine/rtc-xml-validator/validarReformaXml.js';
 
 export const painelRouter = Router();
 
@@ -100,6 +101,13 @@ function montarPainelDeClassificados(classificados, dataCorteReforma) {
       // próprios campos do XML e confere se a aritmética fecha. Não tem
       // relação com estar "adequado à reforma" ou não.
       validacaoMatematica: doc.cancelada ? null : validarDocumento(doc),
+      // XML_REFORMA_VALIDATOR (tax-engine) — outra camada, também
+      // independente: confere se os campos de IBS/CBS que o próprio XML
+      // declara são coerentes com a tabela oficial de tratamentos (CST x
+      // cClassTrib) e com a própria aritmética do documento. Só roda em
+      // itens que já têm o grupo IBSCBS presente — "sem adequação" continua
+      // sendo responsabilidade de situacaoReforma/situacao acima.
+      validacaoReforma: doc.cancelada ? null : validarReformaDocumento(doc, dataCorteReforma),
     };
   });
 
@@ -138,6 +146,8 @@ function montarPainelDeClassificados(classificados, dataCorteReforma) {
       totalInconsistentes: documentos.filter((d) => d.situacao === 'inconsistente').length,
       totalCanceladas: documentos.filter((d) => d.situacao === 'cancelada').length,
       totalDivergenciaCalculo: documentos.filter((d) => d.validacaoMatematica && d.validacaoMatematica.status !== 'CORRETO')
+        .length,
+      totalDivergenciaReforma: documentos.filter((d) => d.validacaoReforma && d.validacaoReforma.status === 'DIVERGENTE')
         .length,
       documentos,
     },

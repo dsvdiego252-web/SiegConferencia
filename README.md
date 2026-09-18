@@ -403,15 +403,51 @@ documento de `/api/painel`, com um resumo (`totalDivergenciaCalculo`) e o
 card "Divergências de cálculo" no painel — clicável, como os cards da
 Reforma Tributária.
 
+### Base de regras (`tax-engine/legal-rules/`)
+
+Pacote de dados fiscais fornecido pelo usuário ("RTC Motor Modular
+v4.34"), commitado como JSON estático versionado em
+`tax-engine/legal-rules/data/` (não em tabelas Supabase — segue o próprio
+padrão de arquitetura do pacote original, um loader de arquivo sem lógica
+tributária hardcoded). Cobre a base legal completa da LC 214/2025
+(Anexos I-XV, art. 147, medicamentos), a tabela oficial de tratamentos
+CST×cClassTrib, classificação semântica de NCM, regras reaproveitáveis já
+validadas manualmente e a especificação completa do XML_REFORMA_VALIDATOR.
+Lido através de `tax-engine/legal-rules/repository.js` (loader ES module
+com cache, um método por domínio: `getCore`, `getClassification`,
+`getValidation`, `getLegal`, `getTax`, `getFlows`, `getFinancial`,
+`getReusableRules`, `getRTCXmlValidator`, `getIntegration`).
+
+### XML_REFORMA_VALIDATOR (`tax-engine/rtc-xml-validator/`)
+
+Segundo módulo implementado. Ao contrário do Motor de Validação
+Matemática, este já usa a tabela oficial de tratamentos
+(`classification/treatments.json`) — mas com um escopo deliberadamente
+limitado: confere se os campos de IBS/CBS que o **próprio XML declara**
+(CST, cClassTrib, percentuais, reduções, valores) são internamente
+coerentes com essa tabela e com a aritmética do documento. **Não**
+determina qual é o benefício correto para o produto/serviço — isso ainda
+depende do Motor de Mercadorias/Serviços (NCM + descrição + regras legais),
+que não existe. Por isso nunca aponta "o produto deveria ter outro CST" —
+só aponta quando o cClassTrib informado não bate com o CST que a própria
+tabela associa a ele, quando a redução informada diverge da prevista, ou
+quando a conta (base × alíquota) não fecha.
+
+Quando o cClassTrib do XML nem consta na tabela carregada (que cobre 26
+tratamentos, um subconjunto), o resultado é `REVISAO_MANUAL` — ausência na
+tabela não significa código errado, só que o módulo não pode confirmar
+automaticamente com os dados disponíveis. Documentos monofásicos
+(`gIBSCBSMono`) e Imposto Seletivo (alíquota pendente de lei ordinária,
+conforme a própria base de regras) ficam com nota informativa, nunca
+divergência. O resultado (`validacaoReforma`) vem em cada documento de
+`/api/painel`, com resumo (`totalDivergenciaReforma`) e coluna própria no
+modal de detalhes ("Conferência RTC").
+
 **Próximos módulos planejados** (ainda não implementados): Motor de
 Mercadorias e de Serviços (determinar o tratamento correto por
-NCM/CFOP/descrição ou por código de serviço/NBS), Motor do Simples
-Nacional, evolução do Motor da Reforma Tributária para validar o *cálculo*
-do IBS/CBS (não só a presença dos campos), e a Central de Auditoria
-consolidando tudo por cliente. Esses módulos dependem de tabelas fiscais
-oficiais versionadas (CST×cClassTrib, NCM/CEST, listas de produtos
-monofásicos etc.) que ainda precisam ser carregadas no sistema — sem elas,
-o motor não deve "adivinhar" uma classificação fiscal.
+NCM/CFOP/descrição ou por código de serviço/NBS, usando a base semântica já
+carregada), Motor do Simples Nacional, e a Central de Auditoria
+consolidando tudo por cliente.
 
 ## Endpoints do backend
 

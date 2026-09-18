@@ -416,6 +416,50 @@ function badgeValidacaoCalculo(validacaoMatematica) {
   return `<span class="badge ${classe}">${ROTULO_STATUS_CALCULO[validacaoMatematica.status]}</span>`;
 }
 
+const ROTULO_STATUS_RTC = {
+  CORRETO: 'coerente com a tabela oficial',
+  REVISAO_MANUAL: 'revisão manual',
+  CST_CCLASSTRIB_INCOMPATIVEL: 'CST incompatível com o cClassTrib',
+  BENEFICIO_NAO_APLICADO: 'benefício não aplicado',
+  BENEFICIO_APLICADO_INDEVIDAMENTE: 'benefício aplicado indevidamente',
+  REDUCAO_INCORRETA: 'percentual de redução incorreto',
+  CALCULO_IBS_INCORRETO: 'cálculo do IBS incorreto',
+  CALCULO_CBS_INCORRETO: 'cálculo do CBS incorreto',
+};
+
+// Conferência do XML_REFORMA_VALIDATOR (tax-engine/rtc-xml-validator): ao
+// contrário de textoReformaItem (que só mostra o que o XML declara), aqui
+// mostra o RESULTADO da comparação com a tabela oficial de tratamentos —
+// só existe quando o grupo IBSCBS está presente no item.
+function textoValidacaoReformaItem(validacao) {
+  if (!validacao) return '<span class="hint">Sem grupo IBS/CBS no item — nada a conferir aqui.</span>';
+  const classeBadge = validacao.status === 'CORRETO' ? 'badge-situacao-ok' : validacao.status === 'REVISAO_MANUAL' ? 'badge-situacao-inconsistente' : 'badge-erro';
+  const badge = `<span class="badge ${classeBadge}">${ROTULO_STATUS_RTC[validacao.status] || validacao.status}</span>`;
+  const divergencias = (validacao.divergencias || []).map((d) => `<div class="destaque-erro">${d}</div>`).join('');
+  const notas = (validacao.notas || []).map((n) => `<div class="hint">${n}</div>`).join('');
+  return `<div class="reforma-info">${badge}${divergencias}${notas}</div>`;
+}
+
+const ROTULO_STATUS_RTC_DOCUMENTO = {
+  CORRETO: 'coerente',
+  REVISAO_MANUAL: 'revisão manual',
+  DIVERGENTE: 'divergências encontradas',
+  TOTAL_REFORMA_DIVERGENTE: 'total do documento diverge',
+};
+
+function badgeValidacaoReformaDocumento(validacaoReforma) {
+  if (!validacaoReforma || validacaoReforma.status === null) {
+    return '<span class="hint">Sem itens com grupo IBS/CBS neste documento.</span>';
+  }
+  const classe =
+    validacaoReforma.status === 'CORRETO'
+      ? 'badge-situacao-ok'
+      : validacaoReforma.status === 'REVISAO_MANUAL'
+        ? 'badge-situacao-inconsistente'
+        : 'badge-erro';
+  return `<span class="badge ${classe}">${ROTULO_STATUS_RTC_DOCUMENTO[validacaoReforma.status] || validacaoReforma.status}</span>`;
+}
+
 function abrirModalDocumento(doc) {
   els.docModalTitulo.textContent = `${doc.tipoDocumento} nº ${doc.numero} — série ${doc.serie}`;
 
@@ -424,6 +468,8 @@ function abrirModalDocumento(doc) {
       const reformaTexto = textoReformaItem(item.reformaTributaria);
       const validacaoItem = doc.validacaoMatematica?.itens?.[indice] || null;
       const calculoTexto = textoValidacaoCalculoItem(validacaoItem);
+      const validacaoRtcItem = doc.validacaoReforma?.itens?.[indice]?.validacao || null;
+      const validacaoRtcTexto = textoValidacaoReformaItem(validacaoRtcItem);
       return `
         <tr>
           <td>${item.codigo}<br><span class="hint">${item.descricao}</span></td>
@@ -435,6 +481,7 @@ function abrirModalDocumento(doc) {
           <td>${formatMoney(item.pis.valor + item.cofins.valor)}</td>
           <td class="reforma-col">${reformaTexto}</td>
           <td class="reforma-col">${calculoTexto}</td>
+          <td class="reforma-col">${validacaoRtcTexto}</td>
         </tr>
       `;
     })
@@ -444,6 +491,7 @@ function abrirModalDocumento(doc) {
     <dl>
       <dt>Situação</dt><dd><span class="badge badge-situacao-${doc.situacao}">${ROTULO_SITUACAO[doc.situacao]}</span></dd>
       <dt>Validação matemática</dt><dd>${badgeValidacaoCalculo(doc.validacaoMatematica)}</dd>
+      <dt>Conferência RTC (IBS/CBS)</dt><dd>${badgeValidacaoReformaDocumento(doc.validacaoReforma)}</dd>
       <dt>Chave de acesso</dt><dd>${doc.chave || '-'}</dd>
       <dt>Emissão</dt><dd>${formatDate(doc.dataEmissao)}</dd>
       <dt>Natureza da operação</dt><dd>${doc.naturezaOperacao || '-'}</dd>
@@ -466,6 +514,7 @@ function abrirModalDocumento(doc) {
             <th>PIS+COFINS</th>
             <th>Reforma Tributária</th>
             <th>Validação Matemática</th>
+            <th>Conferência RTC (CST × cClassTrib)</th>
           </tr>
         </thead>
         <tbody>${linhasItens}</tbody>

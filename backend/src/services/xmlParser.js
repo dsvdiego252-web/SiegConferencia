@@ -44,6 +44,34 @@ function buscarValorRecursivo(obj, chave) {
   return null;
 }
 
+// Mesma ideia de busca recursiva, mas devolve o objeto/subgrupo inteiro em
+// vez de um valor escalar — usado para gIBSUF/gIBSMun/gCBS/gTribRegular,
+// cuja profundidade exata dentro de <gIBSCBS> pode variar entre a
+// especificação e o que cada emissor efetivamente grava.
+function buscarGrupoRecursivo(obj, chave) {
+  if (!obj || typeof obj !== 'object') return null;
+  if (chave in obj && obj[chave] && typeof obj[chave] === 'object') return obj[chave];
+  for (const valor of Object.values(obj)) {
+    if (valor && typeof valor === 'object') {
+      const encontrado = buscarGrupoRecursivo(valor, chave);
+      if (encontrado !== null) return encontrado;
+    }
+  }
+  return null;
+}
+
+// Extrai um grupo de redução (gRed: pRedAliq/pAliqEfet) ou diferimento
+// (gDif: pDif/vDif) quando presente, devolvendo null se ausente — a
+// ausência em si é informação relevante (indica que o item não usa
+// redução/diferimento).
+function extrairSubgrupoOpcional(grupo, chave, campos) {
+  const sub = grupo && typeof grupo === 'object' ? grupo[chave] : null;
+  if (!sub || typeof sub !== 'object') return null;
+  const resultado = {};
+  for (const campo of campos) resultado[campo] = toNumber(sub[campo]);
+  return resultado;
+}
+
 // Extrai os campos criados pela Nota Técnica 2025.002 (Reforma
 // Tributária — IBS/CBS/IS) quando presentes no item. O grupo <IBSCBS>
 // tem duas variantes conforme o tipo de operação: <gIBSCBS> (regra
@@ -53,10 +81,51 @@ function buscarValorRecursivo(obj, chave) {
 // conformidade da reforma detecta.
 function extrairReformaTributaria(imposto) {
   const grupo = imposto?.IBSCBS;
-  if (!grupo) return { presente: false, classTrib: null, cst: null, cBenef: null, valorIbs: 0, valorCbs: 0 };
+  if (!grupo) {
+    return {
+      presente: false, classTrib: null, cst: null, cBenef: null, valorIbs: 0, valorCbs: 0,
+      ibsUf: null, ibsMunicipio: null, cbs: null, tributacaoRegularPresente: false, impostoSeletivo: null,
+    };
+  }
 
   const monofasico = Boolean(grupo.gIBSCBSMono);
   const gValores = grupo.gIBSCBS ?? grupo.gIBSCBSMono ?? {};
+
+  // gIBSUF/gIBSMun/gCBS podem estar diretamente em gIBSCBS ou aninhados de
+  // forma diferente conforme o emissor — busca recursiva evita presumir uma
+  // única profundidade fixa (ver buscarGrupoRecursivo acima).
+  const gIBSUF = buscarGrupoRecursivo(gValores, 'gIBSUF');
+  const gIBSMun = buscarGrupoRecursivo(gValores, 'gIBSMun');
+  const gCBS = buscarGrupoRecursivo(gValores, 'gCBS');
+  const gTribRegular = buscarGrupoRecursivo(gValores, 'gTribRegular');
+  const grupoIS = imposto?.IS ?? buscarGrupoRecursivo(imposto, 'IS');
+
+  const ibsUf = gIBSUF
+    ? {
+        percentual: toNumber(gIBSUF.pIBSUF),
+        valor: toNumber(gIBSUF.vIBSUF),
+        reducao: extrairSubgrupoOpcional(gIBSUF, 'gRed', ['pRedAliq', 'pAliqEfet']),
+        diferimento: extrairSubgrupoOpcional(gIBSUF, 'gDif', ['pDif', 'vDif']),
+      }
+    : null;
+
+  const ibsMunicipio = gIBSMun
+    ? {
+        percentual: toNumber(gIBSMun.pIBSMun),
+        valor: toNumber(gIBSMun.vIBSMun),
+        reducao: extrairSubgrupoOpcional(gIBSMun, 'gRed', ['pRedAliq', 'pAliqEfet']),
+        diferimento: extrairSubgrupoOpcional(gIBSMun, 'gDif', ['pDif', 'vDif']),
+      }
+    : null;
+
+  const cbs = gCBS
+    ? {
+        percentual: toNumber(gCBS.pCBS),
+        valor: toNumber(gCBS.vCBS),
+        reducao: extrairSubgrupoOpcional(gCBS, 'gRed', ['pRedAliq', 'pAliqEfet']),
+        diferimento: extrairSubgrupoOpcional(gCBS, 'gDif', ['pDif', 'vDif']),
+      }
+    : null;
 
   return {
     presente: true,
@@ -65,8 +134,15 @@ function extrairReformaTributaria(imposto) {
     classTrib: grupo.cClassTrib ?? null,
     cBenef: buscarValorRecursivo(grupo, 'cBenef'),
     valorBaseCalculo: toNumber(gValores.vBC),
-    valorIbs: toNumber(gValores?.gIBS?.vIBS),
-    valorCbs: toNumber(gValores?.gCBS?.vCBS),
+    valorIbs: toNumber(buscarGrupoRecursivo(gValores, 'gIBS')?.vIBS ?? gValores?.gIBS?.vIBS),
+    valorCbs: toNumber(gCBS?.vCBS),
+    ibsUf,
+    ibsMunicipio,
+    cbs,
+    tributacaoRegularPresente: Boolean(gTribRegular),
+    impostoSeletivo: grupoIS
+      ? { cst: grupoIS.CSTIS ?? grupoIS.CST ?? null, classTrib: grupoIS.cClassTribIS ?? grupoIS.cClassTrib ?? null }
+      : null,
   };
 }
 
@@ -91,6 +167,7 @@ export function parseNfeXml(xmlString) {
   const emit = infNFe.emit ?? {};
   const dest = infNFe.dest ?? {};
   const total = infNFe.total?.ICMSTot ?? {};
+  const ibscbsTot = infNFe.total?.IBSCBSTot ?? null;
   const chave = (infNFe['@_Id'] || '').replace(/^NFe/, '');
   const cStat = parsed?.nfeProc?.protNFe?.infProt?.cStat;
 
@@ -151,6 +228,12 @@ export function parseNfeXml(xmlString) {
     valorProdutosTotal: toNumber(total.vProd),
     valorPisTotal: toNumber(total.vPIS),
     valorCofinsTotal: toNumber(total.vCOFINS),
+    reformaTributariaTotal: ibscbsTot
+      ? {
+          valorIbs: toNumber(buscarGrupoRecursivo(ibscbsTot, 'gIBS')?.vIBS ?? ibscbsTot.vIBS),
+          valorCbs: toNumber(ibscbsTot.vCBS),
+        }
+      : null,
     itens,
   };
 }
