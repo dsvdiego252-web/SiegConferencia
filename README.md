@@ -150,6 +150,42 @@ create table sieg_rate_limit (
 );
 ```
 
+E mais estas duas — cache permanente de documentos, pra não rebaixar da SIEG
+o que já foi buscado antes (ver "Cache permanente de documentos" abaixo):
+
+```sql
+create table documentos_fiscais (
+  chave text primary key,
+  tipo_documento text not null,
+  numero integer,
+  serie integer,
+  data_emissao text,
+  data_emissao_dia date not null,
+  natureza_operacao text,
+  cancelada boolean not null default false,
+  emit_cnpj text not null,
+  emit_nome text,
+  dest_cnpj text,
+  dest_nome text,
+  valor_total numeric not null default 0,
+  valor_icms_total numeric not null default 0,
+  valor_produtos_total numeric not null default 0,
+  itens jsonb not null default '[]'::jsonb,
+  atualizado_em timestamptz not null default now()
+);
+create index if not exists documentos_fiscais_emit_idx on documentos_fiscais (emit_cnpj, data_emissao_dia);
+create index if not exists documentos_fiscais_dest_idx on documentos_fiscais (dest_cnpj, data_emissao_dia);
+
+create table sieg_sync_dias (
+  cnpj_cliente text not null,
+  xml_type integer not null,
+  direcao text not null,
+  dia date not null,
+  sincronizado_em timestamptz not null default now(),
+  primary key (cnpj_cliente, xml_type, direcao, dia)
+);
+```
+
 E configure na Vercel:
 
 - `SUPABASE_URL` — a Project URL do projeto (Project Settings → API Keys).
@@ -208,6 +244,38 @@ integração usando a mesma API Key, etc.) — nesse caso a busca não é mais
 marcada como erro permanente: o progresso já feito fica salvo e a próxima
 tentativa (poll do front-end) tenta de novo sozinha, com uma pausa
 transitória visível na mensagem de status.
+
+### Cache permanente de documentos (`documentos_fiscais` / `sieg_sync_dias`)
+
+O limite de 2 requisições/minuto da SIEG é fixo — nenhuma mudança no código
+baixa mais rápido. O que dá pra evitar é rebaixar o que **já foi baixado
+antes**: cada documento (por chave de acesso, nunca duplicado) fica guardado
+permanentemente em `documentos_fiscais`, e `sieg_sync_dias` registra, por
+cliente + tipo + direção, quais dias já foram totalmente sincronizados. Numa
+busca nova, se todo o período pedido já está coberto, os documentos vêm
+direto do Supabase — nenhuma chamada à SIEG.
+
+Um dia só é marcado como sincronizado depois de ficar com mais de 32 dias
+(a janela de cancelamento/eventos da SEFAZ já certamente fechou) — dias mais
+recentes que isso são **sempre** buscados de novo na SIEG, do jeito que já
+era antes desta mudança, pra nunca servir do cache um documento que ainda
+pode ter o status alterado (ex.: cancelado depois da emissão). Na prática:
+reconsultar um período com dias recentes continua no mesmo ritmo de sempre;
+reconsultar um mês já fechado (o caso mais comum — fechamento contábil,
+conferência repetida) fica praticamente instantâneo depois da primeira vez.
+
+Sem `SUPABASE_URL`/`SUPABASE_SECRET_KEY` (dev local), esse cache fica
+desligado e toda busca é ao vivo, como sempre foi. Falhas ao ler/gravar esse
+cache (ex.: instabilidade pontual do Supabase) nunca derrubam uma busca — o
+pior caso é simplesmente buscar ao vivo daquela vez, como se o cache não
+existisse.
+
+Limitação conhecida da primeira versão: o cache só é usado quando o
+**período inteiro** pedido já está coberto — um período que mistura dias já
+cacheados com dias novos ainda busca tudo ao vivo (não reaproveita a parte
+que já teria cache). Isso cobre o caso mais comum na prática (reconsultar um
+mês já fechado) sem a complexidade de calcular "buracos" dentro de um
+período misto.
 
 ## Endpoints do backend
 

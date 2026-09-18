@@ -14,6 +14,7 @@ import { analisarConformidadeReforma } from '../services/reformaTributariaAnalyz
 import { XmlType } from '../services/siegClient.js';
 import { obterCliente } from '../services/clientsStore.js';
 import { cacheDisponivel, lerCache, reiniciarBusca, salvarProgresso, salvarResultado, salvarErro, estaExpirado } from '../services/painelCache.js';
+import { registrarSincronizacao } from '../services/documentCache.js';
 
 export const painelRouter = Router();
 
@@ -213,6 +214,19 @@ painelRouter.get('/', async (req, res) => {
         if (resultado.completo) {
           docsAcumulados = mesclarDocumentos(docsAcumulados, docsDoComboAtualizados);
           combosConcluidos.add(chave);
+          // Só grava no cache permanente o que realmente veio da SIEG agora
+          // — reescrever o que acabou de vir do próprio cache é trabalho à
+          // toa. Falha ao gravar não pode derrubar a busca (os documentos já
+          // buscados nesta requisição continuam válidos de qualquer forma) —
+          // só registra e segue, tenta gravar de novo na próxima vez que
+          // esse período for buscado.
+          if (!resultado.doCache) {
+            try {
+              await registrarSincronizacao(cnpj, combo.xmlType, combo.direcao, dataInicio, dataFim, docsDoComboAtualizados);
+            } catch (erroCache) {
+              console.error('Falha ao gravar cache permanente de documentos:', erroCache.message);
+            }
+          }
           comboParcial = null;
         } else {
           comboParcial = { chave, proximoSkip: resultado.proximoSkip, docs: docsDoComboAtualizados };

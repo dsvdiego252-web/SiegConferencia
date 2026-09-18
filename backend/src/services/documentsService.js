@@ -1,6 +1,7 @@
 import { fetchAllXmls, XmlType } from './siegClient.js';
 import { parseNfeBatch, classificarOperacao } from './xmlParser.js';
 import { estaDentroDoPeriodo } from './dateUtils.js';
+import { periodoTotalmenteCacheado, buscarDocumentosCacheados } from './documentCache.js';
 
 const TIPO_DOCUMENTO_POR_XMLTYPE = { [XmlType.NFE]: 'NFe', [XmlType.NFCE]: 'NFCe' };
 
@@ -35,6 +36,26 @@ export function chaveCombo(combo) {
  * novo depois.
  */
 export async function buscarCombo(combo, { clienteCnpj, dataInicio, dataFim, skipInicial, prazoFinal }) {
+  // Se o período inteiro já foi sincronizado antes (nenhum dia "recente
+  // demais" pra confiar — ver documentCache.js), usa o que já está
+  // guardado, sem gastar cota da SIEG. Só faz sentido checar isso no início
+  // do combo (skipInicial 0): uma busca retomada no meio de uma paginação
+  // já está usando dados vindos da SIEG, por definição não veio do cache.
+  if (!skipInicial) {
+    // Uma falha ao consultar o cache (ex.: instabilidade pontual do
+    // Supabase) não pode impedir a busca — só faz cair no caminho normal
+    // (buscar ao vivo na SIEG), como se nada estivesse cacheado.
+    try {
+      const cacheado = await periodoTotalmenteCacheado(clienteCnpj, combo.xmlType, combo.direcao, dataInicio, dataFim);
+      if (cacheado) {
+        const docs = await buscarDocumentosCacheados(clienteCnpj, combo.direcao, dataInicio, dataFim);
+        return { docs, completo: true, proximoSkip: 0, doCache: true };
+      }
+    } catch (erroCache) {
+      console.error('Falha ao consultar cache permanente de documentos:', erroCache.message);
+    }
+  }
+
   const filtroDirecao = combo.direcao === 'emit' ? { cnpjEmit: clienteCnpj } : { cnpjDest: clienteCnpj };
   const resultado = await fetchAllXmls({
     xmlType: combo.xmlType,
@@ -44,7 +65,12 @@ export async function buscarCombo(combo, { clienteCnpj, dataInicio, dataFim, ski
     skipInicial,
     prazoFinal,
   });
-  return { docs: parseNfeBatch(resultado.xmls), completo: resultado.completo, proximoSkip: resultado.proximoSkip };
+  return {
+    docs: parseNfeBatch(resultado.xmls),
+    completo: resultado.completo,
+    proximoSkip: resultado.proximoSkip,
+    doCache: false,
+  };
 }
 
 /** Junta duas listas de documentos já parseados, sem duplicar por chave de acesso. */
