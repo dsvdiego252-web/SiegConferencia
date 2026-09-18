@@ -60,10 +60,8 @@ const els = {
   filtroReformaIndicador: document.getElementById('filtroReformaIndicador'),
   filtroReformaIndicadorTexto: document.getElementById('filtroReformaIndicadorTexto'),
   btnLimparFiltroReforma: document.getElementById('btnLimparFiltroReforma'),
-  reformaPanel: document.getElementById('reformaPanel'),
   reformaDataCorte: document.getElementById('reformaDataCorte'),
   reformaRegimeInfo: document.getElementById('reformaRegimeInfo'),
-  reformaResumoTableBody: document.querySelector('#reformaResumoTable tbody'),
   dominioFileInput: document.getElementById('dominioFileInput'),
   btnConferirDominio: document.getElementById('btnConferirDominio'),
   reconciliationStatus: document.getElementById('reconciliationStatus'),
@@ -170,14 +168,14 @@ async function carregarClientes(selecionarCnpj) {
   if (selecionarCnpj) els.clienteSelect.value = selecionarCnpj;
 }
 
-function renderResumo({ totalDocumentos, totalEntrada, totalSaida, totalInconsistentes, totalDivergenciaCalculo }, temQuebra) {
+function renderResumo({ totalDocumentos, totalEntrada, totalSaida, totalInconsistentes, totalDivergenciaCalculo }, totalFaltando) {
   els.summaryPanel.hidden = false;
   els.summaryTotal.textContent = totalDocumentos;
   els.summaryEntrada.textContent = totalEntrada;
   els.summarySaida.textContent = totalSaida;
-  els.summaryGaps.textContent = temQuebra ? 'Sim' : 'Não';
-  els.summaryGapsCard.classList.toggle('has-gaps', temQuebra);
-  els.summaryGapsCard.classList.toggle('no-gaps', !temQuebra);
+  els.summaryGaps.textContent = totalFaltando;
+  els.summaryGapsCard.classList.toggle('has-gaps', totalFaltando > 0);
+  els.summaryGapsCard.classList.toggle('no-gaps', totalFaltando === 0);
   els.summaryInconsistentes.textContent = totalInconsistentes;
   els.summaryInconsistentesCard.classList.toggle('alerta', totalInconsistentes > 0);
   els.summaryDivergenciaCalculo.textContent = totalDivergenciaCalculo;
@@ -520,7 +518,7 @@ function construirAbaItens(doc) {
           <td>${item.cfop || '-'}</td>
           <td>${item.quantidade}</td>
           <td>${formatMoney(item.valorProduto)}</td>
-          <td>${formatMoney(item.icms.valor)} <span class="hint">(CST ${item.icms.cst ?? '-'} · BC ${formatMoney(item.icms.baseCalculo)})</span></td>
+          <td>${formatMoney(item.icms.valor)} <span class="hint">(CST ${item.icms.cst ?? '-'} · ${item.icms.aliquota}%)</span></td>
           <td>${formatMoney(item.pis.valor + item.cofins.valor)}</td>
         </tr>
       `
@@ -752,17 +750,20 @@ function fecharModal() {
   els.docModalOverlay.hidden = true;
 }
 
+// Retorna quantos números de documento estão faltando no total (soma das
+// faixas faltantes de todos os grupos) — é isso que o card "Quebra de
+// Sequência" no resumo mostra, em vez de só "Sim/Não" como antes.
 function renderSequencia(grupos) {
   els.sequencePanel.hidden = false;
   els.sequenceTableBody.innerHTML = '';
   if (!grupos.length) {
     els.sequenceTableBody.innerHTML = '<tr class="empty-row"><td colspan="7">Nenhum documento de saída no período.</td></tr>';
-    return false;
+    return 0;
   }
-  let temQuebra = false;
+  let totalFaltando = 0;
   for (const g of grupos) {
-    if (g.temQuebra) temQuebra = true;
     const faltando = g.faixasFaltantes.map((f) => (f.inicio === f.fim ? f.inicio : `${f.inicio}-${f.fim}`)).join(', ') || '—';
+    totalFaltando += g.faixasFaltantes.reduce((soma, f) => soma + (f.fim - f.inicio + 1), 0);
     const tr = document.createElement('tr');
     tr.className = g.temQuebra ? 'row-gap' : 'row-ok';
     tr.innerHTML = `
@@ -776,7 +777,11 @@ function renderSequencia(grupos) {
     `;
     els.sequenceTableBody.appendChild(tr);
   }
-  return temQuebra;
+  return totalFaltando;
+}
+
+function irParaQuebrasDeSequencia() {
+  els.sequencePanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 const TAX_PAGE_SIZE = 20;
@@ -853,7 +858,6 @@ const ROTULO_REGIME = {
 
 function renderReforma(reforma, cliente) {
   els.reformaSummaryPanel.hidden = false;
-  els.reformaPanel.hidden = false;
   els.reformaDataCorte.textContent = formatDate(reforma.dataCorte);
 
   const regime = cliente?.regimeTributario;
@@ -871,26 +875,6 @@ function renderReforma(reforma, cliente) {
 
   els.reformaParciaisCard.classList.toggle('alerta-leve', reforma.totais.parciais > 0);
   els.reformaSemAdequacaoCard.classList.toggle('alerta', reforma.totais.semAdequacao > 0);
-
-  els.reformaResumoTableBody.innerHTML = '';
-  if (!reforma.resumoPorEmitente.length) {
-    els.reformaResumoTableBody.innerHTML =
-      '<tr class="empty-row"><td colspan="5">Nenhum documento emitido desde a vigência da reforma no período.</td></tr>';
-  }
-  for (const r of reforma.resumoPorEmitente) {
-    const tr = document.createElement('tr');
-    if (r.semAdequacao > 0) tr.className = 'row-gap';
-    else if (r.parciais > 0) tr.className = 'row-pendente';
-    else tr.className = 'row-ok';
-    tr.innerHTML = `
-      <td>${r.emitNome || r.emitCnpj}</td>
-      <td>${r.totalDocumentos}</td>
-      <td>${r.conformes}</td>
-      <td>${r.parciais}</td>
-      <td>${r.semAdequacao}</td>
-    `;
-    els.reformaResumoTableBody.appendChild(tr);
-  }
 }
 
 function csvEscape(valor) {
@@ -1076,10 +1060,10 @@ async function atualizar(forcarAtualizacao = false) {
     ultimoPainel = painel;
 
     renderDocumentos(painel.xmls.documentos);
-    const temQuebra = renderSequencia(painel.sequence.grupos);
+    const totalFaltando = renderSequencia(painel.sequence.grupos);
     renderTributos(painel.tax.meses);
     renderReforma(painel.reforma, painel.cliente);
-    renderResumo(painel.xmls, temQuebra);
+    renderResumo(painel.xmls, totalFaltando);
     renderValores(painel.valores);
 
     setStatus(`Atualizado às ${new Date().toLocaleTimeString('pt-BR')}.`);
@@ -1332,6 +1316,7 @@ async function init() {
   els.reformaParciaisCard.addEventListener('click', () => aplicarFiltroReforma('parcial'));
   els.reformaSemAdequacaoCard.addEventListener('click', () => aplicarFiltroReforma('sem_adequacao'));
   els.summaryDivergenciaCalculoCard.addEventListener('click', aplicarFiltroCalculo);
+  els.summaryGapsCard.addEventListener('click', irParaQuebrasDeSequencia);
   els.btnLimparFiltroReforma.addEventListener('click', limparFiltroReforma);
   els.btnFecharModal.addEventListener('click', fecharModal);
   els.docModalOverlay.addEventListener('click', (evento) => {

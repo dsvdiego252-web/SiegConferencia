@@ -244,6 +244,20 @@ button:disabled {
   gap: 14px;
 }
 
+/* Cabeçalho opcional dentro de um .summary — grid item que ocupa a linha
+   inteira, pro título/explicação não virar mais um "card" no grid. */
+.summary-header {
+  grid-column: 1 / -1;
+}
+
+.summary-header h2 {
+  margin: 0 0 4px;
+}
+
+.summary-header .hint {
+  margin: 0 0 4px;
+}
+
 .summary-card {
   display: flex;
   flex-direction: column;

@@ -178,11 +178,20 @@ export function parseNfeXml(xmlString) {
     const pis = firstChildValues(imposto.PIS);
     const cofins = firstChildValues(imposto.COFINS);
 
+    // NCM tem sempre 8 dígitos, mas o fast-xml-parser (parseTagValue: true)
+    // converte o conteúdo da tag pra número quando parece numérico — e
+    // Number("02044300") vira 2044300, perdendo o zero à esquerda dos
+    // capítulos 01-09. Sem repor esse zero, tanto a exibição quanto o
+    // Motor de Mercadorias (que compara prefixo de NCM dígito a dígito)
+    // ficam com o código desalinhado.
+    const ncmBruto = String(prod.NCM ?? '');
+    const ncm = ncmBruto ? ncmBruto.padStart(8, '0') : '';
+
     return {
       numeroItem: Number(det['@_nItem']) || undefined,
       codigo: String(prod.cProd ?? ''),
       descricao: String(prod.xProd ?? ''),
-      ncm: String(prod.NCM ?? ''),
+      ncm,
       cfop: String(prod.CFOP ?? ''),
       quantidade: toNumber(prod.qCom),
       valorUnitario: toNumber(prod.vUnCom),

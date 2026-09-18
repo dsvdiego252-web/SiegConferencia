@@ -75,9 +75,9 @@
         <span class="summary-value" id="summarySaida">0</span>
         <span class="summary-label">Saídas</span>
       </div>
-      <div class="summary-card" id="summaryGapsCard">
+      <div class="summary-card summary-card-clickable" id="summaryGapsCard" title="Clique para ver quais documentos têm quebra de sequência">
         <span class="summary-value" id="summaryGaps">0</span>
-        <span class="summary-label">Quebras de sequência</span>
+        <span class="summary-label">Quebra de Sequência</span>
       </div>
       <div class="summary-card" id="summaryInconsistentesCard">
         <span class="summary-value" id="summaryInconsistentes">0</span>
@@ -90,6 +90,15 @@
     </section>
 
     <section class="panel summary" id="reformaSummaryPanel" hidden>
+      <div class="summary-header">
+        <h2>Conformidade com a Reforma Tributária (IBS/CBS)</h2>
+        <p class="hint">
+          Verifica se os documentos emitidos desde <span id="reformaDataCorte">01/01/2026</span> trazem os campos da
+          Nota Técnica 2025.002 preenchidos (CST do IBS/CBS, Classificação Tributária, e opcionalmente cBenef).
+          Não valida o cálculo dos valores — só se o emissor do cliente já está adequado e enviando essa informação.
+        </p>
+        <p class="hint" id="reformaRegimeInfo"></p>
+      </div>
       <div class="summary-card summary-card-clickable" id="reformaTotalAnalisadosCard" title="Clique para ver esses documentos na tabela abaixo">
         <span class="summary-value" id="reformaTotalAnalisados">0</span>
         <span class="summary-label">Documentos desde a vigência</span>
@@ -219,30 +228,6 @@
         </table>
       </div>
       <div class="pagination" id="taxPagination"></div>
-    </section>
-
-    <section class="panel" id="reformaPanel" hidden>
-      <h2>Conformidade com a Reforma Tributária (IBS/CBS)</h2>
-      <p class="hint">
-        Verifica se os documentos emitidos desde <span id="reformaDataCorte">01/01/2026</span> trazem os campos da
-        Nota Técnica 2025.002 preenchidos (CST do IBS/CBS, Classificação Tributária, e opcionalmente cBenef).
-        Não valida o cálculo dos valores — só se o emissor do cliente já está adequado e enviando essa informação.
-      </p>
-      <p class="hint" id="reformaRegimeInfo"></p>
-      <div class="table-wrap">
-        <table id="reformaResumoTable">
-          <thead>
-            <tr>
-              <th>Emitente</th>
-              <th>Documentos</th>
-              <th>Conformes</th>
-              <th>Parciais</th>
-              <th>Sem adequação</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
     </section>
 
     <section class="panel">
