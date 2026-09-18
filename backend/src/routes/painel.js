@@ -65,6 +65,21 @@ function maiorDataEmissao(docs) {
   return maior;
 }
 
+// Roda um módulo do motor tributário protegido contra exceção — um bug
+// num módulo mais novo (ex.: classificação de mercadorias, ainda recente)
+// não pode derrubar a resposta inteira do painel, que documentos/valores/
+// validação matemática dependem de sempre aparecer mesmo se algo mais
+// experimental falhar num item específico. Loga o erro (visível nos logs
+// da função na Vercel) e devolve null nesse documento só.
+function comProtecao(rotulo, fn) {
+  try {
+    return fn();
+  } catch (err) {
+    console.error(`Falha no módulo "${rotulo}" — documento ignorado nesse módulo:`, err.message, err.stack);
+    return null;
+  }
+}
+
 // "OK" — documento normal; "cancelada" — cancelada na SEFAZ; "inconsistente"
 // — desde a vigência da Reforma Tributária, mas sem os campos de IBS/CBS
 // completos (situação vem de reformaTributariaAnalyzer.js).
@@ -101,20 +116,20 @@ function montarPainelDeClassificados(classificados, dataCorteReforma) {
       // situação acima: recalcula produto/ICMS/PIS/COFINS a partir dos
       // próprios campos do XML e confere se a aritmética fecha. Não tem
       // relação com estar "adequado à reforma" ou não.
-      validacaoMatematica: doc.cancelada ? null : validarDocumento(doc),
+      validacaoMatematica: doc.cancelada ? null : comProtecao('validacaoMatematica', () => validarDocumento(doc)),
       // XML_REFORMA_VALIDATOR (tax-engine) — outra camada, também
       // independente: confere se os campos de IBS/CBS que o próprio XML
       // declara são coerentes com a tabela oficial de tratamentos (CST x
       // cClassTrib) e com a própria aritmética do documento. Só roda em
       // itens que já têm o grupo IBSCBS presente — "sem adequação" continua
       // sendo responsabilidade de situacaoReforma/situacao acima.
-      validacaoReforma: doc.cancelada ? null : validarReformaDocumento(doc, dataCorteReforma),
+      validacaoReforma: doc.cancelada ? null : comProtecao('validacaoReforma', () => validarReformaDocumento(doc, dataCorteReforma)),
       // Motor de Mercadorias (tax-engine/goods-engine) — determina, a partir
       // de NCM + descrição, qual tratamento o item PROVAVELMENTE deveria
       // ter. É a peça que faltava pra comparar "o que deveria ser" com "o
       // que o XML informou" (validacaoReforma acima só confere consistência
       // interna do XML contra a tabela oficial, não decide o benefício).
-      classificacaoMercadorias: doc.cancelada ? null : classificarMercadoriasDocumento(doc),
+      classificacaoMercadorias: doc.cancelada ? null : comProtecao('classificacaoMercadorias', () => classificarMercadoriasDocumento(doc)),
     };
   });
 
