@@ -456,6 +456,25 @@ tr.row-cancelada {
   width: 100%;
 }
 
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.checkbox-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.checkbox-option input {
+  width: auto !important;
+}
+
 .modal-small button {
   padding: 9px 18px;
   border: none;

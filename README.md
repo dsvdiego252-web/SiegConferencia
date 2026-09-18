@@ -98,16 +98,29 @@ de `/tmp`). Crie um projeto em supabase.com, rode no SQL Editor:
 create table clientes (
   cnpj text primary key,
   nome text not null,
-  regime_tributario text
+  regime_tributario text,
+  atividade jsonb not null default '[]'::jsonb,
+  segmento text
 );
 ```
 
-(Se a tabela já existir sem a coluna `regime_tributario`, rode `alter table
-clientes add column if not exists regime_tributario text;`.) O regime
-tributário (`simples_nacional`, `mei`, `lucro_presumido` ou `lucro_real`) é
-editável no painel (botão "✎ Editar cliente") e define o prazo usado na
-checagem da Reforma Tributária: Simples Nacional/MEI só são obrigados a
-partir de 01/2027; os demais regimes (ou sem regime definido), 01/2026.
+(Se a tabela já existir sem essas colunas, rode `alter table clientes add
+column if not exists regime_tributario text, add column if not exists
+atividade jsonb not null default '[]'::jsonb, add column if not exists
+segmento text;`.) O regime tributário (`simples_nacional`, `mei`,
+`lucro_presumido` ou `lucro_real`) é editável no painel (botão "✎ Editar
+cliente") e define o prazo usado na checagem da Reforma Tributária: Simples
+Nacional/MEI só são obrigados a partir de 01/2027; os demais regimes (ou
+sem regime definido), 01/2026.
+
+`atividade` é uma lista de categorias atômicas (`comercio_varejo`,
+`atacado`, `industria`, `servico` — um cliente pode ter mais de uma, ex.:
+comércio + serviço) e `segmento` é texto livre opcional (ex.: "Farmácia",
+"Supermercado" — o cadastro sugere alguns exemplos via `<datalist>`, mas
+aceita qualquer texto). Nenhum dos dois decide a tributação sozinho — são
+só metadados que os futuros motores de Mercadorias/Serviços do
+`tax-engine/` vão usar como um sinal a mais, junto com regime, documento,
+NCM/NBS, CFOP e CST.
 
 Rode também esta segunda tabela — cache/progresso do painel (ver "Busca por
 etapas" abaixo):
@@ -404,9 +417,11 @@ o motor não deve "adivinhar" uma classificação fiscal.
 
 - `GET /api/clients` — lista clientes cadastrados (`backend/src/data/clients.json`
   em dev local, ou tabela `clientes` no Supabase em produção).
-- `POST /api/clients` — cadastra um cliente (`{ cnpj, nome, regimeTributario }`).
-- `PATCH /api/clients/:cnpj` — atualiza nome/regime tributário de um cliente
-  existente (`{ nome, regimeTributario }`).
+- `POST /api/clients` — cadastra um cliente (`{ cnpj, nome, regimeTributario,
+  atividade, segmento }` — `atividade` e `segmento` são opcionais).
+- `PATCH /api/clients/:cnpj` — atualiza um cliente existente (`{ nome,
+  regimeTributario, atividade, segmento }`, todos opcionais — omitir um
+  campo mantém o valor atual).
 - `GET /api/painel?cnpj=...&mes=AAAA-MM&tipo=todos|nfe|nfce` — endpoint
   principal usado pelo front-end: busca os documentos do período (já
   classificados em `entrada`/`saida`) e monta de uma vez as quatro análises

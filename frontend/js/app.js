@@ -13,6 +13,7 @@ const els = {
   novoClienteCnpj: document.getElementById('novoClienteCnpj'),
   novoClienteNome: document.getElementById('novoClienteNome'),
   novoClienteRegime: document.getElementById('novoClienteRegime'),
+  novoClienteSegmento: document.getElementById('novoClienteSegmento'),
   btnAdicionarCliente: document.getElementById('btnAdicionarCliente'),
   clienteModalErro: document.getElementById('clienteModalErro'),
   statusBox: document.getElementById('statusBox'),
@@ -813,6 +814,21 @@ async function atualizar() {
 
 let modoModalCliente = 'adicionar';
 
+function checkboxesAtividade() {
+  return [...document.querySelectorAll('.novo-cliente-atividade')];
+}
+
+function lerAtividadeSelecionada() {
+  return checkboxesAtividade()
+    .filter((cb) => cb.checked)
+    .map((cb) => cb.value);
+}
+
+function marcarAtividade(atividade) {
+  const selecionadas = new Set(atividade || []);
+  for (const cb of checkboxesAtividade()) cb.checked = selecionadas.has(cb.value);
+}
+
 function abrirModalCliente() {
   modoModalCliente = 'adicionar';
   els.clienteModalTitulo.textContent = 'Cadastrar cliente';
@@ -822,6 +838,8 @@ function abrirModalCliente() {
   els.novoClienteCnpj.disabled = false;
   els.novoClienteNome.value = '';
   els.novoClienteRegime.value = '';
+  marcarAtividade([]);
+  els.novoClienteSegmento.value = '';
   els.clienteModalOverlay.hidden = false;
 }
 
@@ -842,6 +860,8 @@ function abrirModalEdicaoCliente() {
   els.novoClienteCnpj.disabled = true;
   els.novoClienteNome.value = cliente.nome || '';
   els.novoClienteRegime.value = cliente.regimeTributario || '';
+  marcarAtividade(cliente.atividade);
+  els.novoClienteSegmento.value = cliente.segmento || '';
   els.clienteModalOverlay.hidden = false;
 }
 
@@ -854,6 +874,8 @@ async function adicionarCliente() {
   const cnpj = els.novoClienteCnpj.value.replace(/\D/g, '');
   const nome = els.novoClienteNome.value.trim();
   const regimeTributario = els.novoClienteRegime.value || null;
+  const atividade = lerAtividadeSelecionada();
+  const segmento = els.novoClienteSegmento.value.trim() || null;
   els.clienteModalErro.hidden = true;
   if (cnpj.length !== 14) {
     els.clienteModalErro.textContent = 'Informe um CNPJ com 14 dígitos para cadastrar o cliente.';
@@ -862,12 +884,12 @@ async function adicionarCliente() {
   }
   try {
     if (modoModalCliente === 'editar') {
-      await apiPatch(`/api/clients/${cnpj}`, { nome, regimeTributario });
+      await apiPatch(`/api/clients/${cnpj}`, { nome, regimeTributario, atividade, segmento });
       await carregarClientes(cnpj);
       fecharModalCliente();
       setStatus('Cliente atualizado.');
     } else {
-      await apiPost('/api/clients', { cnpj, nome, regimeTributario });
+      await apiPost('/api/clients', { cnpj, nome, regimeTributario, atividade, segmento });
       await carregarClientes(cnpj);
       fecharModalCliente();
       setStatus('Cliente adicionado.');

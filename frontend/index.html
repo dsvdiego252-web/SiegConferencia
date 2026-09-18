@@ -355,6 +355,33 @@
           </select>
         </div>
         <p class="hint">O regime tributário define o prazo de obrigatoriedade dos campos da Reforma Tributária (Simples/MEI só a partir de 01/2027; demais regimes, 01/2026).</p>
+        <div class="field" style="margin-top: 12px;">
+          <label>Atividade / perfil fiscal</label>
+          <div class="checkbox-group">
+            <label class="checkbox-option"><input type="checkbox" class="novo-cliente-atividade" value="comercio_varejo" /> Comércio/Varejo</label>
+            <label class="checkbox-option"><input type="checkbox" class="novo-cliente-atividade" value="atacado" /> Atacado</label>
+            <label class="checkbox-option"><input type="checkbox" class="novo-cliente-atividade" value="industria" /> Indústria</label>
+            <label class="checkbox-option"><input type="checkbox" class="novo-cliente-atividade" value="servico" /> Serviço</label>
+          </div>
+          <p class="hint">Pode marcar mais de uma (ex.: comércio + serviço = misto).</p>
+        </div>
+        <div class="field" style="margin-top: 12px;">
+          <label for="novoClienteSegmento">Segmento (opcional)</label>
+          <input id="novoClienteSegmento" type="text" list="segmentoOpcoes" placeholder="Ex.: Farmácia, Supermercado..." />
+          <datalist id="segmentoOpcoes">
+            <option value="Supermercado"></option>
+            <option value="Farmácia"></option>
+            <option value="Autopeças"></option>
+            <option value="Material de construção"></option>
+            <option value="Restaurante"></option>
+            <option value="Indústria"></option>
+            <option value="Prestador de serviços"></option>
+            <option value="Clínica"></option>
+            <option value="Escritório"></option>
+            <option value="Transportadora"></option>
+          </datalist>
+          <p class="hint">Só auxilia classificações — a tributação é decidida pelo regime, documento, NCM/NBS, CFOP e CST, não pelo segmento.</p>
+        </div>
         <button id="btnAdicionarCliente" type="button" style="margin-top: 8px;">Adicionar</button>
         <p id="clienteModalErro" class="status error" hidden></p>
       </div>
