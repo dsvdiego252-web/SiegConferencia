@@ -220,6 +220,34 @@ button:disabled {
   margin-top: 4px;
 }
 
+.summary-card-clickable {
+  cursor: pointer;
+  transition: box-shadow 0.1s ease, background 0.1s ease;
+}
+
+.summary-card-clickable:hover {
+  box-shadow: 0 0 0 2px var(--primary) inset;
+}
+
+.summary-card-clickable.card-filtro-ativo {
+  box-shadow: 0 0 0 3px var(--primary) inset;
+}
+
+.filtro-ativo-hint {
+  color: var(--primary);
+  margin-top: 4px;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--primary);
+  text-decoration: underline;
+  font-size: inherit;
+  cursor: pointer;
+}
+
 #summaryGapsCard.has-gaps {
   background: var(--danger-bg);
 }

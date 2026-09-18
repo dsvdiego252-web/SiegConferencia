@@ -46,11 +46,16 @@ const els = {
   taxPagination: document.getElementById('taxPagination'),
   reformaSummaryPanel: document.getElementById('reformaSummaryPanel'),
   reformaTotalAnalisados: document.getElementById('reformaTotalAnalisados'),
+  reformaTotalAnalisadosCard: document.getElementById('reformaTotalAnalisadosCard'),
   reformaConformes: document.getElementById('reformaConformes'),
+  reformaConformesCard: document.getElementById('reformaConformesCard'),
   reformaParciais: document.getElementById('reformaParciais'),
   reformaParciaisCard: document.getElementById('reformaParciaisCard'),
   reformaSemAdequacao: document.getElementById('reformaSemAdequacao'),
   reformaSemAdequacaoCard: document.getElementById('reformaSemAdequacaoCard'),
+  filtroReformaIndicador: document.getElementById('filtroReformaIndicador'),
+  filtroReformaIndicadorTexto: document.getElementById('filtroReformaIndicadorTexto'),
+  btnLimparFiltroReforma: document.getElementById('btnLimparFiltroReforma'),
   reformaPanel: document.getElementById('reformaPanel'),
   reformaDataCorte: document.getElementById('reformaDataCorte'),
   reformaRegimeInfo: document.getElementById('reformaRegimeInfo'),
@@ -190,16 +195,67 @@ const DOCUMENTS_PAGE_SIZE = 20;
 
 let documentosCarregados = [];
 let paginaDocumentosAtual = 1;
+// Filtro disparado pelos cards de "Conformidade com a Reforma Tributária"
+// (não confundir com o dropdown "Situação" acima da tabela — são dimensões
+// diferentes): null (nenhum), 'qualquer' (todos analisados pela reforma),
+// ou o valor de situacaoReforma do documento ('conforme'/'parcial'/'sem_adequacao').
+let filtroReformaAtivo = null;
 
 function documentosFiltrados() {
-  const filtro = els.situacaoFiltroSelect.value;
-  if (filtro === 'todos') return documentosCarregados;
-  return documentosCarregados.filter((d) => d.situacao === filtro);
+  let lista = documentosCarregados;
+  const filtroSituacao = els.situacaoFiltroSelect.value;
+  if (filtroSituacao !== 'todos') lista = lista.filter((d) => d.situacao === filtroSituacao);
+  if (filtroReformaAtivo === 'qualquer') lista = lista.filter((d) => d.situacaoReforma !== null);
+  else if (filtroReformaAtivo) lista = lista.filter((d) => d.situacaoReforma === filtroReformaAtivo);
+  return lista;
+}
+
+const ROTULO_FILTRO_REFORMA = {
+  qualquer: 'Documentos desde a vigência',
+  conforme: 'Conformes (IBS/CBS ok)',
+  parcial: 'Parcialmente adequados',
+  sem_adequacao: 'Sem campos da reforma',
+};
+
+function atualizarCardsReformaAtivos() {
+  const mapa = {
+    qualquer: els.reformaTotalAnalisadosCard,
+    conforme: els.reformaConformesCard,
+    parcial: els.reformaParciaisCard,
+    sem_adequacao: els.reformaSemAdequacaoCard,
+  };
+  for (const [valor, card] of Object.entries(mapa)) {
+    card?.classList.toggle('card-filtro-ativo', filtroReformaAtivo === valor);
+  }
+  if (filtroReformaAtivo) {
+    els.filtroReformaIndicador.hidden = false;
+    els.filtroReformaIndicadorTexto.textContent = `Filtro por card da Reforma Tributária ativo: "${ROTULO_FILTRO_REFORMA[filtroReformaAtivo]}" —`;
+  } else {
+    els.filtroReformaIndicador.hidden = true;
+  }
+}
+
+function aplicarFiltroReforma(valor) {
+  filtroReformaAtivo = filtroReformaAtivo === valor ? null : valor;
+  els.situacaoFiltroSelect.value = 'todos';
+  paginaDocumentosAtual = 1;
+  atualizarCardsReformaAtivos();
+  renderPaginaDocumentos();
+  els.documentsPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function limparFiltroReforma() {
+  filtroReformaAtivo = null;
+  paginaDocumentosAtual = 1;
+  atualizarCardsReformaAtivos();
+  renderPaginaDocumentos();
 }
 
 function renderDocumentos(documentos) {
   documentosCarregados = documentos;
   paginaDocumentosAtual = 1;
+  filtroReformaAtivo = null;
+  atualizarCardsReformaAtivos();
   els.documentsPanel.hidden = false;
   renderPaginaDocumentos();
 }
@@ -882,9 +938,18 @@ async function init() {
   });
   els.btnConferirDominio.addEventListener('click', conferirDominio);
   els.situacaoFiltroSelect.addEventListener('change', () => {
+    // Muda de dimensão de filtro (Situação em vez do card da Reforma) —
+    // limpa o filtro de card pra não combinar os dois e sumir com a lista.
+    filtroReformaAtivo = null;
+    atualizarCardsReformaAtivos();
     paginaDocumentosAtual = 1;
     renderPaginaDocumentos();
   });
+  els.reformaTotalAnalisadosCard.addEventListener('click', () => aplicarFiltroReforma('qualquer'));
+  els.reformaConformesCard.addEventListener('click', () => aplicarFiltroReforma('conforme'));
+  els.reformaParciaisCard.addEventListener('click', () => aplicarFiltroReforma('parcial'));
+  els.reformaSemAdequacaoCard.addEventListener('click', () => aplicarFiltroReforma('sem_adequacao'));
+  els.btnLimparFiltroReforma.addEventListener('click', limparFiltroReforma);
   els.btnFecharModal.addEventListener('click', fecharModal);
   els.docModalOverlay.addEventListener('click', (evento) => {
     if (evento.target === els.docModalOverlay) fecharModal();

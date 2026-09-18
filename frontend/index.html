@@ -79,6 +79,25 @@
       </div>
     </section>
 
+    <section class="panel summary" id="reformaSummaryPanel" hidden>
+      <div class="summary-card summary-card-clickable" id="reformaTotalAnalisadosCard" title="Clique para ver esses documentos na tabela abaixo">
+        <span class="summary-value" id="reformaTotalAnalisados">0</span>
+        <span class="summary-label">Documentos desde a vigência</span>
+      </div>
+      <div class="summary-card summary-card-clickable" id="reformaConformesCard" title="Clique para ver esses documentos na tabela abaixo">
+        <span class="summary-value" id="reformaConformes">0</span>
+        <span class="summary-label">Conformes (IBS/CBS ok)</span>
+      </div>
+      <div class="summary-card summary-card-clickable" id="reformaParciaisCard" title="Clique para ver esses documentos na tabela abaixo">
+        <span class="summary-value" id="reformaParciais">0</span>
+        <span class="summary-label">Parcialmente adequados</span>
+      </div>
+      <div class="summary-card summary-card-clickable" id="reformaSemAdequacaoCard" title="Clique para ver esses documentos na tabela abaixo">
+        <span class="summary-value" id="reformaSemAdequacao">0</span>
+        <span class="summary-label">Sem campos da reforma</span>
+      </div>
+    </section>
+
     <section class="panel summary" id="valuesPanel" hidden>
       <div class="summary-card">
         <span class="summary-value" id="valorEntrada">R$ 0,00</span>
@@ -145,6 +164,10 @@
         </div>
       </div>
       <p class="hint">Clique numa linha pra ver os itens e impostos do documento.</p>
+      <p class="hint filtro-ativo-hint" id="filtroReformaIndicador" hidden>
+        <span id="filtroReformaIndicadorTexto"></span>
+        <button type="button" id="btnLimparFiltroReforma" class="link-button">limpar</button>
+      </p>
       <div class="table-wrap">
         <table id="documentsTable">
           <thead>
@@ -186,25 +209,6 @@
         </table>
       </div>
       <div class="pagination" id="taxPagination"></div>
-    </section>
-
-    <section class="panel summary" id="reformaSummaryPanel" hidden>
-      <div class="summary-card">
-        <span class="summary-value" id="reformaTotalAnalisados">0</span>
-        <span class="summary-label">Documentos desde a vigência</span>
-      </div>
-      <div class="summary-card">
-        <span class="summary-value" id="reformaConformes">0</span>
-        <span class="summary-label">Conformes (IBS/CBS ok)</span>
-      </div>
-      <div class="summary-card" id="reformaParciaisCard">
-        <span class="summary-value" id="reformaParciais">0</span>
-        <span class="summary-label">Parcialmente adequados</span>
-      </div>
-      <div class="summary-card" id="reformaSemAdequacaoCard">
-        <span class="summary-value" id="reformaSemAdequacao">0</span>
-        <span class="summary-label">Sem campos da reforma</span>
-      </div>
     </section>
 
     <section class="panel" id="reformaPanel" hidden>
