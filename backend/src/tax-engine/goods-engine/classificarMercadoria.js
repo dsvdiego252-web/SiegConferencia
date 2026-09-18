@@ -282,8 +282,32 @@ function montarResultado(status, extra = {}) {
     pendencias: [],
     notas: [],
     origem: null,
+    divergenciaFiscal: null,
     ...extra,
   };
+}
+
+// Confronto simples com o sistema antigo (ICMS/PIS/COFINS): quando o
+// motor não reconhece nenhum benefício especial pro item (regra geral —
+// "provável tributação integral"), ele deveria normalmente ter ICMS e/ou
+// PIS/COFINS cobrados no XML. Se os dois vierem zerados, é um sinal de
+// divergência fiscal real (não confundir com a conferência de IBS/CBS —
+// isso aqui é o sistema antigo que já está em vigor hoje).
+//
+// Só aciona quando os DOIS impostos (ICMS e PIS+COFINS) estão ausentes —
+// checar só o ICMS geraria falso positivo em qualquer operação com
+// Substituição Tributária (CST 60 etc.), que zera o ICMS próprio
+// legitimamente enquanto o PIS/COFINS continua sendo cobrado normalmente.
+// Ausência dos dois ao mesmo tempo é bem mais difícil de justificar sem
+// ser um regime que este motor não modela (Simples Nacional, imunidade
+// específica) — por isso o texto pede confirmação, não afirma erro.
+function verificarDivergenciaFiscalAntiga(item, resultado) {
+  if (resultado.status !== 'PROVAVEL_TRIBUTACAO_INTEGRAL') return null;
+  if (!(item.valorProduto > 0)) return null;
+  const semIcms = !(item.icms?.valor > 0);
+  const semPisCofins = !((item.pis?.valor || 0) + (item.cofins?.valor || 0) > 0);
+  if (!semIcms || !semPisCofins) return null;
+  return 'Motor de Mercadorias não encontrou nenhum benefício da Reforma Tributária para este item (regra geral, tributação integral), mas o XML não cobrou ICMS nem PIS/COFINS — confirmar se há outro motivo legítimo (Substituição Tributária, Simples Nacional, imunidade específica) ou se é erro de tributação.';
 }
 
 function avaliarCandidatoUnico(candidato, descNormalizada) {
@@ -573,15 +597,17 @@ export function classificarMercadoria(item) {
   const descNormalizada = normalizarDescricao(item.descricao);
   const ncmCanonicoItem = canonicalizarNcm(item.ncm);
 
+  let resultado = null;
   if (ncmCanonicoItem) {
-    const resultadoEspecifico =
+    resultado =
       verificarNcm9619(ncmCanonicoItem, descNormalizada) ||
       verificarOverrideEspecifico(ncmCanonicoItem, descNormalizada) ||
       verificarMedicamento(ncmCanonicoItem, descNormalizada);
-    if (resultadoEspecifico) return resultadoEspecifico;
   }
+  if (!resultado) resultado = classificarPorNcmEDescricaoGenerico(item, descNormalizada);
 
-  return classificarPorNcmEDescricaoGenerico(item, descNormalizada);
+  resultado.divergenciaFiscal = verificarDivergenciaFiscalAntiga(item, resultado);
+  return resultado;
 }
 
 export function classificarMercadoriasDocumento(doc) {

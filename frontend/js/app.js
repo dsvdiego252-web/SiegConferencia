@@ -4,6 +4,7 @@ const els = {
   dataInicioInput: document.getElementById('dataInicioInput'),
   dataFimInput: document.getElementById('dataFimInput'),
   btnAtualizar: document.getElementById('btnAtualizar'),
+  btnForcarAtualizacao: document.getElementById('btnForcarAtualizacao'),
   btnAbrirCadastroCliente: document.getElementById('btnAbrirCadastroCliente'),
   btnEditarCliente: document.getElementById('btnEditarCliente'),
   btnExportarAvisos: document.getElementById('btnExportarAvisos'),
@@ -569,6 +570,8 @@ function construirAbaDivergencias(doc) {
     if (rtc?.divergencias?.length) {
       for (const d of rtc.divergencias) linhasItem.push(`<li>${d}</li>`);
     }
+    const divergenciaFiscal = doc.classificacaoMercadorias?.[indice]?.classificacao?.divergenciaFiscal;
+    if (divergenciaFiscal) linhasItem.push(`<li>${divergenciaFiscal}</li>`);
     if (linhasItem.length) {
       blocos.push(`
         <div class="divergencia-bloco">
@@ -696,7 +699,8 @@ function contarItensComDivergencia(doc) {
     const calc = doc.validacaoMatematica?.itens?.[indice];
     const temCalc = calc && ['produto', 'icms', 'pis', 'cofins'].some((c) => calc[c] && calc[c].status !== 'CORRETO');
     const temRtc = (doc.validacaoReforma?.itens?.[indice]?.validacao?.divergencias?.length || 0) > 0;
-    return temCalc || temRtc;
+    const temFiscal = Boolean(doc.classificacaoMercadorias?.[indice]?.classificacao?.divergenciaFiscal);
+    return temCalc || temRtc || temFiscal;
   }).length;
 
   const totaisComProblema =
@@ -1045,7 +1049,12 @@ function montarQueryPeriodo() {
 
 let ultimoPainel = null;
 
-async function atualizar() {
+// forcarAtualizacao ignora o cache do painel (válido por 10 minutos no
+// Supabase) e busca/reclassifica tudo de novo — necessário depois de uma
+// atualização do sistema (ex.: correção de bug de classificação), já que
+// senão o resultado em cache continua mostrando o comportamento antigo até
+// o cache expirar sozinho.
+async function atualizar(forcarAtualizacao = false) {
   const cnpj = els.clienteSelect.value;
   const tipo = els.tipoDocSelect.value;
   if (!cnpj) {
@@ -1058,9 +1067,11 @@ async function atualizar() {
   }
 
   els.btnAtualizar.disabled = true;
-  setStatus('Buscando na SIEG...', false, true);
+  if (els.btnForcarAtualizacao) els.btnForcarAtualizacao.disabled = true;
+  setStatus(forcarAtualizacao ? 'Ignorando o cache e buscando tudo de novo...' : 'Buscando na SIEG...', false, true);
   try {
-    const query = `cnpj=${encodeURIComponent(cnpj)}&${montarQueryPeriodo()}&tipo=${encodeURIComponent(tipo)}`;
+    let query = `cnpj=${encodeURIComponent(cnpj)}&${montarQueryPeriodo()}&tipo=${encodeURIComponent(tipo)}`;
+    if (forcarAtualizacao) query += '&forcar=1';
     const painel = await buscarPainelComEspera(query);
     ultimoPainel = painel;
 
@@ -1076,6 +1087,7 @@ async function atualizar() {
     setStatus(err.message, true);
   } finally {
     els.btnAtualizar.disabled = false;
+    if (els.btnForcarAtualizacao) els.btnForcarAtualizacao.disabled = false;
   }
 }
 
@@ -1292,7 +1304,11 @@ async function init() {
   els.dataInicioInput.value = primeiroDiaMesAtual();
   els.dataFimInput.value = ultimoDiaMesAtual();
 
-  els.btnAtualizar.addEventListener('click', atualizar);
+  // Nunca passar o listener direto (atualizar) pro addEventListener aqui —
+  // o clique manda o MouseEvent como primeiro argumento, e um objeto é
+  // sempre "truthy", faria o botão normal também forçar o cache sempre.
+  els.btnAtualizar.addEventListener('click', () => atualizar(false));
+  els.btnForcarAtualizacao.addEventListener('click', () => atualizar(true));
   els.btnAbrirCadastroCliente.addEventListener('click', abrirModalCliente);
   els.btnEditarCliente.addEventListener('click', abrirModalEdicaoCliente);
   els.btnExportarAvisos.addEventListener('click', exportarAvisos);
