@@ -17,6 +17,7 @@ import { cacheDisponivel, lerCache, reiniciarBusca, salvarProgresso, salvarResul
 import { registrarSincronizacao } from '../services/documentCache.js';
 import { validarDocumento } from '../tax-engine/math-validation/mathValidator.js';
 import { validarReformaDocumento } from '../tax-engine/rtc-xml-validator/validarReformaXml.js';
+import { classificarMercadoriasDocumento } from '../tax-engine/goods-engine/classificarMercadoria.js';
 
 export const painelRouter = Router();
 
@@ -108,6 +109,12 @@ function montarPainelDeClassificados(classificados, dataCorteReforma) {
       // itens que já têm o grupo IBSCBS presente — "sem adequação" continua
       // sendo responsabilidade de situacaoReforma/situacao acima.
       validacaoReforma: doc.cancelada ? null : validarReformaDocumento(doc, dataCorteReforma),
+      // Motor de Mercadorias (tax-engine/goods-engine) — determina, a partir
+      // de NCM + descrição, qual tratamento o item PROVAVELMENTE deveria
+      // ter. É a peça que faltava pra comparar "o que deveria ser" com "o
+      // que o XML informou" (validacaoReforma acima só confere consistência
+      // interna do XML contra a tabela oficial, não decide o benefício).
+      classificacaoMercadorias: doc.cancelada ? null : classificarMercadoriasDocumento(doc),
     };
   });
 

@@ -464,8 +464,13 @@ const ROTULO_STATUS_RTC = {
 // contrário de textoReformaItem (que só mostra o que o XML declara), aqui
 // mostra o RESULTADO da comparação com a tabela oficial de tratamentos —
 // só existe quando o grupo IBSCBS está presente no item.
-function textoValidacaoReformaItem(validacao) {
-  if (!validacao) return '<span class="hint">Sem grupo IBS/CBS no item — nada a conferir aqui.</span>';
+function textoValidacaoReformaItem(validacao, situacaoReforma) {
+  if (!validacao) {
+    if (situacaoReforma === 'sem_adequacao' || situacaoReforma === 'parcial') {
+      return '<span class="destaque-erro">Sem grupo IBS/CBS no item — documento emitido dentro da vigência da reforma.</span>';
+    }
+    return '<span class="hint">Sem grupo IBS/CBS no item — nada a conferir aqui.</span>';
+  }
   const classeBadge = validacao.status === 'CORRETO' ? 'badge-situacao-ok' : validacao.status === 'REVISAO_MANUAL' ? 'badge-situacao-inconsistente' : 'badge-erro';
   const badge = `<span class="badge ${classeBadge}">${ROTULO_STATUS_RTC[validacao.status] || validacao.status}</span>`;
   const divergencias = (validacao.divergencias || []).map((d) => `<div class="destaque-erro">${d}</div>`).join('');
@@ -480,8 +485,16 @@ const ROTULO_STATUS_RTC_DOCUMENTO = {
   TOTAL_REFORMA_DIVERGENTE: 'total do documento diverge',
 };
 
-function badgeValidacaoReformaDocumento(validacaoReforma) {
+// situacaoReforma vem de reformaTributariaAnalyzer.js: 'sem_adequacao'/
+// 'parcial' significam que o documento já está sob a vigência da reforma
+// e deveria ter os campos IBS/CBS, mas não tem — isso é uma inconsistência
+// de verdade, não só "informação ausente", e precisa aparecer em vermelho
+// igual ao resto do sistema (mesmo padrão da coluna "Situação").
+function badgeValidacaoReformaDocumento(validacaoReforma, situacaoReforma) {
   if (!validacaoReforma || validacaoReforma.status === null) {
+    if (situacaoReforma === 'sem_adequacao' || situacaoReforma === 'parcial') {
+      return '<span class="destaque-erro">Sem itens com grupo IBS/CBS neste documento — emitido dentro da vigência da reforma.</span>';
+    }
     return '<span class="hint">Sem itens com grupo IBS/CBS neste documento.</span>';
   }
   const classe =
@@ -594,17 +607,54 @@ function construirAbaDivergencias(doc) {
   return blocos.join('');
 }
 
-// Aba "Reforma Tributária" — os campos que o XML declara (CST, cClassTrib,
-// cBenef, BC, IBS, CBS) lado a lado com o resultado da conferência contra a
-// tabela oficial (XML_REFORMA_VALIDATOR), item a item.
+const ROTULO_STATUS_MERCADORIA = {
+  CONFIRMADO_AUTOMATICO: 'confirmado',
+  CANDIDATO_A_BENEFICIO: 'candidato a benefício',
+  REVISAO_MANUAL: 'revisão manual',
+  PROVAVEL_TRIBUTACAO_INTEGRAL: 'provável tributação integral',
+};
+
+// Sugestão do Motor de Mercadorias (tax-engine/goods-engine): o que o
+// sistema determina que o item DEVERIA ter, a partir de NCM + descrição —
+// antes e independente do que o XML realmente informou (isso é o próprio
+// "Campos da Reforma (XML)", na coluna ao lado).
+function textoClassificacaoMercadoria(classificacao) {
+  if (!classificacao) return '<span class="hint">Não avaliado.</span>';
+  const classeBadge =
+    classificacao.status === 'CONFIRMADO_AUTOMATICO'
+      ? 'badge-situacao-ok'
+      : classificacao.status === 'PROVAVEL_TRIBUTACAO_INTEGRAL'
+        ? 'badge-desconhecida'
+        : 'badge-situacao-inconsistente';
+  const badge = `<span class="badge ${classeBadge}">${ROTULO_STATUS_MERCADORIA[classificacao.status] || classificacao.status}</span>`;
+  const modulo = classificacao.modulo
+    ? `<div><strong>Módulo:</strong> ${classificacao.modulo} ${classificacao.item ? `(item ${classificacao.item})` : ''}</div>`
+    : '';
+  const tratamento = classificacao.tratamentoSugerido ? `<div><strong>Tratamento sugerido:</strong> ${classificacao.tratamentoSugerido}</div>` : '';
+  const codigos =
+    preenchido(classificacao.cstSugerido) || preenchido(classificacao.cClassTribSugerido)
+      ? `<div><strong>CST/ClassTrib sugeridos:</strong> ${formatarCodigoReforma(classificacao.cstSugerido, 3) || '-'} / ${formatarCodigoReforma(classificacao.cClassTribSugerido, 6) || '-'}</div>`
+      : '';
+  const pendencias = (classificacao.pendencias || []).map((p) => `<div class="reforma-aviso">${p}</div>`).join('');
+  const notas = (classificacao.notas || []).map((n) => `<div class="hint">${n}</div>`).join('');
+  return `<div class="reforma-info">${badge}${modulo}${tratamento}${codigos}${pendencias}${notas}</div>`;
+}
+
+// Aba "Reforma Tributária" — três colunas lado a lado, na mesma ordem do
+// princípio do motor tributário ("primeiro descobrir como deveria estar
+// tributado, depois comparar com o documento"): o que o Motor de
+// Mercadorias determina que DEVERIA ser, o que o XML realmente declara, e o
+// resultado da conferência entre o XML e a tabela oficial.
 function construirAbaReforma(doc) {
   const linhas = doc.itens
     .map((item, indice) => {
+      const classificacaoTexto = textoClassificacaoMercadoria(doc.classificacaoMercadorias?.[indice]?.classificacao || null);
       const reformaTexto = textoReformaItem(item.reformaTributaria);
-      const validacaoRtcTexto = textoValidacaoReformaItem(doc.validacaoReforma?.itens?.[indice]?.validacao || null);
+      const validacaoRtcTexto = textoValidacaoReformaItem(doc.validacaoReforma?.itens?.[indice]?.validacao || null, doc.situacaoReforma);
       return `
         <tr>
           <td>${item.codigo}<br><span class="hint">${item.descricao}</span></td>
+          <td class="reforma-col">${classificacaoTexto}</td>
           <td class="reforma-col">${reformaTexto}</td>
           <td class="reforma-col">${validacaoRtcTexto}</td>
         </tr>
@@ -618,11 +668,12 @@ function construirAbaReforma(doc) {
         <thead>
           <tr>
             <th>Produto</th>
+            <th>Sugestão do Motor de Mercadorias</th>
             <th>Campos da Reforma (XML)</th>
             <th>Conferência RTC (CST × cClassTrib)</th>
           </tr>
         </thead>
-        <tbody>${linhas || '<tr class="empty-row"><td colspan="3">Documento sem itens.</td></tr>'}</tbody>
+        <tbody>${linhas || '<tr class="empty-row"><td colspan="4">Documento sem itens.</td></tr>'}</tbody>
       </table>
     </div>
   `;
@@ -663,7 +714,7 @@ function abrirModalDocumento(doc) {
     <dl>
       <dt>Situação</dt><dd><span class="badge badge-situacao-${doc.situacao}">${ROTULO_SITUACAO[doc.situacao]}</span></dd>
       <dt>Validação matemática</dt><dd>${badgeValidacaoCalculo(doc.validacaoMatematica)}</dd>
-      <dt>Conferência RTC (IBS/CBS)</dt><dd>${badgeValidacaoReformaDocumento(doc.validacaoReforma)}</dd>
+      <dt>Conferência RTC (IBS/CBS)</dt><dd>${badgeValidacaoReformaDocumento(doc.validacaoReforma, doc.situacaoReforma)}</dd>
       <dt>Chave de acesso</dt><dd>${doc.chave || '-'}</dd>
       <dt>Emissão</dt><dd>${formatDate(doc.dataEmissao)}</dd>
       <dt>Natureza da operação</dt><dd>${doc.naturezaOperacao || '-'}</dd>

@@ -247,8 +247,19 @@ export function parseNfeXml(xmlString) {
  */
 export function classificarOperacao(doc, clienteCnpj) {
   const cnpjLimpo = String(clienteCnpj || '').replace(/\D/g, '');
-  if (doc.emitente.cnpj === cnpjLimpo) return 'saida';
-  if (doc.destinatario.cnpj === cnpjLimpo) return 'entrada';
+  // Compara sempre só dígitos dos dois lados — o CNPJ do emitente/
+  // destinatário vem direto do XML (sem normalização) e formatação
+  // divergente (espaços, pontuação) fazia a comparação falhar mesmo
+  // quando o CNPJ era o mesmo, caindo indevidamente em "desconhecida".
+  const emitCnpj = String(doc.emitente?.cnpj || '').replace(/\D/g, '');
+  const destCnpj = String(doc.destinatario?.cnpj || '').replace(/\D/g, '');
+  if (emitCnpj === cnpjLimpo) return 'saida';
+  if (destCnpj === cnpjLimpo) return 'entrada';
+  // NFCe é sempre emitida pelo próprio estabelecimento pra venda ao
+  // consumidor final — nunca representa uma entrada de mercadoria pro
+  // cliente do escritório. Mesmo se o CNPJ do emitente não bateu por
+  // algum motivo, não faz sentido classificar como "desconhecida".
+  if (doc.tipoDocumento === 'NFCe') return 'saida';
   return 'desconhecida';
 }
 
