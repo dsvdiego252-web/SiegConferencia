@@ -9,6 +9,7 @@ import { xmlsRouter } from './routes/xmls.js';
 import { analysisRouter } from './routes/analysis.js';
 import { reconciliationRouter } from './routes/reconciliation.js';
 import { painelRouter } from './routes/painel.js';
+import { cronRouter } from './routes/cron.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FRONTEND_DIR = path.join(__dirname, '..', '..', 'frontend');
@@ -149,9 +150,20 @@ function paginaLogin({ erro } = {}) {
 </html>`;
 }
 
+function ehChamadaDeCronValida(req) {
+  // O Cron da Vercel (e o encadeamento entre execuções em routes/cron.js)
+  // não tem como mandar o cookie de sessão de um login humano — se autentica
+  // sozinho via CRON_SECRET, verificado de novo dentro da própria rota.
+  // Aqui só libera do gate de sessão; sem CRON_SECRET configurado, esse
+  // caminho nunca libera nada (a rota fica inacessível de propósito).
+  if (!req.path.startsWith('/api/cron/') || !process.env.CRON_SECRET) return false;
+  return req.headers.authorization === `Bearer ${process.env.CRON_SECRET}`;
+}
+
 function exigirSessao(req, res, next) {
   if (!authEnabled) return next();
   if (tokenValido(lerCookie(req, SESSION_COOKIE))) return next();
+  if (ehChamadaDeCronValida(req)) return next();
   if (req.path.startsWith('/api/')) {
     return res.status(401).json({ erro: 'Sessão expirada. Faça login novamente.' });
   }
@@ -215,6 +227,7 @@ app.use('/api/xmls', xmlsRouter);
 app.use('/api/analysis', analysisRouter);
 app.use('/api/reconciliation', reconciliationRouter);
 app.use('/api/painel', painelRouter);
+app.use('/api/cron', cronRouter);
 
 app.use(express.static(FRONTEND_DIR));
 

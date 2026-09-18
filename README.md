@@ -186,12 +186,36 @@ create table sieg_sync_dias (
 );
 ```
 
+E esta última — estado da sincronização noturna (ver "Sincronização noturna"
+abaixo):
+
+```sql
+create table sync_noturno_estado (
+  id integer primary key default 1,
+  data_alvo date,
+  offset_inicial integer not null default 0,
+  visitados integer not null default 0,
+  status text not null default 'concluido',
+  iniciado_em timestamptz,
+  invocacoes integer not null default 0,
+  atualizado_em timestamptz not null default now(),
+  constraint sync_noturno_estado_linha_unica check (id = 1)
+);
+```
+
 E configure na Vercel:
 
 - `SUPABASE_URL` — a Project URL do projeto (Project Settings → API Keys).
 - `SUPABASE_SECRET_KEY` — a **Secret key** (não a Publishable), já que os
   serviços que usam essas tabelas rodam só no backend e nenhuma delas tem
   RLS habilitado.
+- `CRON_SECRET` — uma string aleatória qualquer (ex.: gerada com
+  `openssl rand -hex 32`). Protege o endpoint `/api/cron/sincronizar-noturno`
+  — sem essa variável configurada, o endpoint fica **inacessível** (não
+  "aberto"), então não esqueça de configurá-la pra sincronização noturna
+  funcionar. A Vercel manda esse valor automaticamente no cabeçalho
+  `Authorization` das chamadas que ela mesma agenda (Cron Jobs), então não
+  precisa configurar nada além da variável de ambiente.
 
 Depois de configurar as variáveis, faça um redeploy pra elas valerem.
 
@@ -255,14 +279,24 @@ cliente + tipo + direção, quais dias já foram totalmente sincronizados. Numa
 busca nova, se todo o período pedido já está coberto, os documentos vêm
 direto do Supabase — nenhuma chamada à SIEG.
 
-Um dia só é marcado como sincronizado depois de ficar com mais de 32 dias
-(a janela de cancelamento/eventos da SEFAZ já certamente fechou) — dias mais
-recentes que isso são **sempre** buscados de novo na SIEG, do jeito que já
-era antes desta mudança, pra nunca servir do cache um documento que ainda
-pode ter o status alterado (ex.: cancelado depois da emissão). Na prática:
-reconsultar um período com dias recentes continua no mesmo ritmo de sempre;
-reconsultar um mês já fechado (o caso mais comum — fechamento contábil,
-conferência repetida) fica praticamente instantâneo depois da primeira vez.
+O cancelamento de NFe/NFCe tem prazo real de 24h a partir da emissão — uma
+nota emitida às 23h59 de um dia só pode ser cancelada até 23h59 do dia
+seguinte. Por isso um dia só é considerado **definitivamente** sincronizado
+(cache pra sempre) a partir de 2 dias depois (1 dia de folga sobre o prazo
+real). "Hoje" nunca é considerado cacheado. Só isso já ajuda bastante: numa
+busca de um período que vai até hoje, tudo que for de 3+ dias atrás já sai
+cacheado pra sempre a partir da primeira vez que for buscado — não precisa
+de nenhuma sincronização automática pra esse ganho acontecer.
+
+Só que isso sozinho não ajuda ontem/anteontem — que é justamente onde entra
+a **sincronização noturna** (ver seção abaixo): enquanto um dia ainda não é
+"definitivo", ele pode ficar num cache **provisório** por até 30h contadas
+da última vez que foi buscado, tempo suficiente pra cobrir o intervalo até a
+próxima rodada noturna. Ou seja: se a sincronização noturna buscou "ontem"
+de madrugada, consultar "ontem" durante o dia é instantâneo — o dado só
+volta a ser buscado ao vivo se passar mais de 30h sem uma nova
+sincronização (nesse caso o próximo uso do painel busca ao vivo de novo,
+sem intervenção manual).
 
 Sem `SUPABASE_URL`/`SUPABASE_SECRET_KEY` (dev local), esse cache fica
 desligado e toda busca é ao vivo, como sempre foi. Falhas ao ler/gravar esse
@@ -274,8 +308,42 @@ Limitação conhecida da primeira versão: o cache só é usado quando o
 **período inteiro** pedido já está coberto — um período que mistura dias já
 cacheados com dias novos ainda busca tudo ao vivo (não reaproveita a parte
 que já teria cache). Isso cobre o caso mais comum na prática (reconsultar um
-mês já fechado) sem a complexidade de calcular "buracos" dentro de um
-período misto.
+mês já fechado, ou um período que a sincronização noturna já deixou pronto)
+sem a complexidade de calcular "buracos" dentro de um período misto.
+
+### Sincronização noturna (`GET /api/cron/sincronizar-noturno`)
+
+Endpoint agendado por Cron Job da Vercel (`vercel.json`, todo dia às 22h de
+Brasília) que mantém "ontem" e "anteontem" pré-buscados pra todos os
+clientes cadastrados, sem ninguém precisar esperar ao vivo — é o que faz o
+cache provisório da seção acima valer a pena logo no dia seguinte a uma
+busca, mesmo sem ninguém ter consultado aquele cliente antes.
+
+Restrições reais que moldam como isso funciona:
+
+- **A cota da SIEG (2 req/min) é compartilhada** entre a sincronização
+  noturna e qualquer busca ao vivo de alguém usando o painel. Por isso ela
+  só roda **fora do horário comercial** (22h–6h, horário de Brasília fixo —
+  o Brasil não observa mais horário de verão): fora dessa janela, ela pausa
+  sozinha e retoma na próxima noite de onde parou.
+- **O plano Hobby da Vercel só permite Cron Jobs uma vez por dia**, e cada
+  execução tem no máximo 60s — não dá pra processar todos os clientes numa
+  chamada só. Por isso o endpoint **encadeia a si mesmo** (chama a própria
+  URL de novo ao terminar seu pedaço de trabalho) até esgotar a janela
+  noturna ou terminar todo mundo, retomando de onde parou a cada chamada
+  (estado salvo em `sync_noturno_estado`).
+- **Nem toda noite necessariamente dá tempo de passar por todos os
+  clientes** (depende de quantos têm volume alto, como qualquer busca ao
+  vivo). Pra não deixar sempre os mesmos clientes de fora numa noite
+  incompleta, o ponto de partida da lista gira um pouco a cada dia — ao
+  longo de várias noites, todo mundo acaba coberto de forma razoavelmente
+  justa, mesmo que uma noite isolada não feche o ciclo inteiro.
+- Uma falha pontual num cliente/combo específico (ex.: um 429 isolado) só
+  pula aquele item e segue pros outros — não derruba a rodada inteira.
+
+Sem `SUPABASE_URL`/`SUPABASE_SECRET_KEY`/`CRON_SECRET` configurados, o
+endpoint responde `{"status":"ignorado"}` (ou fica inacessível, sem
+`CRON_SECRET`) e não faz nada — nunca falha nem afeta o resto do sistema.
 
 ## Endpoints do backend
 
