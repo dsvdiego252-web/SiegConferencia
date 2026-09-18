@@ -518,3 +518,32 @@ tr.row-cancelada {
   color: var(--danger);
   font-weight: 600;
 }
+
+/* Coluna "Reforma Tributária" do modal de detalhe do documento — vários
+   campos (CST/ClassTrib/cBenef/BC/IBS/CBS) precisam de quebra de linha e
+   espaçamento próprios, diferente do resto da tabela (que é nowrap de
+   propósito pra caber valores curtos numa linha só). */
+td.reforma-col {
+  white-space: normal;
+  min-width: 200px;
+  max-width: 260px;
+  vertical-align: top;
+}
+
+.reforma-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.82rem;
+  line-height: 1.3;
+}
+
+.reforma-info strong {
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+.reforma-aviso {
+  color: #b25c00;
+  white-space: normal;
+}
