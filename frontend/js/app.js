@@ -493,17 +493,13 @@ function badgeValidacaoReformaDocumento(validacaoReforma) {
   return `<span class="badge ${classe}">${ROTULO_STATUS_RTC_DOCUMENTO[validacaoReforma.status] || validacaoReforma.status}</span>`;
 }
 
-function abrirModalDocumento(doc) {
-  els.docModalTitulo.textContent = `${doc.tipoDocumento} nº ${doc.numero} — série ${doc.serie}`;
-
-  const linhasItens = doc.itens
-    .map((item, indice) => {
-      const reformaTexto = textoReformaItem(item.reformaTributaria);
-      const validacaoItem = doc.validacaoMatematica?.itens?.[indice] || null;
-      const calculoTexto = textoValidacaoCalculoItem(validacaoItem);
-      const validacaoRtcItem = doc.validacaoReforma?.itens?.[indice]?.validacao || null;
-      const validacaoRtcTexto = textoValidacaoReformaItem(validacaoRtcItem);
-      return `
+// Aba "Itens" — dados centrais do item, sem as colunas de conferência (que
+// foram pra suas próprias abas) pra não precisar rolar a tabela pros lados
+// só pra ver produto/NCM/valor.
+function construirAbaItens(doc) {
+  const linhas = doc.itens
+    .map(
+      (item) => `
         <tr>
           <td>${item.codigo}<br><span class="hint">${item.descricao}</span></td>
           <td>${item.ncm || '-'}</td>
@@ -512,28 +508,12 @@ function abrirModalDocumento(doc) {
           <td>${formatMoney(item.valorProduto)}</td>
           <td>${formatMoney(item.icms.valor)} <span class="hint">(CST ${item.icms.cst ?? '-'} · BC ${formatMoney(item.icms.baseCalculo)})</span></td>
           <td>${formatMoney(item.pis.valor + item.cofins.valor)}</td>
-          <td class="reforma-col">${reformaTexto}</td>
-          <td class="reforma-col">${calculoTexto}</td>
-          <td class="reforma-col">${validacaoRtcTexto}</td>
         </tr>
-      `;
-    })
+      `
+    )
     .join('');
 
-  els.docModalCorpo.innerHTML = `
-    <dl>
-      <dt>Situação</dt><dd><span class="badge badge-situacao-${doc.situacao}">${ROTULO_SITUACAO[doc.situacao]}</span></dd>
-      <dt>Validação matemática</dt><dd>${badgeValidacaoCalculo(doc.validacaoMatematica)}${detalheDivergenciasCalculo(doc.validacaoMatematica, doc.itens)}</dd>
-      <dt>Conferência RTC (IBS/CBS)</dt><dd>${badgeValidacaoReformaDocumento(doc.validacaoReforma)}</dd>
-      <dt>Chave de acesso</dt><dd>${doc.chave || '-'}</dd>
-      <dt>Emissão</dt><dd>${formatDate(doc.dataEmissao)}</dd>
-      <dt>Natureza da operação</dt><dd>${doc.naturezaOperacao || '-'}</dd>
-      <dt>Emitente</dt><dd>${doc.emitente.nome || '-'} (${doc.emitente.cnpj || '-'})</dd>
-      <dt>Destinatário</dt><dd>${doc.destinatario.nome || '-'} (${doc.destinatario.cnpj || '-'})</dd>
-      <dt>Valor total</dt><dd>${formatMoney(doc.valorTotal)}</dd>
-      <dt>ICMS total</dt><dd>${formatMoney(doc.valorIcmsTotal)}</dd>
-    </dl>
-    <h3>Itens (${doc.itens.length})</h3>
+  return `
     <div class="table-wrap">
       <table>
         <thead>
@@ -545,16 +525,170 @@ function abrirModalDocumento(doc) {
             <th>Valor</th>
             <th>ICMS</th>
             <th>PIS+COFINS</th>
-            <th>Reforma Tributária</th>
-            <th>Validação Matemática</th>
+          </tr>
+        </thead>
+        <tbody>${linhas || '<tr class="empty-row"><td colspan="7">Documento sem itens.</td></tr>'}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+// Aba "Divergências" — junta num só lugar o que o Motor de Validação
+// Matemática e o XML_REFORMA_VALIDATOR encontraram de errado, item a item
+// e depois os totais do documento. Itens sem nenhum problema não aparecem
+// aqui — só o que precisa de atenção.
+function construirAbaDivergencias(doc) {
+  const blocos = [];
+
+  doc.itens.forEach((item, indice) => {
+    const linhasItem = [];
+    const calc = doc.validacaoMatematica?.itens?.[indice];
+    if (calc) {
+      for (const campo of ['produto', 'icms', 'pis', 'cofins']) {
+        const c = calc[campo];
+        if (c && c.status !== 'CORRETO') {
+          const rotuloArredondamento = c.status === 'DIVERGENCIA_ARREDONDAMENTO' ? ' <span class="hint">(diferença de arredondamento)</span>' : '';
+          linhasItem.push(`<li><strong>${ROTULO_CAMPO_CALCULO[campo]}</strong>: informado ${formatMoney(c.xml)}, esperado ${formatMoney(c.esperado)}${rotuloArredondamento}</li>`);
+        }
+      }
+    }
+    const rtc = doc.validacaoReforma?.itens?.[indice]?.validacao;
+    if (rtc?.divergencias?.length) {
+      for (const d of rtc.divergencias) linhasItem.push(`<li>${d}</li>`);
+    }
+    if (linhasItem.length) {
+      blocos.push(`
+        <div class="divergencia-bloco">
+          <h4>${item.codigo} — ${item.descricao}</h4>
+          <ul>${linhasItem.join('')}</ul>
+        </div>
+      `);
+    }
+  });
+
+  const linhasTotais = [];
+  const totais = doc.validacaoMatematica?.totais;
+  if (totais) {
+    for (const [campo, rotulo] of Object.entries(ROTULO_TOTAL_CALCULO)) {
+      const t = totais[campo];
+      if (t && t.status !== 'CORRETO') {
+        linhasTotais.push(`<li><strong>${rotulo}</strong>: soma dos itens ${formatMoney(t.somaItens)}, total informado ${formatMoney(t.totalDocumento)}</li>`);
+      }
+    }
+  }
+  if (doc.validacaoReforma?.divergenciasTotais?.length) {
+    for (const d of doc.validacaoReforma.divergenciasTotais) linhasTotais.push(`<li>${d}</li>`);
+  }
+  if (linhasTotais.length) {
+    blocos.push(`
+      <div class="divergencia-bloco">
+        <h4>Totais do documento</h4>
+        <ul>${linhasTotais.join('')}</ul>
+      </div>
+    `);
+  }
+
+  if (!blocos.length) {
+    return '<p class="hint">Nenhuma divergência encontrada neste documento — cálculos batem e, onde há grupo IBS/CBS, está coerente com a tabela oficial.</p>';
+  }
+  return blocos.join('');
+}
+
+// Aba "Reforma Tributária" — os campos que o XML declara (CST, cClassTrib,
+// cBenef, BC, IBS, CBS) lado a lado com o resultado da conferência contra a
+// tabela oficial (XML_REFORMA_VALIDATOR), item a item.
+function construirAbaReforma(doc) {
+  const linhas = doc.itens
+    .map((item, indice) => {
+      const reformaTexto = textoReformaItem(item.reformaTributaria);
+      const validacaoRtcTexto = textoValidacaoReformaItem(doc.validacaoReforma?.itens?.[indice]?.validacao || null);
+      return `
+        <tr>
+          <td>${item.codigo}<br><span class="hint">${item.descricao}</span></td>
+          <td class="reforma-col">${reformaTexto}</td>
+          <td class="reforma-col">${validacaoRtcTexto}</td>
+        </tr>
+      `;
+    })
+    .join('');
+
+  return `
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Produto</th>
+            <th>Campos da Reforma (XML)</th>
             <th>Conferência RTC (CST × cClassTrib)</th>
           </tr>
         </thead>
-        <tbody>${linhasItens}</tbody>
+        <tbody>${linhas || '<tr class="empty-row"><td colspan="3">Documento sem itens.</td></tr>'}</tbody>
       </table>
     </div>
+  `;
+}
+
+function ativarAbaModal(nomeAba) {
+  els.docModalCorpo.querySelectorAll('.tab-button').forEach((botao) => {
+    botao.classList.toggle('tab-button-ativo', botao.dataset.tab === nomeAba);
+  });
+  els.docModalCorpo.querySelectorAll('.tab-panel').forEach((painel) => {
+    painel.hidden = painel.dataset.tabPanel !== nomeAba;
+  });
+}
+
+// Conta quantos itens (+ os totais do documento, como um "item" a mais)
+// têm alguma divergência — usado só pro número entre parênteses na aba,
+// pra dar uma ideia do tamanho do problema antes de clicar.
+function contarItensComDivergencia(doc) {
+  const itensComProblema = doc.itens.filter((_, indice) => {
+    const calc = doc.validacaoMatematica?.itens?.[indice];
+    const temCalc = calc && ['produto', 'icms', 'pis', 'cofins'].some((c) => calc[c] && calc[c].status !== 'CORRETO');
+    const temRtc = (doc.validacaoReforma?.itens?.[indice]?.validacao?.divergencias?.length || 0) > 0;
+    return temCalc || temRtc;
+  }).length;
+
+  const totaisComProblema =
+    Object.values(doc.validacaoMatematica?.totais || {}).some((t) => t.status !== 'CORRETO') ||
+    (doc.validacaoReforma?.divergenciasTotais?.length || 0) > 0;
+
+  return itensComProblema + (totaisComProblema ? 1 : 0);
+}
+
+function abrirModalDocumento(doc) {
+  els.docModalTitulo.textContent = `${doc.tipoDocumento} nº ${doc.numero} — série ${doc.serie}`;
+  const totalDivergencias = contarItensComDivergencia(doc);
+
+  els.docModalCorpo.innerHTML = `
+    <dl>
+      <dt>Situação</dt><dd><span class="badge badge-situacao-${doc.situacao}">${ROTULO_SITUACAO[doc.situacao]}</span></dd>
+      <dt>Validação matemática</dt><dd>${badgeValidacaoCalculo(doc.validacaoMatematica)}</dd>
+      <dt>Conferência RTC (IBS/CBS)</dt><dd>${badgeValidacaoReformaDocumento(doc.validacaoReforma)}</dd>
+      <dt>Chave de acesso</dt><dd>${doc.chave || '-'}</dd>
+      <dt>Emissão</dt><dd>${formatDate(doc.dataEmissao)}</dd>
+      <dt>Natureza da operação</dt><dd>${doc.naturezaOperacao || '-'}</dd>
+      <dt>Emitente</dt><dd>${doc.emitente.nome || '-'} (${doc.emitente.cnpj || '-'})</dd>
+      <dt>Destinatário</dt><dd>${doc.destinatario.nome || '-'} (${doc.destinatario.cnpj || '-'})</dd>
+      <dt>Valor total</dt><dd>${formatMoney(doc.valorTotal)}</dd>
+      <dt>ICMS total</dt><dd>${formatMoney(doc.valorIcmsTotal)}</dd>
+    </dl>
+
+    <div class="tabs">
+      <button type="button" class="tab-button tab-button-ativo" data-tab="itens">Itens (${doc.itens.length})</button>
+      <button type="button" class="tab-button" data-tab="divergencias">Divergências${totalDivergencias ? ` (${totalDivergencias})` : ''}</button>
+      <button type="button" class="tab-button" data-tab="reforma">Reforma Tributária</button>
+    </div>
+
+    <div class="tab-panel" data-tab-panel="itens">${construirAbaItens(doc)}</div>
+    <div class="tab-panel" data-tab-panel="divergencias" hidden>${construirAbaDivergencias(doc)}</div>
+    <div class="tab-panel" data-tab-panel="reforma" hidden>${construirAbaReforma(doc)}</div>
+
     <p class="hint" style="margin-top: 16px;">Esta é a informação já processada a partir do XML — o arquivo XML original não fica guardado, só os dados extraídos dele.</p>
   `;
+
+  els.docModalCorpo.querySelectorAll('.tab-button').forEach((botao) => {
+    botao.addEventListener('click', () => ativarAbaModal(botao.dataset.tab));
+  });
 
   els.docModalOverlay.hidden = false;
 }
