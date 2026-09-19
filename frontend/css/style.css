@@ -252,6 +252,12 @@ main {
   border-top-color: var(--danger);
 }
 
+.status-progress {
+  width: 140px;
+  height: 6px;
+  accent-color: var(--primary);
+}
+
 @keyframes girar {
   to { transform: rotate(360deg); }
 }
@@ -759,6 +765,20 @@ td.reforma-col {
 .reforma-aviso {
   color: var(--warning);
   white-space: normal;
+}
+
+.tag-confianca {
+  white-space: normal;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.tag-confianca-alta {
+  color: var(--ok);
+}
+
+.tag-confianca-baixa {
+  color: var(--warning);
 }
 
 /* Lista de divergências abaixo da badge "Validação matemática"/"Conferência

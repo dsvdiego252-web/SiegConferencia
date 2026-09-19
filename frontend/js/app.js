@@ -11,6 +11,7 @@ const els = {
   btnAuditoriaDados: document.getElementById('btnAuditoriaDados'),
   emptyStateBanner: document.getElementById('emptyStateBanner'),
   emptyStateDetalhe: document.getElementById('emptyStateDetalhe'),
+  statusProgress: document.getElementById('statusProgress'),
   clienteModalOverlay: document.getElementById('clienteModalOverlay'),
   clienteModalTitulo: document.getElementById('clienteModalTitulo'),
   btnFecharModalCliente: document.getElementById('btnFecharModalCliente'),
@@ -92,10 +93,12 @@ function apiBase() {
   return '';
 }
 
-function setStatus(message, isError = false, isLoading = false) {
+function setStatus(message, isError = false, isLoading = false, progressoPercentual = null) {
   els.statusText.textContent = message;
   els.statusBox.classList.toggle('error', isError);
   els.statusSpinner.hidden = !isLoading;
+  els.statusProgress.hidden = progressoPercentual === null;
+  if (progressoPercentual !== null) els.statusProgress.value = progressoPercentual;
 }
 
 async function apiGet(pathAndQuery) {
@@ -640,6 +643,24 @@ const ROTULO_STATUS_MERCADORIA = {
   PROVAVEL_TRIBUTACAO_INTEGRAL: 'provável tributação integral',
 };
 
+// "origem" (goods-engine/classificarMercadoria.js) tem muito mais nuance de
+// confiança do que os 4 valores de "status" sozinhos deixam ver — duas
+// classificações com o mesmo status (ex.: CANDIDATO_A_BENEFICIO) podem vir
+// de uma regra específica com fundamento legal citado, ou de um "chute" por
+// falta de regra mapeada. Sem distinguir isso, as duas pareciam igualmente
+// confiáveis na tela.
+const ORIGENS_BAIXA_CONFIANCA = new Set(['regra_residual', 'regra_generica_sem_evidencia_suficiente', 'conflito_multiplos_candidatos']);
+
+function tagConfiancaClassificacao(classificacao) {
+  if (classificacao.fundamentoLegal) {
+    return `<div class="tag-confianca tag-confianca-alta">✓ Regra com fundamento legal: ${classificacao.fundamentoLegal}</div>`;
+  }
+  if (ORIGENS_BAIXA_CONFIANCA.has(classificacao.origem) || !classificacao.origem) {
+    return '<div class="tag-confianca tag-confianca-baixa">⚠ Sugestão automática sem regra específica mapeada — confira manualmente antes de aplicar.</div>';
+  }
+  return '';
+}
+
 // Sugestão do Motor de Mercadorias (tax-engine/goods-engine): o que o
 // sistema determina que o item DEVERIA ter, a partir de NCM + descrição —
 // antes e independente do que o XML realmente informou (isso é o próprio
@@ -653,6 +674,7 @@ function textoClassificacaoMercadoria(classificacao) {
         ? 'badge-desconhecida'
         : 'badge-situacao-inconsistente';
   const badge = `<span class="badge ${classeBadge}">${ROTULO_STATUS_MERCADORIA[classificacao.status] || classificacao.status}</span>`;
+  const confianca = tagConfiancaClassificacao(classificacao);
   const modulo = classificacao.modulo
     ? `<div><strong>Módulo:</strong> ${classificacao.modulo} ${classificacao.item ? `(item ${classificacao.item})` : ''}</div>`
     : '';
@@ -663,7 +685,7 @@ function textoClassificacaoMercadoria(classificacao) {
       : '';
   const pendencias = (classificacao.pendencias || []).map((p) => `<div class="reforma-aviso">${p}</div>`).join('');
   const notas = (classificacao.notas || []).map((n) => `<div class="hint">${n}</div>`).join('');
-  return `<div class="reforma-info">${badge}${modulo}${tratamento}${codigos}${pendencias}${notas}</div>`;
+  return `<div class="reforma-info">${badge}${confianca}${modulo}${tratamento}${codigos}${pendencias}${notas}</div>`;
 }
 
 // Aba "Reforma Tributária" — três colunas lado a lado, na mesma ordem do
@@ -1077,10 +1099,19 @@ async function buscarPainelComEspera(query) {
     // Erros transitórios (ex.: 429 da SIEG) não interrompem o polling — só
     // avisam, já que a próxima tentativa já tenta de novo sozinha.
     const aviso = painel.avisoTransitorio ? ' Aguardando a SIEG liberar (limite temporário atingido), tentando de novo automaticamente.' : '';
+    // painel.progresso vem como "combosConcluidos/totalCombos" (ex.: "2/4")
+    // — dá pra virar uma barra visual em vez de só texto, que é mais rápido
+    // de bater o olho a cada tentativa do polling do que ler a frase de novo.
+    let percentual = null;
+    if (painel.progresso) {
+      const [concluidos, total] = painel.progresso.split('/').map(Number);
+      if (total > 0) percentual = Math.round((concluidos / total) * 100);
+    }
     setStatus(
       `Buscando na SIEG...${progresso}${detalhe}${ateData}${fechaParenteses} — isso pode levar alguns minutos dependendo do volume.${aviso}`,
       false,
-      true
+      true,
+      percentual
     );
     await new Promise((resolve) => setTimeout(resolve, POLL_INTERVALO_MS));
   }
