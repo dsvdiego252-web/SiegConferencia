@@ -19,6 +19,18 @@ function toNumber(value) {
   return Number.isFinite(n) ? n : 0;
 }
 
+// CNPJ tem sempre 14 dígitos, mas o fast-xml-parser (parseTagValue: true)
+// converte o conteúdo da tag pra número quando parece numérico — e
+// Number("07302509000138") vira 7302509000138, perdendo o zero à esquerda
+// de qualquer CNPJ cujos 2 primeiros dígitos comecem com 0. Sem repor esse
+// zero, o CNPJ gravado no cache permanente (documentos_fiscais.emit_cnpj)
+// nunca bate com o CNPJ do cliente (14 dígitos) usado pra consultar esse
+// cache, e a busca sempre volta vazia mesmo com os documentos já baixados.
+function normalizarCnpj(value) {
+  const bruto = String(value ?? '').replace(/\D/g, '');
+  return bruto ? bruto.padStart(14, '0') : '';
+}
+
 // O grupo ICMS/PIS/COFINS tem dezenas de variantes de acordo com o CST/CSOSN
 // (ICMS00, ICMS10, ICMS60, ICMSSN101, PISAliq, PISNT, PISOutr, ...). O valor
 // do imposto sempre fica dentro da primeira (e única) chave filha do grupo.
@@ -230,8 +242,8 @@ export function parseNfeXml(xmlString) {
     naturezaOperacao: ide.natOp ?? '',
     tpNF: ide.tpNF !== undefined ? Number(ide.tpNF) : null, // 0=entrada, 1=saída (segundo o próprio emitente)
     cancelada: String(cStat) === '101' || String(cStat) === '151',
-    emitente: { cnpj: String(emit.CNPJ ?? ''), nome: emit.xNome ?? '' },
-    destinatario: { cnpj: String(dest.CNPJ ?? ''), nome: dest.xNome ?? '' },
+    emitente: { cnpj: normalizarCnpj(emit.CNPJ), nome: emit.xNome ?? '' },
+    destinatario: { cnpj: normalizarCnpj(dest.CNPJ), nome: dest.xNome ?? '' },
     valorTotal: toNumber(total.vNF),
     valorIcmsTotal: toNumber(total.vICMS),
     valorProdutosTotal: toNumber(total.vProd),
