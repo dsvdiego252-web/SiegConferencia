@@ -8,6 +8,9 @@ const els = {
   btnAbrirCadastroCliente: document.getElementById('btnAbrirCadastroCliente'),
   btnEditarCliente: document.getElementById('btnEditarCliente'),
   btnExportarAvisos: document.getElementById('btnExportarAvisos'),
+  btnAuditoriaDados: document.getElementById('btnAuditoriaDados'),
+  emptyStateBanner: document.getElementById('emptyStateBanner'),
+  emptyStateDetalhe: document.getElementById('emptyStateDetalhe'),
   clienteModalOverlay: document.getElementById('clienteModalOverlay'),
   clienteModalTitulo: document.getElementById('clienteModalTitulo'),
   btnFecharModalCliente: document.getElementById('btnFecharModalCliente'),
@@ -177,9 +180,31 @@ function renderResumo({ totalDocumentos, totalEntrada, totalSaida, totalInconsis
   els.summaryGapsCard.classList.toggle('has-gaps', totalFaltando > 0);
   els.summaryGapsCard.classList.toggle('no-gaps', totalFaltando === 0);
   els.summaryInconsistentes.textContent = totalInconsistentes;
-  els.summaryInconsistentesCard.classList.toggle('alerta', totalInconsistentes > 0);
+  // Mesmo tom (âmbar) do badge/linha "Inconsistente" na tabela de
+  // documentos (badge-situacao-inconsistente/row-inconsistente) — antes
+  // este card usava vermelho (mesma cor de "erro"/divergência real),
+  // sugerindo uma gravidade maior do que a mesma situação recebe em
+  // qualquer outro lugar da tela.
+  els.summaryInconsistentesCard.classList.toggle('alerta-leve', totalInconsistentes > 0);
   els.summaryDivergenciaCalculo.textContent = totalDivergenciaCalculo;
   els.summaryDivergenciaCalculoCard.classList.toggle('alerta-leve', totalDivergenciaCalculo > 0);
+}
+
+// Diferencia "não tem nota emitida nesse período" (normal) de "algo deu
+// errado" (que já teria caído no catch de atualizar() com uma mensagem de
+// erro) — sem isso, os dois casos pareciam idênticos: todos os cards
+// zerados, sem nenhuma explicação de qual dos dois é.
+function renderEmptyState(totalDocumentos, cnpj, tipo, dataInicio, dataFim) {
+  if (totalDocumentos > 0) {
+    els.emptyStateBanner.hidden = true;
+    return;
+  }
+  const cliente = clientesCarregados.find((c) => c.cnpj === cnpj);
+  const rotuloTipo = els.tipoDocSelect.selectedOptions[0]?.textContent || 'documentos';
+  els.emptyStateDetalhe.textContent =
+    `${cliente?.nome || cnpj} · ${rotuloTipo} · ${formatDate(dataInicio)} a ${formatDate(dataFim)}. ` +
+    'Confira se o tipo de documento e o período estão corretos, ou se o cliente realmente não emitiu/recebeu nada nessa janela.';
+  els.emptyStateBanner.hidden = false;
 }
 
 function renderValores(valores) {
@@ -982,6 +1007,35 @@ function exportarAvisos() {
   setStatus(`Avisos exportados: ${gruposComQuebra.length} quebra(s) de sequência, ${documentosInconsistentes.length} documento(s) inconsistente(s).`);
 }
 
+// Canário manual contra a classe de bug que já corrompeu NCM e CNPJ no
+// cache permanente (fast-xml-parser perdendo zero à esquerda) — chama a
+// mesma auditoria que roda sozinha no fim da sincronização noturna, mas sob
+// demanda, sem precisar esperar a próxima madrugada pra saber se está limpo.
+async function rodarAuditoriaDados() {
+  els.btnAuditoriaDados.disabled = true;
+  setStatus('Rodando auditoria de dados...', false, true);
+  try {
+    const resultado = await apiGet('/api/cron/auditoria-dados');
+    if (resultado.status === 'ignorado') {
+      setStatus(`Auditoria não disponível: ${resultado.motivo}`, true);
+      return;
+    }
+    if (resultado.limpo) {
+      setStatus(`Auditoria de dados OK — ${resultado.totalDocumentosVerificados} documento(s) verificado(s), nenhuma corrupção de CNPJ/NCM encontrada.`);
+      return;
+    }
+    const problemas = resultado.achados
+      .filter((a) => a.totalCorrompidos > 0)
+      .map((a) => `${a.coluna}: ${a.totalCorrompidos} registro(s)`)
+      .join(', ');
+    setStatus(`Auditoria encontrou corrupção de dado — ${problemas}. Veja os logs do servidor para as chaves afetadas.`, true);
+  } catch (err) {
+    setStatus(`Falha ao rodar auditoria de dados: ${err.message}`, true);
+  } finally {
+    els.btnAuditoriaDados.disabled = false;
+  }
+}
+
 const POLL_INTERVALO_MS = 2000;
 // Cada tentativa já busca um pedaço de verdade, mas o rate limit real da
 // SIEG (2 requisições/minuto pra baixar XMLs) faz cada uma poder levar até
@@ -1077,6 +1131,7 @@ async function atualizar(forcarAtualizacao = false) {
     renderReforma(painel.reforma, painel.cliente);
     renderResumo(painel.xmls, totalFaltando);
     renderValores(painel.valores);
+    renderEmptyState(painel.xmls.totalDocumentos, cnpj, tipo, painel.periodo.dataInicio, painel.periodo.dataFim);
 
     setStatus(`Atualizado às ${new Date().toLocaleTimeString('pt-BR')}.`);
   } catch (err) {
@@ -1308,6 +1363,7 @@ async function init() {
   els.btnAbrirCadastroCliente.addEventListener('click', abrirModalCliente);
   els.btnEditarCliente.addEventListener('click', abrirModalEdicaoCliente);
   els.btnExportarAvisos.addEventListener('click', exportarAvisos);
+  els.btnAuditoriaDados.addEventListener('click', rodarAuditoriaDados);
   els.btnAdicionarCliente.addEventListener('click', adicionarCliente);
   els.btnFecharModalCliente.addEventListener('click', fecharModalCliente);
   els.clienteModalOverlay.addEventListener('click', (evento) => {

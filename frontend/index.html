@@ -55,11 +55,19 @@
       <div class="field field-button">
         <button id="btnExportarAvisos" class="btn-secondary" type="button">⬇ Exportar avisos</button>
       </div>
+      <div class="field field-button">
+        <button id="btnAuditoriaDados" class="btn-secondary" type="button" title="Verifica se algum CNPJ ou NCM ficou gravado com dígitos a menos no banco (sinal de corrupção de dado).">🛡 Auditoria de dados</button>
+      </div>
     </section>
 
     <section id="statusBox" class="status">
       <span id="statusSpinner" class="spinner" hidden></span>
       <span id="statusText"></span>
+    </section>
+
+    <section id="emptyStateBanner" class="empty-state" hidden>
+      <strong>Nenhum documento encontrado neste período.</strong>
+      <p id="emptyStateDetalhe"></p>
     </section>
 
     <section class="panel summary" id="summaryPanel" hidden>

@@ -3,6 +3,7 @@ import { listarClientes } from '../services/clientsStore.js';
 import { listarCombos, chaveCombo, buscarCombo } from '../services/documentsService.js';
 import { registrarSincronizacao, cacheDocumentosDisponivel } from '../services/documentCache.js';
 import { obterEstado, salvarEstado, estadoDisponivel } from '../services/syncNoturnoEstado.js';
+import { auditarDocumentosFiscais } from '../services/dataAudit.js';
 
 export const cronRouter = Router();
 
@@ -150,6 +151,20 @@ cronRouter.get('/sincronizar-noturno', async (req, res) => {
   };
   await salvarEstado(novoEstado);
 
+  // Aproveita o fim de cada rodada noturna (já dentro do orçamento de tempo
+  // de uma invocação de cron, sem custo de uma chamada extra à SIEG) pra
+  // rodar o canário de corrupção de CNPJ/NCM — loga no console (visível nos
+  // logs da função na Vercel) em vez de travar a resposta por causa disso.
+  if (concluiu) {
+    auditarDocumentosFiscais()
+      .then((resultado) => {
+        if (resultado.status === 'concluido' && !resultado.limpo) {
+          console.error('Auditoria de dados encontrou corrupção de CNPJ/NCM:', JSON.stringify(resultado.achados));
+        }
+      })
+      .catch((err) => console.error('Falha ao rodar auditoria de dados pós sincronização noturna:', err.message));
+  }
+
   const aindaDentroDaJanela = dentroDaJanelaNoturna();
   if (!concluiu && aindaDentroDaJanela) {
     // Continua sozinha: chama a si mesma pra processar o restante, sem
@@ -170,4 +185,16 @@ cronRouter.get('/sincronizar-noturno', async (req, res) => {
     visitados,
     totalUnidades,
   });
+});
+
+// Sob demanda (botão "Auditoria de dados" no painel, autenticado pela
+// própria sessão de login — exigirSessao em app.js já cobre isso) — não
+// depende da sincronização noturna ter rodado.
+cronRouter.get('/auditoria-dados', async (req, res) => {
+  try {
+    const resultado = await auditarDocumentosFiscais();
+    res.json(resultado);
+  } catch (err) {
+    res.status(500).json({ status: 'erro', erro: err.message });
+  }
 });

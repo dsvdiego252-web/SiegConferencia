@@ -11,6 +11,10 @@
   --danger-bg: #fdecec;
   --ok: #1f9d55;
   --ok-bg: #eafaf0;
+  --warning: #b25c00;
+  --warning-bg: #fff4e0;
+  --info: #3346c9;
+  --info-bg: #eef2ff;
   --radius: 14px;
   --radius-sm: 8px;
   --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.04);
@@ -215,6 +219,25 @@ main {
   color: var(--danger);
 }
 
+.empty-state {
+  background: var(--primary-tint);
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  margin: 4px 0 16px;
+  color: var(--text);
+}
+
+.empty-state strong {
+  color: var(--primary-dark);
+}
+
+.empty-state p {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+
 .spinner {
   width: 14px;
   height: 14px;
@@ -327,11 +350,11 @@ button:disabled {
 }
 
 .summary-card.alerta-leve {
-  background: #fff4e0;
+  background: var(--warning-bg);
 }
 
 .summary-card.alerta-leve .summary-value {
-  color: #b25c00;
+  color: var(--warning);
 }
 
 tr.row-divergente {
@@ -339,11 +362,11 @@ tr.row-divergente {
 }
 
 tr.row-pendente {
-  background: #fff4e0;
+  background: var(--warning-bg);
 }
 
 tr.row-somente-dominio {
-  background: #eef2ff;
+  background: var(--info-bg);
 }
 
 .badge-divergente {
@@ -352,13 +375,13 @@ tr.row-somente-dominio {
 }
 
 .badge-pendente {
-  background: #fff4e0;
-  color: #b25c00;
+  background: var(--warning-bg);
+  color: var(--warning);
 }
 
 .badge-somente-dominio {
-  background: #eef2ff;
-  color: #3346c9;
+  background: var(--info-bg);
+  color: var(--info);
 }
 
 #summaryGapsCard.no-gaps .summary-value {
@@ -415,7 +438,7 @@ tr.row-ok {
 
 .badge-saida {
   background: #fff2e0;
-  color: #b25c00;
+  color: var(--warning);
 }
 
 .badge-desconhecida {
@@ -438,7 +461,7 @@ tr.row-clickable:hover {
 }
 
 tr.row-inconsistente {
-  background: #fff4e0;
+  background: var(--warning-bg);
 }
 
 tr.row-cancelada {
@@ -452,8 +475,8 @@ tr.row-cancelada {
 }
 
 .badge-situacao-inconsistente {
-  background: #fff4e0;
-  color: #b25c00;
+  background: var(--warning-bg);
+  color: var(--warning);
 }
 
 .badge-situacao-cancelada {
@@ -734,7 +757,7 @@ td.reforma-col {
 }
 
 .reforma-aviso {
-  color: #b25c00;
+  color: var(--warning);
   white-space: normal;
 }
 
