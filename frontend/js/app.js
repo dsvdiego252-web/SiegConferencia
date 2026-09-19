@@ -8,7 +8,9 @@ const els = {
   btnAbrirCadastroCliente: document.getElementById('btnAbrirCadastroCliente'),
   btnEditarCliente: document.getElementById('btnEditarCliente'),
   btnExportarAvisos: document.getElementById('btnExportarAvisos'),
+  btnExportarExcel: document.getElementById('btnExportarExcel'),
   btnAuditoriaDados: document.getElementById('btnAuditoriaDados'),
+  btnRelatorioNcm: document.getElementById('btnRelatorioNcm'),
   emptyStateBanner: document.getElementById('emptyStateBanner'),
   emptyStateDetalhe: document.getElementById('emptyStateDetalhe'),
   statusProgress: document.getElementById('statusProgress'),
@@ -85,6 +87,10 @@ const els = {
   docModalTitulo: document.getElementById('docModalTitulo'),
   docModalCorpo: document.getElementById('docModalCorpo'),
   btnFecharModal: document.getElementById('btnFecharModal'),
+  btnPainelConsolidado: document.getElementById('btnPainelConsolidado'),
+  consolidadoModalOverlay: document.getElementById('consolidadoModalOverlay'),
+  consolidadoModalCorpo: document.getElementById('consolidadoModalCorpo'),
+  btnFecharModalConsolidado: document.getElementById('btnFecharModalConsolidado'),
 };
 
 // O front-end é servido pelo mesmo backend (mesma origem), tanto em dev
@@ -797,6 +803,73 @@ function fecharModal() {
   els.docModalOverlay.hidden = true;
 }
 
+function fecharModalConsolidado() {
+  els.consolidadoModalOverlay.hidden = true;
+}
+
+const ROTULO_COBERTURA = {
+  completa: '',
+  parcial: '<span class="hint">cobertura parcial (nem todo combo sincronizado)</span>',
+  nenhuma: '<span class="hint">ainda não sincronizado nessa janela</span>',
+};
+
+// Só lê o que já está cacheado (nunca busca ao vivo na SIEG) — cruza todos
+// os clientes cadastrados de uma vez pra achar quem tem quebra de
+// sequência, documento inconsistente ou divergência de cálculo nos
+// últimos 7 dias, sem precisar abrir CNPJ por CNPJ.
+async function abrirPainelConsolidado() {
+  els.consolidadoModalOverlay.hidden = false;
+  els.consolidadoModalCorpo.innerHTML = '<p class="hint">Carregando...</p>';
+  try {
+    const resultado = await apiGet('/api/cron/painel-consolidado');
+    if (resultado.status === 'ignorado') {
+      els.consolidadoModalCorpo.innerHTML = `<p class="hint">${resultado.motivo}</p>`;
+      return;
+    }
+    const linhas = resultado.clientes
+      .map((c) => {
+        if (c.temPendencia === null) {
+          return `<tr><td>${c.nome}</td><td colspan="4">${ROTULO_COBERTURA.nenhuma}</td></tr>`;
+        }
+        const classeLinha = c.temPendencia ? 'row-inconsistente' : 'row-ok';
+        return `
+          <tr class="${classeLinha} row-clickable" data-cnpj="${c.cnpj}">
+            <td>${c.nome} ${ROTULO_COBERTURA[c.cobertura] || ''}</td>
+            <td>${c.quebrasDeSequencia} quebra(s)</td>
+            <td>${c.documentosInconsistentes} inconsistente(s)</td>
+            <td>${c.divergenciasCalculo} divergência(s)</td>
+            <td>${c.totalDocumentos} doc(s)</td>
+          </tr>
+        `;
+      })
+      .join('');
+    els.consolidadoModalCorpo.innerHTML = `
+      <p class="hint">
+        Período verificado: ${formatDate(resultado.periodo.dataInicio)} a ${formatDate(resultado.periodo.dataFim)} (últimos 7 dias já sincronizados) —
+        ${resultado.clientesComPendencia} de ${resultado.totalClientes} cliente(s) com pendência,
+        ${resultado.clientesSemCobertura} ainda sem cobertura nessa janela. Clique num cliente pra abrir.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Cliente</th><th>Sequência</th><th>Reforma</th><th>Cálculo</th><th>Volume</th></tr></thead>
+          <tbody>${linhas || '<tr class="empty-row"><td colspan="5">Nenhum cliente cadastrado.</td></tr>'}</tbody>
+        </table>
+      </div>
+    `;
+    els.consolidadoModalCorpo.querySelectorAll('tr[data-cnpj]').forEach((tr) => {
+      tr.addEventListener('click', () => {
+        els.clienteSelect.value = tr.dataset.cnpj;
+        els.dataInicioInput.value = resultado.periodo.dataInicio;
+        els.dataFimInput.value = resultado.periodo.dataFim;
+        fecharModalConsolidado();
+        atualizar(false);
+      });
+    });
+  } catch (err) {
+    els.consolidadoModalCorpo.innerHTML = `<p class="status error">${err.message}</p>`;
+  }
+}
+
 // Retorna quantos números de documento estão faltando no total (soma das
 // faixas faltantes de todos os grupos) — é isso que o card "Quebra de
 // Sequência" no resumo mostra, em vez de só "Sim/Não" como antes.
@@ -1029,6 +1102,77 @@ function exportarAvisos() {
   setStatus(`Avisos exportados: ${gruposComQuebra.length} quebra(s) de sequência, ${documentosInconsistentes.length} documento(s) inconsistente(s).`);
 }
 
+// "Exportar avisos" (CSV) só lista o que já dá alerta — útil pra agir rápido,
+// mas não serve pra levar a conferência inteira pra fora do sistema (ex.:
+// anexar num fechamento, cruzar numa outra planilha). Esta exportação cobre
+// todos os documentos do período, não só os problemáticos.
+function exportarExcelCompleto() {
+  if (!ultimoPainel) {
+    setStatus('Busque os dados de um cliente antes de exportar.', true);
+    return;
+  }
+  const cliente = ultimoPainel.cliente;
+  const { dataInicio, dataFim } = ultimoPainel.periodo;
+
+  const linhasDocumentos = documentosCarregados.map((d) => ({
+    Tipo: d.tipoDocumento,
+    Número: d.numero,
+    Série: d.serie,
+    'Data Emissão': formatDate(d.dataEmissao),
+    Direção: d.operacao,
+    Emitente: d.emitente.nome || d.emitente.cnpj,
+    Destinatário: d.destinatario.nome || d.destinatario.cnpj || '',
+    'Valor Total': d.valorTotal,
+    Situação: ROTULO_SITUACAO[d.situacao] || d.situacao,
+    'Validação Matemática': d.validacaoMatematica?.status || '-',
+    'Qtd. Divergências': contarItensComDivergencia(d),
+    Chave: d.chave || '',
+  }));
+
+  const gruposComQuebra = (ultimoPainel.sequence?.grupos || []).filter((g) => g.temQuebra);
+  const linhasQuebras = gruposComQuebra.map((g) => ({
+    Emitente: g.emitNome,
+    Tipo: g.tipoDocumento,
+    Série: g.serie,
+    'Menor Número': g.menorNumero,
+    'Maior Número': g.maiorNumero,
+    'Total Esperado': g.totalEsperado,
+    'Total Encontrado': g.totalEncontrado,
+    Canceladas: g.totalCanceladas,
+    'Faixas Faltantes': g.faixasFaltantes.map((f) => (f.inicio === f.fim ? f.inicio : `${f.inicio}-${f.fim}`)).join(', '),
+  }));
+
+  const linhasDivergencias = documentosCarregados
+    .filter((d) => d.situacao === 'inconsistente' || (d.validacaoMatematica && d.validacaoMatematica.status !== 'CORRETO'))
+    .map((d) => ({
+      Tipo: d.tipoDocumento,
+      Número: d.numero,
+      Série: d.serie,
+      'Data Emissão': formatDate(d.dataEmissao),
+      Emitente: d.emitente.nome || d.emitente.cnpj,
+      'Valor Total': d.valorTotal,
+      Motivo: motivoInconsistencia(d),
+      'Status Validação Matemática': d.validacaoMatematica?.status || '-',
+    }));
+
+  const planilha = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(planilha, XLSX.utils.json_to_sheet(linhasDocumentos), 'Documentos');
+  XLSX.utils.book_append_sheet(
+    planilha,
+    XLSX.utils.json_to_sheet(linhasQuebras.length ? linhasQuebras : [{ Aviso: 'Nenhuma quebra de sequência encontrada no período.' }]),
+    'Quebras de Sequência'
+  );
+  XLSX.utils.book_append_sheet(
+    planilha,
+    XLSX.utils.json_to_sheet(linhasDivergencias.length ? linhasDivergencias : [{ Aviso: 'Nenhuma divergência encontrada no período.' }]),
+    'Divergências'
+  );
+
+  const nomeArquivo = `conferencia_${cliente?.cnpj || 'cliente'}_${dataInicio}_a_${dataFim}.xlsx`;
+  XLSX.writeFile(planilha, nomeArquivo);
+  setStatus(`Excel exportado: ${linhasDocumentos.length} documento(s), ${gruposComQuebra.length} quebra(s), ${linhasDivergencias.length} divergência(s).`);
+}
+
 // Canário manual contra a classe de bug que já corrompeu NCM e CNPJ no
 // cache permanente (fast-xml-parser perdendo zero à esquerda) — chama a
 // mesma auditoria que roda sozinha no fim da sincronização noturna, mas sob
@@ -1055,6 +1199,36 @@ async function rodarAuditoriaDados() {
     setStatus(`Falha ao rodar auditoria de dados: ${err.message}`, true);
   } finally {
     els.btnAuditoriaDados.disabled = false;
+  }
+}
+
+// Prioriza onde expandir a base de regras RTC: quais NCMs realmente usados
+// pelos clientes caem em classificação de baixa confiança (sem regra
+// específica mapeada), em vez de tentar cobrir a tabela NCM inteira às cegas.
+async function rodarRelatorioNcm() {
+  els.btnRelatorioNcm.disabled = true;
+  setStatus('Levantando NCMs sem regra mapeada...', false, true);
+  try {
+    const resultado = await apiGet('/api/cron/relatorio-ncm-sem-regra');
+    if (resultado.status === 'ignorado') {
+      setStatus(`Relatório não disponível: ${resultado.motivo}`, true);
+      return;
+    }
+    if (!resultado.totalNcmsSemRegra) {
+      setStatus(`Nenhum NCM sem regra mapeada entre os ${resultado.totalNcmsDistintos} NCM(s) distintos já cacheados.`);
+      return;
+    }
+    const top5 = resultado.top
+      .slice(0, 5)
+      .map((n) => `${n.ncm} (${n.ocorrencias}x)`)
+      .join(', ');
+    setStatus(
+      `${resultado.totalNcmsSemRegra} de ${resultado.totalNcmsDistintos} NCM(s) distintos sem regra mapeada. Mais frequentes: ${top5}.`
+    );
+  } catch (err) {
+    setStatus(`Falha ao levantar relatório de NCM: ${err.message}`, true);
+  } finally {
+    els.btnRelatorioNcm.disabled = false;
   }
 }
 
@@ -1394,7 +1568,11 @@ async function init() {
   els.btnAbrirCadastroCliente.addEventListener('click', abrirModalCliente);
   els.btnEditarCliente.addEventListener('click', abrirModalEdicaoCliente);
   els.btnExportarAvisos.addEventListener('click', exportarAvisos);
+  els.btnExportarExcel.addEventListener('click', exportarExcelCompleto);
   els.btnAuditoriaDados.addEventListener('click', rodarAuditoriaDados);
+  els.btnRelatorioNcm.addEventListener('click', rodarRelatorioNcm);
+  els.btnPainelConsolidado.addEventListener('click', abrirPainelConsolidado);
+  els.btnFecharModalConsolidado.addEventListener('click', fecharModalConsolidado);
   els.btnAdicionarCliente.addEventListener('click', adicionarCliente);
   els.btnFecharModalCliente.addEventListener('click', fecharModalCliente);
   els.clienteModalOverlay.addEventListener('click', (evento) => {

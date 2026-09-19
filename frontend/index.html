@@ -15,7 +15,10 @@
       <h1>SIEG Conferência Fiscal</h1>
       <p class="subtitle">Documentos integrados, quebras de sequência e cruzamento tributário por cliente</p>
     </div>
-    <a class="logout-link" href="/logout">Sair</a>
+    <div class="topbar-actions">
+      <button id="btnPainelConsolidado" class="btn-secondary" type="button" title="Cruza todos os clientes cadastrados de uma vez, sem precisar abrir CNPJ por CNPJ, usando só o que já está cacheado (últimos 7 dias).">📊 Quem tem pendência hoje</button>
+      <a class="logout-link" href="/logout">Sair</a>
+    </div>
   </header>
 
   <main>
@@ -56,7 +59,13 @@
         <button id="btnExportarAvisos" class="btn-secondary" type="button">⬇ Exportar avisos</button>
       </div>
       <div class="field field-button">
+        <button id="btnExportarExcel" class="btn-secondary" type="button" title="Lista completa de documentos e divergências do período, não só os avisos.">⬇ Exportar Excel completo</button>
+      </div>
+      <div class="field field-button">
         <button id="btnAuditoriaDados" class="btn-secondary" type="button" title="Verifica se algum CNPJ ou NCM ficou gravado com dígitos a menos no banco (sinal de corrupção de dado).">🛡 Auditoria de dados</button>
+      </div>
+      <div class="field field-button">
+        <button id="btnRelatorioNcm" class="btn-secondary" type="button" title="Lista os NCMs mais frequentes nos documentos já cacheados que caem em classificação de baixa confiança — prioriza onde expandir a base de regras da Reforma Tributária.">📋 NCMs sem regra</button>
       </div>
     </section>
 
@@ -319,6 +328,16 @@
     </section>
   </main>
 
+  <div id="consolidadoModalOverlay" class="modal-overlay" hidden>
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Quem tem pendência</h2>
+        <button id="btnFecharModalConsolidado" class="modal-close" type="button" aria-label="Fechar">&times;</button>
+      </div>
+      <div class="modal-body" id="consolidadoModalCorpo"></div>
+    </div>
+  </div>
+
   <div id="docModalOverlay" class="modal-overlay" hidden>
     <div class="modal">
       <div class="modal-header">
@@ -388,6 +407,7 @@
     </div>
   </div>
 
+  <script src="js/vendor/xlsx.mini.min.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

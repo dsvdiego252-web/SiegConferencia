@@ -51,6 +51,12 @@ body {
   gap: 16px;
 }
 
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .logout-link {
   color: var(--text-muted);
   font-size: 0.85rem;

@@ -4,6 +4,8 @@ import { listarCombos, chaveCombo, buscarCombo } from '../services/documentsServ
 import { registrarSincronizacao, cacheDocumentosDisponivel } from '../services/documentCache.js';
 import { obterEstado, salvarEstado, estadoDisponivel } from '../services/syncNoturnoEstado.js';
 import { auditarDocumentosFiscais } from '../services/dataAudit.js';
+import { relatorioNcmSemRegra } from '../services/ncmCoverageReport.js';
+import { gerarPainelConsolidado } from '../services/painelConsolidado.js';
 
 export const cronRouter = Router();
 
@@ -193,6 +195,31 @@ cronRouter.get('/sincronizar-noturno', async (req, res) => {
 cronRouter.get('/auditoria-dados', async (req, res) => {
   try {
     const resultado = await auditarDocumentosFiscais();
+    res.json(resultado);
+  } catch (err) {
+    res.status(500).json({ status: 'erro', erro: err.message });
+  }
+});
+
+// Sob demanda (botão "NCMs sem regra" no painel) — pra priorizar onde
+// expandir a base de regras RTC pelos NCMs que os clientes reais de fato
+// usam, em vez de tentar cobrir a tabela NCM inteira de uma vez.
+cronRouter.get('/relatorio-ncm-sem-regra', async (req, res) => {
+  try {
+    const resultado = await relatorioNcmSemRegra();
+    res.json(resultado);
+  } catch (err) {
+    res.status(500).json({ status: 'erro', erro: err.message });
+  }
+});
+
+// Cruza todos os clientes cadastrados de uma vez (só lê o cache permanente,
+// nunca busca ao vivo na SIEG) — "quem tem pendência" sem precisar abrir
+// cliente por cliente. Ver painelConsolidado.js para os detalhes da janela
+// de 7 dias e do porquê de nunca disparar busca ao vivo aqui.
+cronRouter.get('/painel-consolidado', async (req, res) => {
+  try {
+    const resultado = await gerarPainelConsolidado();
     res.json(resultado);
   } catch (err) {
     res.status(500).json({ status: 'erro', erro: err.message });
