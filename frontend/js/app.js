@@ -1472,6 +1472,7 @@ function renderReconciliation(resultado) {
       situacao: 'pendente',
       rowClass: 'row-pendente',
       badge: 'Pendente no Domínio',
+      chave: d.chave,
       numero: d.numero,
       serie: d.serie,
       operacao: d.operacao,
@@ -1499,7 +1500,14 @@ function renderReconciliation(resultado) {
   }
   for (const l of linhas) {
     const tr = document.createElement('tr');
-    tr.className = l.rowClass;
+    // Documentos pareados/pendentes carregam a chave de acesso — se o
+    // documento completo já foi buscado no painel principal (mesmo cliente
+    // e período), dá pra abrir o mesmo modal de conferência fiscal usado lá
+    // em vez de deixar a divergência do Domínio como uma tabela isolada,
+    // sem ligação nenhuma com a conferência SIEG do lado de cá.
+    const docCompleto = l.chave ? documentosCarregados.find((d) => d.chave === l.chave) : null;
+    tr.className = docCompleto ? `${l.rowClass} row-clickable` : l.rowClass;
+    if (docCompleto) tr.title = 'Clique para ver a conferência fiscal completa deste documento.';
     const valorSieg = l.sieg ? formatMoney(l.sieg.valorTotal) : '—';
     const valorDominio = l.dominio ? formatMoney(l.dominio.valorTotal) : '—';
     const diferenca = l.sieg && l.dominio ? formatMoney(l.diffValorTotal) : '—';
@@ -1513,6 +1521,7 @@ function renderReconciliation(resultado) {
       <td>${valorDominio}</td>
       <td>${diferenca}</td>
     `;
+    if (docCompleto) tr.addEventListener('click', () => abrirModalDocumento(docCompleto));
     els.reconDetailTableBody.appendChild(tr);
   }
 }

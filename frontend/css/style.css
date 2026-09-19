@@ -188,6 +188,19 @@ main {
   border-color: var(--primary);
 }
 
+/* Link estilizado igual aos botões da mesma linha (ex.: âncora pra rolar até
+   a seção de Conferência Domínio x SIEG) — herda cor de .btn-secondary,
+   só falta o "formato de botão" que .field-button button só dá pra <button>. */
+.link-as-button {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
 .field-full {
   flex-basis: 100%;
   margin: 0;

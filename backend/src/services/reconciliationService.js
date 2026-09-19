@@ -101,6 +101,7 @@ export function reconciliar(siegClassificados, dominioDocs) {
       diferencaRelevante(docSieg.valorIcms, par.valorIcms);
 
     pareados.push({
+      chave: docSieg.chave,
       numero: docSieg.numero,
       serie: docSieg.serie,
       operacao: docSieg.operacao,
