@@ -1,8 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
-import { listarClientes } from './clientsStore.js';
+import { listarClientes, obterCliente } from './clientsStore.js';
 import { linhaParaDocumento, cacheDocumentosDisponivel } from './documentCache.js';
 import { classificarOperacao } from './xmlParser.js';
 import { analisarConformidadeReforma, resolverDataCorteReforma } from './reformaTributariaAnalyzer.js';
+import { montarPainelDeClassificados } from './painelBuilder.js';
 
 const supabase = cacheDocumentosDisponivel ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY) : null;
 
@@ -121,5 +122,30 @@ export async function gerarPainelConsolidado() {
     clientesComDados: linhasClientes.filter((l) => l.temDados).length,
     clientesComPendencia: linhasClientes.filter((l) => l.temPendencia).length,
     clientes: linhasClientes,
+  };
+}
+
+/**
+ * Monta o mesmo formato de resposta de /api/painel (xmls, sequence, tax,
+ * reforma, valores) pra um cliente/dia específico, mas só a partir do
+ * cache permanente — nunca busca ao vivo na SIEG. Usada quando alguém
+ * clica num dia do painel consolidado pra ver os documentos de verdade,
+ * sem gastar cota da SIEG numa busca que os dados já cacheados respondem.
+ */
+export async function buscarDocumentosConsolidado(cnpj, dia) {
+  if (!cacheDocumentosDisponivel) {
+    return { status: 'ignorado', motivo: 'Supabase não configurado — painel consolidado desligado.' };
+  }
+
+  const docs = await docsCacheadosDoCliente(cnpj, dia, dia);
+  const cliente = await obterCliente(cnpj);
+  const dataCorteReforma = resolverDataCorteReforma(cliente?.regimeTributario);
+  const classificados = docs.map((doc) => ({ doc, operacao: classificarOperacao(doc, cnpj) }));
+
+  return {
+    status: 'concluido',
+    periodo: { dataInicio: dia, dataFim: dia },
+    cliente,
+    ...montarPainelDeClassificados(classificados, dataCorteReforma),
   };
 }

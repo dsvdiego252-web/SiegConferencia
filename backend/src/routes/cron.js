@@ -5,7 +5,7 @@ import { registrarSincronizacao, cacheDocumentosDisponivel } from '../services/d
 import { obterEstado, salvarEstado, estadoDisponivel } from '../services/syncNoturnoEstado.js';
 import { auditarDocumentosFiscais } from '../services/dataAudit.js';
 import { relatorioNcmSemRegra } from '../services/ncmCoverageReport.js';
-import { gerarPainelConsolidado } from '../services/painelConsolidado.js';
+import { gerarPainelConsolidado, buscarDocumentosConsolidado } from '../services/painelConsolidado.js';
 
 export const cronRouter = Router();
 
@@ -216,10 +216,24 @@ cronRouter.get('/relatorio-ncm-sem-regra', async (req, res) => {
 // Cruza todos os clientes cadastrados de uma vez (só lê o cache permanente,
 // nunca busca ao vivo na SIEG) — "quem tem pendência" sem precisar abrir
 // cliente por cliente. Ver painelConsolidado.js para os detalhes da janela
-// de 7 dias e do porquê de nunca disparar busca ao vivo aqui.
+// de 30 dias e do porquê de nunca disparar busca ao vivo aqui.
 cronRouter.get('/painel-consolidado', async (req, res) => {
   try {
     const resultado = await gerarPainelConsolidado();
+    res.json(resultado);
+  } catch (err) {
+    res.status(500).json({ status: 'erro', erro: err.message });
+  }
+});
+
+// Documentos de um cliente/dia específico do painel consolidado — clicar
+// num dia na tela abre isso em vez de repetir a busca inteira na SIEG,
+// já que o cache permanente já tem esses documentos.
+cronRouter.get('/painel-consolidado/documentos', async (req, res) => {
+  try {
+    const { cnpj, dia } = req.query;
+    if (!cnpj || !dia) return res.status(400).json({ erro: 'Informe "cnpj" e "dia".' });
+    const resultado = await buscarDocumentosConsolidado(cnpj, dia);
     res.json(resultado);
   } catch (err) {
     res.status(500).json({ status: 'erro', erro: err.message });

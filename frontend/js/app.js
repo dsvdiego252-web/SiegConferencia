@@ -89,6 +89,17 @@ const els = {
   btnFecharModal: document.getElementById('btnFecharModal'),
   btnAtualizarConsolidado: document.getElementById('btnAtualizarConsolidado'),
   consolidadoResultado: document.getElementById('consolidadoResultado'),
+  consolidadoFiltroCliente: document.getElementById('consolidadoFiltroCliente'),
+  consolidadoFiltroDe: document.getElementById('consolidadoFiltroDe'),
+  consolidadoFiltroAte: document.getElementById('consolidadoFiltroAte'),
+  consolidadoClienteModalOverlay: document.getElementById('consolidadoClienteModalOverlay'),
+  consolidadoClienteModalTitulo: document.getElementById('consolidadoClienteModalTitulo'),
+  consolidadoClienteModalCorpo: document.getElementById('consolidadoClienteModalCorpo'),
+  btnFecharModalConsolidadoCliente: document.getElementById('btnFecharModalConsolidadoCliente'),
+  consolidadoDocsModalOverlay: document.getElementById('consolidadoDocsModalOverlay'),
+  consolidadoDocsModalTitulo: document.getElementById('consolidadoDocsModalTitulo'),
+  consolidadoDocsModalCorpo: document.getElementById('consolidadoDocsModalCorpo'),
+  btnFecharModalConsolidadoDocs: document.getElementById('btnFecharModalConsolidadoDocs'),
   auditoriaResultado: document.getElementById('auditoriaResultado'),
   ncmResultado: document.getElementById('ncmResultado'),
   pageTitle: document.getElementById('pageTitle'),
@@ -834,66 +845,197 @@ function fecharModal() {
 }
 
 let consolidadoCarregado = false;
+let ultimoConsolidado = null;
 
 // Só lê o que já está cacheado (nunca busca ao vivo na SIEG) — cruza todos
-// os clientes cadastrados de uma vez, mostrando cada dia que já tem
-// documento encontrado (não exige a janela inteira sincronizada: um único
-// dia já buscado manualmente já aparece aqui, sem esperar cobertura total).
+// os clientes cadastrados de uma vez. A tabela é agrupada por cliente (não
+// por cliente+dia); o filtro de cliente/período de cima aplica em cima do
+// que já veio nessa chamada só, sem precisar buscar de novo.
 async function carregarConsolidado() {
   consolidadoCarregado = true;
   els.consolidadoResultado.innerHTML = '<p class="hint">Carregando...</p>';
   try {
     const resultado = await apiGet('/api/cron/painel-consolidado');
+    ultimoConsolidado = resultado;
     if (resultado.status === 'ignorado') {
       els.consolidadoResultado.innerHTML = `<p class="hint">${resultado.motivo}</p>`;
       return;
     }
-    const comDados = resultado.clientes.filter((c) => c.temDados);
-    if (!comDados.length) {
-      els.consolidadoResultado.innerHTML =
-        '<p class="hint">Nenhum cliente com documento cacheado nos últimos 30 dias ainda. Busque algum cliente na aba "Conferência Fiscal" primeiro.</p>';
+    preencherFiltroClienteConsolidado(resultado.clientes);
+    if (!els.consolidadoFiltroDe.value) els.consolidadoFiltroDe.value = resultado.periodo.dataInicio;
+    if (!els.consolidadoFiltroAte.value) els.consolidadoFiltroAte.value = resultado.periodo.dataFim;
+    renderConsolidadoTabela();
+  } catch (err) {
+    els.consolidadoResultado.innerHTML = `<p class="status error">${err.message}</p>`;
+  }
+}
+
+function preencherFiltroClienteConsolidado(clientes) {
+  const atual = els.consolidadoFiltroCliente.value;
+  els.consolidadoFiltroCliente.innerHTML =
+    '<option value="">Todos os clientes</option>' + clientes.map((c) => `<option value="${c.cnpj}">${c.nome}</option>`).join('');
+  els.consolidadoFiltroCliente.value = atual;
+}
+
+function somarDias(dias) {
+  return dias.reduce(
+    (acc, d) => ({
+      totalDocumentos: acc.totalDocumentos + d.totalDocumentos,
+      conformes: acc.conformes + d.conformes,
+      parciais: acc.parciais + d.parciais,
+      semAdequacao: acc.semAdequacao + d.semAdequacao,
+    }),
+    { totalDocumentos: 0, conformes: 0, parciais: 0, semAdequacao: 0 }
+  );
+}
+
+// Aplica o filtro de cliente/período por cima do que já foi buscado — o
+// relatório já cobre os últimos 30 dias numa chamada só, então filtrar não
+// precisa de nova ida ao servidor. Se nada bater, mostra que não achou.
+function renderConsolidadoTabela() {
+  if (!ultimoConsolidado || ultimoConsolidado.status !== 'concluido') return;
+  const cnpjFiltro = els.consolidadoFiltroCliente.value;
+  const de = els.consolidadoFiltroDe.value;
+  const ate = els.consolidadoFiltroAte.value;
+
+  const clientesFiltrados = ultimoConsolidado.clientes
+    .filter((c) => !cnpjFiltro || c.cnpj === cnpjFiltro)
+    .map((c) => ({ ...c, diasFiltrados: c.dias.filter((d) => (!de || d.dia >= de) && (!ate || d.dia <= ate)) }))
+    .filter((c) => c.diasFiltrados.length > 0);
+
+  if (!clientesFiltrados.length) {
+    els.consolidadoResultado.innerHTML =
+      '<p class="hint">Nenhum documento encontrado no cache para esse cliente/período. Busque na aba "Conferência Fiscal" primeiro, ou tente outro período.</p>';
+    return;
+  }
+
+  const linhas = clientesFiltrados
+    .map((c) => {
+      const totais = somarDias(c.diasFiltrados);
+      const pendente = totais.semAdequacao > 0 || totais.parciais > 0;
+      return `
+        <tr class="${pendente ? 'row-inconsistente' : 'row-ok'} row-clickable" data-cnpj="${c.cnpj}">
+          <td>${c.nome}</td>
+          <td>${c.diasFiltrados.length} dia(s)</td>
+          <td>${totais.totalDocumentos}</td>
+          <td>${totais.conformes}</td>
+          <td>${totais.parciais}</td>
+          <td>${totais.semAdequacao}</td>
+        </tr>
+      `;
+    })
+    .join('');
+
+  els.consolidadoResultado.innerHTML = `
+    <p class="hint">${clientesFiltrados.length} cliente(s) encontrado(s) no período. Clique numa linha pra ver os dias.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Cliente</th><th>Dias com dado</th><th>Documentos</th><th>Conformes</th><th>Parciais</th><th>Sem campos</th></tr></thead>
+        <tbody>${linhas}</tbody>
+      </table>
+    </div>
+  `;
+  els.consolidadoResultado.querySelectorAll('tr[data-cnpj]').forEach((tr) => {
+    tr.addEventListener('click', () => abrirConsolidadoCliente(tr.dataset.cnpj));
+  });
+}
+
+function fecharModalConsolidadoCliente() {
+  els.consolidadoClienteModalOverlay.hidden = true;
+}
+
+// Nível 2 do drill-down: dias encontrados daquele cliente (já em memória,
+// sem nova chamada) — clicar num dia abre os documentos de verdade.
+function abrirConsolidadoCliente(cnpj) {
+  const cliente = ultimoConsolidado.clientes.find((c) => c.cnpj === cnpj);
+  if (!cliente) return;
+  const de = els.consolidadoFiltroDe.value;
+  const ate = els.consolidadoFiltroAte.value;
+  const dias = cliente.dias.filter((d) => (!de || d.dia >= de) && (!ate || d.dia <= ate));
+
+  els.consolidadoClienteModalTitulo.textContent = cliente.nome;
+  const linhas = dias
+    .map((d) => {
+      const pendente = d.semAdequacao > 0 || d.parciais > 0;
+      return `
+        <tr class="${pendente ? 'row-inconsistente' : 'row-ok'} row-clickable" data-dia="${d.dia}">
+          <td>${formatDate(d.dia)}</td>
+          <td>${d.totalDocumentos}</td>
+          <td>${d.conformes}</td>
+          <td>${d.parciais}</td>
+          <td>${d.semAdequacao}</td>
+        </tr>
+      `;
+    })
+    .join('');
+  els.consolidadoClienteModalCorpo.innerHTML = `
+    <p class="hint">Clique num dia pra ver os documentos encontrados naquele dia.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Dia</th><th>Documentos</th><th>Conformes</th><th>Parciais</th><th>Sem campos</th></tr></thead>
+        <tbody>${linhas || '<tr class="empty-row"><td colspan="5">Nenhum dia no período filtrado.</td></tr>'}</tbody>
+      </table>
+    </div>
+  `;
+  els.consolidadoClienteModalCorpo.querySelectorAll('tr[data-dia]').forEach((tr) => {
+    tr.addEventListener('click', () => abrirConsolidadoDocumentos(cnpj, tr.dataset.dia, cliente.nome));
+  });
+  els.consolidadoClienteModalOverlay.hidden = false;
+}
+
+function fecharModalConsolidadoDocs() {
+  els.consolidadoDocsModalOverlay.hidden = true;
+}
+
+// Nível 3 do drill-down: os documentos de verdade daquele cliente/dia, só
+// do cache (1 chamada leve) — clicar num documento abre o mesmo modal de
+// detalhe completo (itens/divergências/reforma) usado na Conferência Fiscal.
+async function abrirConsolidadoDocumentos(cnpj, dia, nomeCliente) {
+  els.consolidadoDocsModalTitulo.textContent = `${nomeCliente} — ${formatDate(dia)}`;
+  els.consolidadoDocsModalCorpo.innerHTML = '<p class="hint">Carregando...</p>';
+  els.consolidadoDocsModalOverlay.hidden = false;
+  try {
+    const painel = await apiGet(`/api/cron/painel-consolidado/documentos?cnpj=${encodeURIComponent(cnpj)}&dia=${encodeURIComponent(dia)}`);
+    if (painel.status === 'ignorado') {
+      els.consolidadoDocsModalCorpo.innerHTML = `<p class="hint">${painel.motivo}</p>`;
       return;
     }
-    const linhas = comDados
-      .flatMap((c) =>
-        c.dias.map((d) => {
-          const pendente = d.semAdequacao > 0 || d.parciais > 0;
-          return `
-            <tr class="${pendente ? 'row-inconsistente' : 'row-ok'} row-clickable" data-cnpj="${c.cnpj}" data-dia="${d.dia}">
-              <td>${c.nome}</td>
-              <td>${formatDate(d.dia)}</td>
-              <td>${d.totalDocumentos}</td>
-              <td>${d.conformes}</td>
-              <td>${d.parciais}</td>
-              <td>${d.semAdequacao}</td>
-            </tr>
-          `;
-        })
+    const documentos = painel.xmls.documentos;
+    if (!documentos.length) {
+      els.consolidadoDocsModalCorpo.innerHTML = '<p class="hint">Nenhum documento encontrado.</p>';
+      return;
+    }
+    const linhas = documentos
+      .map(
+        (d, indice) => `
+          <tr class="row-${d.situacao} row-clickable" data-indice="${indice}">
+            <td><span class="badge badge-situacao-${d.situacao}">${ROTULO_SITUACAO[d.situacao]}</span></td>
+            <td><span class="badge badge-${d.operacao}">${d.operacao}</span></td>
+            <td>${d.tipoDocumento}</td>
+            <td>${d.numero}</td>
+            <td>${formatDate(d.dataEmissao)}</td>
+            <td>${formatMoney(d.valorTotal)}</td>
+          </tr>
+        `
       )
       .join('');
-    els.consolidadoResultado.innerHTML = `
-      <p class="hint">
-        Janela verificada: ${formatDate(resultado.periodo.dataInicio)} a ${formatDate(resultado.periodo.dataFim)} —
-        ${resultado.clientesComDados} de ${resultado.totalClientes} cliente(s) com algum documento já cacheado,
-        ${resultado.clientesComPendencia} com pendência de adequação à Reforma. Clique numa linha pra ver o detalhe.
-      </p>
+    els.consolidadoDocsModalCorpo.innerHTML = `
+      <p class="hint">${documentos.length} documento(s). Clique numa linha pra ver o detalhe completo.</p>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Cliente</th><th>Dia</th><th>Documentos</th><th>Conformes</th><th>Parciais</th><th>Sem campos</th></tr></thead>
+          <thead><tr><th>Situação</th><th>Operação</th><th>Tipo</th><th>Nº</th><th>Emissão</th><th>Valor</th></tr></thead>
           <tbody>${linhas}</tbody>
         </table>
       </div>
     `;
-    els.consolidadoResultado.querySelectorAll('tr[data-cnpj]').forEach((tr) => {
+    els.consolidadoDocsModalCorpo.querySelectorAll('tr[data-indice]').forEach((tr) => {
       tr.addEventListener('click', () => {
-        els.clienteSelect.value = tr.dataset.cnpj;
-        els.dataInicioInput.value = tr.dataset.dia;
-        els.dataFimInput.value = tr.dataset.dia;
-        atualizar(false);
+        fecharModalConsolidadoDocs();
+        abrirModalDocumento(documentos[Number(tr.dataset.indice)]);
       });
     });
   } catch (err) {
-    els.consolidadoResultado.innerHTML = `<p class="status error">${err.message}</p>`;
+    els.consolidadoDocsModalCorpo.innerHTML = `<p class="status error">${err.message}</p>`;
   }
 }
 
@@ -1717,10 +1859,23 @@ async function init() {
   els.docModalOverlay.addEventListener('click', (evento) => {
     if (evento.target === els.docModalOverlay) fecharModal();
   });
+  els.consolidadoFiltroCliente.addEventListener('change', renderConsolidadoTabela);
+  els.consolidadoFiltroDe.addEventListener('change', renderConsolidadoTabela);
+  els.consolidadoFiltroAte.addEventListener('change', renderConsolidadoTabela);
+  els.btnFecharModalConsolidadoCliente.addEventListener('click', fecharModalConsolidadoCliente);
+  els.consolidadoClienteModalOverlay.addEventListener('click', (evento) => {
+    if (evento.target === els.consolidadoClienteModalOverlay) fecharModalConsolidadoCliente();
+  });
+  els.btnFecharModalConsolidadoDocs.addEventListener('click', fecharModalConsolidadoDocs);
+  els.consolidadoDocsModalOverlay.addEventListener('click', (evento) => {
+    if (evento.target === els.consolidadoDocsModalOverlay) fecharModalConsolidadoDocs();
+  });
   document.addEventListener('keydown', (evento) => {
     if (evento.key === 'Escape') {
       fecharModal();
       fecharModalCliente();
+      fecharModalConsolidadoCliente();
+      fecharModalConsolidadoDocs();
     }
   });
 

@@ -124,8 +124,24 @@
           </div>
           <p class="hint">
             Cruza todos os clientes cadastrados usando só o que já está cacheado (últimos 30 dias) — nunca busca ao
-            vivo na SIEG. Clique numa linha pra ver o detalhe completo daquele cliente/dia abaixo.
+            vivo na SIEG. Clique num cliente pra ver os dias encontrados, e num dia pra ver os documentos.
           </p>
+          <div class="filters" style="padding: 0;">
+            <div class="field">
+              <label for="consolidadoFiltroCliente">Cliente</label>
+              <select id="consolidadoFiltroCliente">
+                <option value="">Todos os clientes</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="consolidadoFiltroDe">De</label>
+              <input id="consolidadoFiltroDe" type="date" />
+            </div>
+            <div class="field">
+              <label for="consolidadoFiltroAte">Até</label>
+              <input id="consolidadoFiltroAte" type="date" />
+            </div>
+          </div>
           <div id="consolidadoResultado"><p class="hint">Carregando...</p></div>
         </section>
 
@@ -409,6 +425,26 @@
           </div>
         </section>
       </div>
+    </div>
+  </div>
+
+  <div id="consolidadoClienteModalOverlay" class="modal-overlay" hidden>
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="consolidadoClienteModalTitulo">Cliente</h2>
+        <button id="btnFecharModalConsolidadoCliente" class="modal-close" type="button" aria-label="Fechar">&times;</button>
+      </div>
+      <div class="modal-body" id="consolidadoClienteModalCorpo"></div>
+    </div>
+  </div>
+
+  <div id="consolidadoDocsModalOverlay" class="modal-overlay" hidden>
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="consolidadoDocsModalTitulo">Documentos</h2>
+        <button id="btnFecharModalConsolidadoDocs" class="modal-close" type="button" aria-label="Fechar">&times;</button>
+      </div>
+      <div class="modal-body" id="consolidadoDocsModalCorpo"></div>
     </div>
   </div>
 
