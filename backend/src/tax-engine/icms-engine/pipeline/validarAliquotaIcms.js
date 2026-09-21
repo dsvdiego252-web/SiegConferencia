@@ -52,7 +52,13 @@ export function validarAliquotaIcmsItem(item, contexto) {
       return { status: 'CORRETO', aliquotaEsperada: esperada, fundamento, divergencias, pendencias };
     }
     if (!ALIQUOTAS_VALIDAS_INTERNA.has(aliquotaXml)) {
-      divergencias.push(`Alíquota de ICMS informada (${aliquotaXml}%) não corresponde a nenhuma alíquota interna vigente em SP (18/20/25/30/7/12 conforme o artigo aplicável).`);
+      divergencias.push({
+        campo: 'Alíquota ICMS',
+        informado: `${aliquotaXml}%`,
+        esperado: `${esperada}%`,
+        mensagem: `Alíquota de ICMS informada (${aliquotaXml}%) não corresponde a nenhuma alíquota interna vigente em SP (18/20/25/30/7/12 conforme o artigo aplicável).`,
+        baseLegal: fundamento,
+      });
       return { status: 'DIVERGENTE', divergencias, pendencias };
     }
     pendencias.push(`Alíquota informada (${aliquotaXml}%) diverge da regra geral (${esperada}% — ${fundamento}), mas pode se enquadrar em produto nomeado nos arts. 53-A/54/55 do RICMS/SP, que este motor não confere automaticamente por falta de lista de produtos — revisar manualmente.`);
@@ -63,7 +69,13 @@ export function validarAliquotaIcmsItem(item, contexto) {
     const regiao = regiaoDaUf(contexto.ufDestinatario);
     if (!regiao) {
       if (!ALIQUOTAS_VALIDAS_INTERESTADUAL.has(aliquotaXml)) {
-        divergencias.push(`Alíquota de ICMS informada (${aliquotaXml}%) não corresponde a nenhuma alíquota interestadual vigente (4/7/12%).`);
+        divergencias.push({
+          campo: 'Alíquota ICMS',
+          informado: `${aliquotaXml}%`,
+          esperado: null,
+          mensagem: `Alíquota de ICMS informada (${aliquotaXml}%) não corresponde a nenhuma alíquota interestadual vigente (4/7/12%).`,
+          baseLegal: 'RICMS/SP art. 52',
+        });
         return { status: 'DIVERGENTE', divergencias, pendencias };
       }
       return { status: 'REVISAO_MANUAL', divergencias, pendencias: ['UF de destino não identificada — não dá pra confirmar se 7% ou 12% seria o esperado.'] };
@@ -73,7 +85,13 @@ export function validarAliquotaIcmsItem(item, contexto) {
     if (Math.abs(aliquotaXml - 4) < 0.01) {
       return { status: 'REVISAO_MANUAL', divergencias, pendencias: ['Alíquota de 4% informada — só é válida se a mercadoria for importada com conteúdo de importação acima de 40% (art. 52, §2º); este motor ainda não confere a origem da mercadoria no XML.'] };
     }
-    divergencias.push(`Alíquota de ICMS informada (${aliquotaXml}%) diverge da esperada pra operação interestadual com destino a ${contexto.ufDestinatario || 'UF não identificada'} (${esperada}% — RICMS/SP art. 52).`);
+    divergencias.push({
+      campo: 'Alíquota ICMS',
+      informado: `${aliquotaXml}%`,
+      esperado: `${esperada}%`,
+      mensagem: `Alíquota de ICMS informada (${aliquotaXml}%) diverge da esperada pra operação interestadual com destino a ${contexto.ufDestinatario || 'UF não identificada'} (${esperada}% — RICMS/SP art. 52).`,
+      baseLegal: 'RICMS/SP art. 52',
+    });
     return { status: 'DIVERGENTE', divergencias, pendencias };
   }
 

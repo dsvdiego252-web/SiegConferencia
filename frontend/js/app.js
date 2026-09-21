@@ -656,6 +656,46 @@ function construirAbaItens(doc) {
 // Matemática e o XML_REFORMA_VALIDATOR encontraram de errado, item a item
 // e depois os totais do documento. Itens sem nenhum problema não aparecem
 // aqui — só o que precisa de atenção.
+// Agrupa as divergências estruturadas do tax-engine/icms-engine
+// (campo/informado/esperado/mensagem/baseLegal) por assunto — tudo que veio
+// de ICMS/CFOP/NCM/cBenef/ST num cartão, PIS/COFINS em outro — e monta uma
+// "ficha de inconsistência fiscal" por cartão: uma linha por campo
+// divergente (informado → esperado quando dá pra apontar um valor esperado
+// específico, senão a frase completa) e uma linha de base legal ao final
+// juntando as fontes citadas, sem repetir a mesma referência várias vezes.
+const TITULO_GRUPO_DIVERGENCIA = { icms: 'Inconsistência Fiscal — ICMS/CFOP', pis_cofins: 'Inconsistência Fiscal — PIS/COFINS' };
+const MOTOR_PARA_GRUPO = { ncm: 'icms', cfop: 'icms', icms_aliquota: 'icms', icms_cbenef: 'icms', icms_st: 'icms', icms_anexos: 'icms', pis_cofins: 'pis_cofins' };
+
+function construirFichasInconsistenciaFiscal(divergenciasIcms) {
+  if (!divergenciasIcms.length) return '';
+
+  const porGrupo = new Map();
+  for (const d of divergenciasIcms) {
+    const grupo = MOTOR_PARA_GRUPO[d.motor] || 'icms';
+    if (!porGrupo.has(grupo)) porGrupo.set(grupo, []);
+    porGrupo.get(grupo).push(d);
+  }
+
+  const fichas = [];
+  for (const [grupo, itens] of porGrupo) {
+    const linhas = itens.map((d) => {
+      const valor = d.esperado ? `<strong>${d.campo}</strong>: ${d.informado ?? '-'} → esperado ${d.esperado}` : `<strong>${d.campo}</strong>: ${d.mensagem}`;
+      return `<div class="ficha-fiscal-linha ficha-fiscal-alerta">⚠ ${valor}</div>`;
+    });
+    const basesLegais = [...new Set(itens.map((d) => d.baseLegal).filter(Boolean))];
+    if (basesLegais.length) {
+      linhas.push(`<div class="ficha-fiscal-linha ficha-fiscal-info">ℹ Base legal: ${basesLegais.join('; ')}</div>`);
+    }
+    fichas.push(`
+      <div class="ficha-fiscal">
+        <div class="ficha-fiscal-titulo">⚠ ${TITULO_GRUPO_DIVERGENCIA[grupo] || 'Inconsistência Fiscal'}</div>
+        ${linhas.join('')}
+      </div>
+    `);
+  }
+  return fichas.join('');
+}
+
 function construirAbaDivergencias(doc) {
   const blocos = [];
   let icmsSemBase = false;
@@ -678,25 +718,28 @@ function construirAbaDivergencias(doc) {
     }
     const divergenciaFiscal = doc.classificacaoMercadorias?.[indice]?.classificacao?.divergenciaFiscal;
     if (divergenciaFiscal) linhasItem.push(`<li>${divergenciaFiscal}</li>`);
-    // Conferência de ICMS/CFOP/CST (tax-engine/icms-engine): compara o que o
-    // XML informou com o que a base de regras diz que deveria ser — só
-    // aponta aqui quando bate uma divergência de verdade (SEM_BASE_CARREGADA
-    // vira um aviso único no fim da aba, não um item repetido por produto).
+    // Conferência de ICMS/CFOP/CST/PIS-COFINS (tax-engine/icms-engine):
+    // compara o que o XML informou com o que a base de regras diz que
+    // deveria ser — vira uma "ficha de inconsistência fiscal" por
+    // assunto (ICMS/CFOP de um lado, PIS/COFINS de outro), campo a campo,
+    // em vez de uma frase corrida só.
     const icmsItem = doc.conferenciaIcms?.itens?.[indice]?.conferencia;
+    let fichasFiscais = '';
     if (icmsItem) {
       if (icmsItem.status === 'SEM_BASE_CARREGADA') icmsSemBase = true;
-      for (const d of icmsItem.divergencias || []) linhasItem.push(`<li>${d}</li>`);
+      fichasFiscais = construirFichasInconsistenciaFiscal(icmsItem.divergencias || []);
       // Pendências (ex.: "UF não disponível pra conferir alíquota") não são
       // divergência confirmada, mas também não devem ficar invisíveis — sem
       // isso, um item "revisão manual" parece idêntico a um item sem
       // nenhuma conferência rodando.
       for (const p of icmsItem.pendencias || []) linhasItem.push(`<li class="hint">${p}</li>`);
     }
-    if (linhasItem.length) {
+    if (linhasItem.length || fichasFiscais) {
       blocos.push(`
         <div class="divergencia-bloco">
           <h4>${item.codigo} — ${item.descricao}</h4>
-          <ul>${linhasItem.join('')}</ul>
+          ${linhasItem.length ? `<ul>${linhasItem.join('')}</ul>` : ''}
+          ${fichasFiscais}
         </div>
       `);
     }

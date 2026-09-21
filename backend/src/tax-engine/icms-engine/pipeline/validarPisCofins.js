@@ -40,6 +40,17 @@ function regraVigenteNaData(regra, dataEmissao) {
   return true;
 }
 
+const ROTULO_TRATAMENTO = {
+  ALIQUOTAS_DIFERENCIADAS_MONOFASICO_OU_PAUTA: 'Monofásico/pauta (alíquotas diferenciadas)',
+  MONOFASICO_REVENDA_ALIQUOTA_ZERO: 'Monofásico — revenda a alíquota zero',
+  ALIQUOTA_ZERO: 'Alíquota zero',
+  TRATAMENTO_CONFORME_TABELA_4_3_10: 'Conforme Tabela 4.3.10',
+};
+
+function baseLegal(regra) {
+  return (regra.referencias_legais || []).join('; ') || null;
+}
+
 export function validarPisCofinsItem(item, contexto) {
   const codigo = canonicalizarNcm(item.ncm);
   const divergencias = [];
@@ -63,20 +74,45 @@ export function validarPisCofinsItem(item, contexto) {
 
   const [regra] = candidatas;
   const { cst_pis, cst_cofins, aliquota_pis_percentual, aliquota_cofins_percentual } = regra.resultado;
+  const fundamento = baseLegal(regra);
 
   const cstPisXml = item.pis?.cst;
   const cstCofinsXml = item.cofins?.cst;
   if (cstPisXml && cst_pis && cstPisXml !== cst_pis) {
-    divergencias.push(`CST PIS informado (${cstPisXml}) diverge do esperado pela tabela ${regra.tabela_sped} (${cst_pis} — ${regra.descricao}).`);
+    divergencias.push({
+      campo: 'CST PIS',
+      informado: cstPisXml,
+      esperado: cst_pis,
+      mensagem: `CST PIS informado (${cstPisXml}) diverge do esperado pela tabela ${regra.tabela_sped} (${cst_pis} — ${regra.descricao}).`,
+      baseLegal: fundamento,
+    });
   }
   if (cstCofinsXml && cst_cofins && cstCofinsXml !== cst_cofins) {
-    divergencias.push(`CST COFINS informado (${cstCofinsXml}) diverge do esperado pela tabela ${regra.tabela_sped} (${cst_cofins} — ${regra.descricao}).`);
+    divergencias.push({
+      campo: 'CST COFINS',
+      informado: cstCofinsXml,
+      esperado: cst_cofins,
+      mensagem: `CST COFINS informado (${cstCofinsXml}) diverge do esperado pela tabela ${regra.tabela_sped} (${cst_cofins} — ${regra.descricao}).`,
+      baseLegal: fundamento,
+    });
   }
   if (Number.isFinite(item.pis?.aliquota) && Number.isFinite(aliquota_pis_percentual) && Math.abs(item.pis.aliquota - aliquota_pis_percentual) > 0.01) {
-    divergencias.push(`Alíquota de PIS informada (${item.pis.aliquota}%) diverge da esperada pela tabela ${regra.tabela_sped} (${aliquota_pis_percentual}%).`);
+    divergencias.push({
+      campo: 'Alíquota PIS',
+      informado: `${item.pis.aliquota}%`,
+      esperado: `${aliquota_pis_percentual}%`,
+      mensagem: `Alíquota de PIS informada (${item.pis.aliquota}%) diverge da esperada pela tabela ${regra.tabela_sped} (${aliquota_pis_percentual}%).`,
+      baseLegal: fundamento,
+    });
   }
   if (Number.isFinite(item.cofins?.aliquota) && Number.isFinite(aliquota_cofins_percentual) && Math.abs(item.cofins.aliquota - aliquota_cofins_percentual) > 0.01) {
-    divergencias.push(`Alíquota de COFINS informada (${item.cofins.aliquota}%) diverge da esperada pela tabela ${regra.tabela_sped} (${aliquota_cofins_percentual}%).`);
+    divergencias.push({
+      campo: 'Alíquota COFINS',
+      informado: `${item.cofins.aliquota}%`,
+      esperado: `${aliquota_cofins_percentual}%`,
+      mensagem: `Alíquota de COFINS informada (${item.cofins.aliquota}%) diverge da esperada pela tabela ${regra.tabela_sped} (${aliquota_cofins_percentual}%).`,
+      baseLegal: fundamento,
+    });
   }
 
   return {
@@ -84,6 +120,10 @@ export function validarPisCofinsItem(item, contexto) {
     regraAplicada: regra.id_regra,
     cstPisEsperado: cst_pis,
     cstCofinsEsperado: cst_cofins,
+    regime: ROTULO_TRATAMENTO[regra.tratamento] || regra.tratamento,
+    naturezaReceita: regra.grupo?.titulo || null,
+    descricaoRegra: regra.descricao,
+    baseLegal: fundamento,
     divergencias,
     pendencias,
   };

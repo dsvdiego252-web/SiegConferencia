@@ -44,13 +44,26 @@ export function validarNcmItem(item) {
   const pendencias = [];
 
   if (!codigo) {
-    return { status: 'DIVERGENTE', existe: false, descricaoOficial: null, aliquotaIpi: null, divergencias: ['NCM ausente no item.'], pendencias: [] };
+    return {
+      status: 'DIVERGENTE',
+      existe: false,
+      descricaoOficial: null,
+      aliquotaIpi: null,
+      divergencias: [{ campo: 'NCM', informado: null, esperado: null, mensagem: 'NCM ausente no item.', baseLegal: null }],
+      pendencias: [],
+    };
   }
 
   const { porNcm, exPorNcm } = obterIndice();
   const linhaTipi = porNcm.get(codigo);
   if (!linhaTipi) {
-    divergencias.push(`NCM ${item.ncm} não encontrada na TIPI oficial (Decreto 11.158/2022, atualizada até jan/2026).`);
+    divergencias.push({
+      campo: 'NCM',
+      informado: item.ncm,
+      esperado: null,
+      mensagem: `NCM ${item.ncm} não encontrada na TIPI oficial (Decreto 11.158/2022, atualizada até jan/2026).`,
+      baseLegal: 'TIPI — Decreto 11.158/2022',
+    });
     return { status: 'DIVERGENTE', existe: false, descricaoOficial: null, aliquotaIpi: null, divergencias, pendencias };
   }
 

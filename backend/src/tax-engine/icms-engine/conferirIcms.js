@@ -51,7 +51,7 @@ const ESTAGIOS = [
   { nome: 'pisCofins', motor: 'pis_cofins', fn: (item, contexto) => validarPisCofinsItem(item, contexto) },
   { nome: 'aliquotaIcms', motor: 'icms_aliquota', fn: (item, contexto) => validarAliquotaIcmsItem(item, contexto) },
   { nome: 'cbenef', motor: 'icms_cbenef', fn: (item, contexto) => validarCbenefItem(item, contexto) },
-  { nome: 'icmsSt', motor: 'icms_st', fn: (item) => verificarStItem(item) },
+  { nome: 'icmsSt', motor: 'icms_st', fn: (item, contexto) => verificarStItem(item, contexto) },
   { nome: 'beneficiosAnexos', motor: 'icms_anexos', fn: (item) => verificarBeneficiosAnexosItem(item) },
 ];
 
@@ -79,7 +79,11 @@ export function conferirIcmsItem(item, contexto = {}) {
     if (!resultado) continue;
     porEstagio[estagio.nome] = resultado;
     statusPorEstagio.push(resultado.status);
-    for (const d of resultado.divergencias || []) divergencias.push(`[${estagio.nome}] ${d}`);
+    // divergencias já vêm estruturadas (campo/informado/esperado/mensagem/
+    // baseLegal) de cada estágio — só marca de qual motor/agrupamento veio,
+    // pra o front conseguir juntar tudo do mesmo assunto (ICMS/CFOP de um
+    // lado, PIS/COFINS de outro) num cartão só.
+    for (const d of resultado.divergencias || []) divergencias.push({ ...d, motor: estagio.motor, estagio: estagio.nome });
     for (const p of resultado.pendencias || []) pendencias.push(`[${estagio.nome}] ${p}`);
   }
 

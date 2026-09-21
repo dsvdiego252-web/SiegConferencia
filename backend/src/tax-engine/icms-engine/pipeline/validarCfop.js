@@ -27,31 +27,58 @@ export function validarCfopItem(item, contexto) {
   const pendencias = [];
 
   if (!cfop) {
-    return { status: 'DIVERGENTE', existe: false, divergencias: ['CFOP ausente no item.'], pendencias: [] };
+    return { status: 'DIVERGENTE', existe: false, divergencias: [{ campo: 'CFOP', informado: null, esperado: null, mensagem: 'CFOP ausente no item.', baseLegal: null }], pendencias: [] };
   }
 
   const regra = obterIndice().get(cfop);
   if (!regra) {
-    return { status: 'DIVERGENTE', existe: false, divergencias: [`CFOP ${cfop} não consta na tabela oficial (IT 2023.002 v2.10).`], pendencias: [] };
+    return {
+      status: 'DIVERGENTE',
+      existe: false,
+      divergencias: [{ campo: 'CFOP', informado: cfop, esperado: null, mensagem: `CFOP ${cfop} não consta na tabela oficial (IT 2023.002 v2.10).`, baseLegal: 'IT 2023.002 v2.10' }],
+      pendencias: [],
+    };
   }
 
   if (regra.vigencia_fim && contexto.dataEmissao && contexto.dataEmissao > regra.vigencia_fim) {
-    divergencias.push(`CFOP ${cfop} não estava mais vigente na data de emissão (vigência encerrada em ${regra.vigencia_fim}).`);
+    divergencias.push({
+      campo: 'CFOP',
+      informado: cfop,
+      esperado: null,
+      mensagem: `CFOP ${cfop} não estava mais vigente na data de emissão (vigência encerrada em ${regra.vigencia_fim}).`,
+      baseLegal: 'IT 2023.002 v2.10',
+    });
   }
 
   const movimentoEsperado = MOVIMENTO_POR_OPERACAO[contexto.operacao];
   if (movimentoEsperado && regra.classificacao_derivada?.movimento && regra.classificacao_derivada.movimento !== movimentoEsperado) {
-    divergencias.push(
-      `CFOP ${cfop} é de ${regra.classificacao_derivada.movimento} ("${regra.titulo}"), mas o documento é de ${movimentoEsperado === 'ENTRADA' ? 'entrada' : 'saída'} pra este cliente.`
-    );
+    divergencias.push({
+      campo: 'CFOP',
+      informado: cfop,
+      esperado: null,
+      mensagem: `CFOP ${cfop} é de ${regra.classificacao_derivada.movimento} ("${regra.titulo}"), mas o documento é de ${movimentoEsperado === 'ENTRADA' ? 'entrada' : 'saída'} pra este cliente.`,
+      baseLegal: 'IT 2023.002 v2.10',
+    });
   }
 
   if (contexto.mesmoEstado !== null && contexto.mesmoEstado !== undefined && regra.classificacao_derivada?.ambito) {
     const ambito = regra.classificacao_derivada.ambito;
     if (ambito === 'DENTRO_UF' && contexto.mesmoEstado === false) {
-      divergencias.push(`CFOP ${cfop} é de operação dentro do estado, mas emitente e destinatário estão em UFs diferentes.`);
+      divergencias.push({
+        campo: 'CFOP',
+        informado: cfop,
+        esperado: null,
+        mensagem: `CFOP ${cfop} é de operação dentro do estado, mas emitente e destinatário estão em UFs diferentes.`,
+        baseLegal: 'IT 2023.002 v2.10',
+      });
     } else if (ambito === 'FORA_UF' && contexto.mesmoEstado === true) {
-      divergencias.push(`CFOP ${cfop} é de operação interestadual, mas emitente e destinatário estão na mesma UF.`);
+      divergencias.push({
+        campo: 'CFOP',
+        informado: cfop,
+        esperado: null,
+        mensagem: `CFOP ${cfop} é de operação interestadual, mas emitente e destinatário estão na mesma UF.`,
+        baseLegal: 'IT 2023.002 v2.10',
+      });
     }
   } else if (regra.classificacao_derivada?.ambito && regra.classificacao_derivada.ambito !== 'DENTRO_UF') {
     pendencias.push('UF de emitente/destinatário não disponível — não dá pra confirmar se o âmbito (dentro/fora do estado) do CFOP está coerente.');

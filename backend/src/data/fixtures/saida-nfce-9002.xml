@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nfeProc>
+  <NFe>
+    <infNFe Id="NFeDEMO-NFCE-9002">
+      <ide>
+        <cUF>35</cUF>
+        <natOp>Venda</natOp>
+        <mod>65</mod>
+        <serie>1</serie>
+        <nNF>9002</nNF>
+        <dhEmi>2026-09-01T14:30:00-03:00</dhEmi>
+        <tpNF>1</tpNF>
+      </ide>
+      <emit>
+        <CNPJ>11222333000181</CNPJ>
+        <xNome>Cliente Ficticio Comercio Ltda</xNome>
+        <enderEmit><UF>SP</UF></enderEmit>
+      </emit>
+      <dest>
+        <CNPJ></CNPJ>
+        <xNome>CONSUMIDOR FINAL</xNome>
+      </dest>
+      <det nItem="1">
+        <prod>
+          <cProd>MED001</cProd>
+          <xProd>AMOXICILINA 500MG GENERICO</xProd>
+          <NCM>30049069</NCM>
+          <CEST>1300200</CEST>
+          <CFOP>5405</CFOP>
+          <qCom>1</qCom>
+          <vUnCom>24.90</vUnCom>
+          <vProd>24.90</vProd>
+        </prod>
+        <imposto>
+          <ICMS><ICMS60><CST>60</CST><vBCSTRet>0</vBCSTRet><vICMSSTRet>0</vICMSSTRet></ICMS60></ICMS>
+          <PIS><PISNT><CST>04</CST></PISNT></PIS>
+          <COFINS><COFINSNT><CST>04</CST></COFINSNT></COFINS>
+        </imposto>
+      </det>
+      <total>
+        <ICMSTot>
+          <vProd>24.90</vProd>
+          <vICMS>0.00</vICMS>
+          <vNF>24.90</vNF>
+        </ICMSTot>
+      </total>
+    </infNFe>
+    <protNFe><infProt><cStat>100</cStat></infProt></protNFe>
+  </NFe>
+</nfeProc>

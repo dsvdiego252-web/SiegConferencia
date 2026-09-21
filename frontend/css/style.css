@@ -813,6 +813,52 @@ label.checkbox-option {
   margin-bottom: 12px;
 }
 
+/* "Ficha de Inconsistência Fiscal" — cartão estruturado campo a campo
+   (informado → esperado) usado pela conferência de ICMS/CFOP/CST e
+   PIS/COFINS dentro de um .divergencia-bloco, no lugar de uma frase corrida
+   só — mais fácil de escanear item a item, e a linha de base legal fica
+   sempre separada e visualmente distinta das divergências em si. */
+.ficha-fiscal {
+  border: 1px solid var(--danger-bg);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.ficha-fiscal:first-child {
+  margin-top: 0;
+}
+
+.ficha-fiscal-titulo {
+  background: var(--danger-bg);
+  color: var(--danger);
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 8px 12px;
+}
+
+.ficha-fiscal-linha {
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+}
+
+.ficha-fiscal-alerta {
+  color: var(--text);
+  border-left: 3px solid var(--danger);
+}
+
+.ficha-fiscal-info {
+  color: var(--text-muted);
+  border-left: 3px solid var(--info);
+  background: var(--info-bg);
+  font-size: 0.8rem;
+}
+
 .divergencia-bloco:last-child {
   margin-bottom: 0;
 }

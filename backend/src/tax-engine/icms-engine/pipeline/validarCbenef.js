@@ -44,21 +44,39 @@ export function validarCbenefItem(item, contexto) {
   if (!cBenefXml) {
     if (!semPreenchimento) return { status: 'REVISAO_MANUAL', divergencias, pendencias: ['Regra "sem preenchimento de cBenef" não encontrada na base.'] };
     if (!semPreenchimento.cst_permitidos.includes(cstXml)) {
-      divergencias.push(`Item sem cBenef informado, mas o CST ${cstXml} exige preenchimento do campo segundo a Tabela CST x cBenef de SP.`);
+      divergencias.push({
+        campo: 'cBenef',
+        informado: '(não informado)',
+        esperado: 'preenchido',
+        mensagem: `Item sem cBenef informado, mas o CST ${cstXml} exige preenchimento do campo segundo a Tabela CST x cBenef de SP.`,
+        baseLegal: 'Tabela CST x cBenef — SEFAZ-SP',
+      });
     }
     return { status: divergencias.length ? 'DIVERGENTE' : 'CORRETO', divergencias, pendencias };
   }
 
   const regra = porCodigo.get(cBenefXml);
   if (!regra) {
-    return { status: 'DIVERGENTE', divergencias: [`cBenef "${cBenefXml}" informado no XML não consta na Tabela CST x cBenef de SP.`], pendencias };
+    return {
+      status: 'DIVERGENTE',
+      divergencias: [{ campo: 'cBenef', informado: cBenefXml, esperado: null, mensagem: `cBenef "${cBenefXml}" informado no XML não consta na Tabela CST x cBenef de SP.`, baseLegal: 'Tabela CST x cBenef — SEFAZ-SP' }],
+      pendencias,
+    };
   }
 
   const avisoVigencia = checarVigencia(regra, contexto.dataEmissao);
-  if (avisoVigencia) divergencias.push(avisoVigencia);
+  if (avisoVigencia) {
+    divergencias.push({ campo: 'cBenef', informado: cBenefXml, esperado: null, mensagem: avisoVigencia, baseLegal: regra.fundamento_legal || 'Tabela CST x cBenef — SEFAZ-SP' });
+  }
 
   if (!regra.cst_permitidos.includes(cstXml)) {
-    divergencias.push(`CST/CSOSN ${cstXml} não está entre os permitidos pela SEFAZ-SP para o cBenef "${cBenefXml}" (${regra.objeto_descricao || regra.categoria_textual || ''}).`.trim());
+    divergencias.push({
+      campo: 'CST',
+      informado: cstXml,
+      esperado: regra.cst_permitidos.join(' ou '),
+      mensagem: `CST/CSOSN ${cstXml} não está entre os permitidos pela SEFAZ-SP para o cBenef "${cBenefXml}" (${regra.objeto_descricao || regra.categoria_textual || ''}).`.trim(),
+      baseLegal: regra.fundamento_legal || 'Tabela CST x cBenef — SEFAZ-SP',
+    });
   }
 
   return { status: divergencias.length ? 'DIVERGENTE' : 'CORRETO', regraAplicada: regra.id_regra, divergencias, pendencias };

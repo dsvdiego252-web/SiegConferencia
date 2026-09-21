@@ -48,7 +48,7 @@ function primeiraDivergencia(resultadoReforma) {
 
 function primeiraDivergenciaIcms(resultadoIcms) {
   for (const item of resultadoIcms.itens) {
-    if (item.conferencia.divergencias.length) return item.conferencia.divergencias[0];
+    if (item.conferencia.divergencias.length) return item.conferencia.divergencias[0].mensagem;
   }
   return null;
 }
