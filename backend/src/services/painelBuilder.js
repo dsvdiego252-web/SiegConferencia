@@ -4,6 +4,7 @@ import { analisarConformidadeReforma } from './reformaTributariaAnalyzer.js';
 import { validarDocumento } from '../tax-engine/math-validation/mathValidator.js';
 import { validarReformaDocumento } from '../tax-engine/rtc-xml-validator/validarReformaXml.js';
 import { classificarMercadoriasDocumento } from '../tax-engine/goods-engine/classificarMercadoria.js';
+import { conferirIcmsDocumento } from '../tax-engine/icms-engine/conferirIcms.js';
 
 function round2(n) {
   return Math.round((n + Number.EPSILON) * 100) / 100;
@@ -35,12 +36,14 @@ function situacaoDocumento(doc, situacaoReforma) {
 
 /**
  * Roda o motor tributário inteiro (validação matemática, XML_REFORMA_
- * VALIDATOR, Motor de Mercadorias) sobre uma lista de documentos já
- * classificados (entrada/saída/desconhecida) e monta a mesma estrutura que
- * /api/painel devolve — usada tanto pela busca ao vivo quanto pelo painel
- * consolidado (que só lê do cache permanente, nunca busca na SIEG).
+ * VALIDATOR, Motor de Mercadorias, conferência de ICMS/CFOP/CST) sobre uma
+ * lista de documentos já classificados (entrada/saída/desconhecida) e monta
+ * a mesma estrutura que /api/painel devolve — usada tanto pela busca ao
+ * vivo quanto pelo painel consolidado (que só lê do cache permanente, nunca
+ * busca na SIEG). `regimeTributario` (opcional) é o regime do cliente,
+ * repassado à conferência de ICMS/CFOP/CST (ver tax-engine/icms-engine).
  */
-export function montarPainelDeClassificados(classificados, dataCorteReforma) {
+export function montarPainelDeClassificados(classificados, dataCorteReforma, regimeTributario = null) {
   const reforma = analisarConformidadeReforma(classificados, dataCorteReforma);
   const situacaoReformaPorChave = new Map(reforma.porDocumento.map((d) => [d.chave, d.situacao]));
 
@@ -66,6 +69,7 @@ export function montarPainelDeClassificados(classificados, dataCorteReforma) {
       validacaoMatematica: doc.cancelada ? null : comProtecao('validacaoMatematica', () => validarDocumento(doc)),
       validacaoReforma: doc.cancelada ? null : comProtecao('validacaoReforma', () => validarReformaDocumento(doc, dataCorteReforma)),
       classificacaoMercadorias: doc.cancelada ? null : comProtecao('classificacaoMercadorias', () => classificarMercadoriasDocumento(doc)),
+      conferenciaIcms: doc.cancelada ? null : comProtecao('conferenciaIcms', () => conferirIcmsDocumento(doc, operacao, regimeTributario)),
     };
   });
 
@@ -107,6 +111,7 @@ export function montarPainelDeClassificados(classificados, dataCorteReforma) {
         .length,
       totalDivergenciaReforma: documentos.filter((d) => d.validacaoReforma && d.validacaoReforma.status === 'DIVERGENTE')
         .length,
+      totalDivergenciaIcms: documentos.filter((d) => d.conferenciaIcms && d.conferenciaIcms.status === 'DIVERGENTE').length,
       documentos,
     },
     valores: resumoValores,

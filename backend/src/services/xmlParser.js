@@ -31,6 +31,16 @@ function normalizarCnpj(value) {
   return bruto ? bruto.padStart(14, '0') : '';
 }
 
+// Mesmo bug de zero à esquerda do CNPJ/NCM, mas em CST/CSOSN: "00" (CST
+// tributação integral) e "01"/"02"/... viram os números 0/1/2 depois do
+// parseTagValue, e sem repor o zero a comparação com uma tabela de regras
+// (ex.: tax-engine/icms-engine) nunca bate, mesmo quando o XML está
+// correto — CST "00" comparado como "0" contra o esperado "00" já falha.
+function normalizarCodigoFiscal(value, digitos) {
+  if (value === undefined || value === null || value === '') return null;
+  return String(value).padStart(digitos, '0');
+}
+
 // O grupo ICMS/PIS/COFINS tem dezenas de variantes de acordo com o CST/CSOSN
 // (ICMS00, ICMS10, ICMS60, ICMSSN101, PISAliq, PISNT, PISOutr, ...). O valor
 // do imposto sempre fica dentro da primeira (e única) chave filha do grupo.
@@ -209,19 +219,22 @@ export function parseNfeXml(xmlString) {
       valorUnitario: toNumber(prod.vUnCom),
       valorProduto: toNumber(prod.vProd),
       icms: {
-        cst: icms.CST ?? icms.CSOSN ?? null,
+        // CST (Regime Normal) tem 2 dígitos, CSOSN (Simples Nacional) tem
+        // 3 — normaliza cada um no tamanho certo antes do fallback ??, pra
+        // não std zero à esquerda perdido virar um código de tamanho errado.
+        cst: normalizarCodigoFiscal(icms.CST, 2) ?? normalizarCodigoFiscal(icms.CSOSN, 3),
         aliquota: toNumber(icms.pICMS),
         valor: toNumber(icms.vICMS),
         baseCalculo: toNumber(icms.vBC),
       },
       pis: {
-        cst: pis.CST ?? null,
+        cst: normalizarCodigoFiscal(pis.CST, 2),
         aliquota: toNumber(pis.pPIS),
         valor: toNumber(pis.vPIS),
         baseCalculo: toNumber(pis.vBC),
       },
       cofins: {
-        cst: cofins.CST ?? null,
+        cst: normalizarCodigoFiscal(cofins.CST, 2),
         aliquota: toNumber(cofins.pCOFINS),
         valor: toNumber(cofins.vCOFINS),
         baseCalculo: toNumber(cofins.vBC),

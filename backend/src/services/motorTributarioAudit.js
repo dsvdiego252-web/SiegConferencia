@@ -2,8 +2,10 @@ import { createClient } from '@supabase/supabase-js';
 import { listarClientes } from './clientsStore.js';
 import { linhaParaDocumento, cacheDocumentosDisponivel } from './documentCache.js';
 import { resolverDataCorteReforma } from './reformaTributariaAnalyzer.js';
+import { classificarOperacao } from './xmlParser.js';
 import { validarDocumento } from '../tax-engine/math-validation/mathValidator.js';
 import { validarReformaDocumento } from '../tax-engine/rtc-xml-validator/validarReformaXml.js';
+import { conferirIcmsDocumento } from '../tax-engine/icms-engine/conferirIcms.js';
 
 const supabase = cacheDocumentosDisponivel ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY) : null;
 
@@ -44,14 +46,24 @@ function primeiraDivergencia(resultadoReforma) {
   return resultadoReforma.divergenciasTotais[0] || null;
 }
 
+function primeiraDivergenciaIcms(resultadoIcms) {
+  for (const item of resultadoIcms.itens) {
+    if (item.conferencia.divergencias.length) return item.conferencia.divergencias[0];
+  }
+  return null;
+}
+
 /**
- * Roda o motor tributário (Validação Matemática + XML_REFORMA_VALIDATOR)
- * sobre todo o cache permanente de documentos, cliente a cliente, e agrega
- * quantos documentos vieram corretos, com divergência de cálculo ou de
- * arredondamento, e como a Reforma Tributária está batendo — mesma lógica
- * já usada em cada documento individual (painelBuilder.js), só que somada
- * pra dar uma visão de conferência do motor em cima dos dados fiscais reais
- * já coletados, sem precisar abrir cliente por cliente.
+ * Roda o motor tributário (Validação Matemática + XML_REFORMA_VALIDATOR +
+ * conferência de ICMS/CFOP/CST) sobre todo o cache permanente de
+ * documentos, cliente a cliente, e agrega quantos documentos vieram
+ * corretos, com divergência de cálculo, de Reforma Tributária ou de
+ * ICMS/CFOP/CST — mesma lógica já usada em cada documento individual
+ * (painelBuilder.js), só que somada pra dar uma visão de conferência do
+ * motor em cima dos dados fiscais reais já coletados, sem precisar abrir
+ * cliente por cliente. A conferência de ICMS/CFOP/CST fica em "semBase" até
+ * a base de regras ser cadastrada (ver tax-engine/icms-engine/README.md) —
+ * não é um bug, é o motor recusando confirmar sem dado.
  */
 export async function auditarMotorTributario() {
   if (!cacheDocumentosDisponivel) {
@@ -65,6 +77,7 @@ export async function auditarMotorTributario() {
     documentosAnalisados: 0,
     matematica: { correto: 0, divergenciaArredondamento: 0, divergenciaCalculo: 0 },
     reforma: { correto: 0, divergente: 0, totalDivergente: 0, revisaoManual: 0, semDados: 0 },
+    icms: { correto: 0, divergente: 0, revisaoManual: 0, semBase: 0 },
   };
 
   for (const cliente of clientes) {
@@ -78,6 +91,7 @@ export async function auditarMotorTributario() {
     const dataCorteReforma = resolverDataCorteReforma(cliente.regimeTributario);
     const matematica = { correto: 0, divergenciaArredondamento: 0, divergenciaCalculo: 0 };
     const reforma = { correto: 0, divergente: 0, totalDivergente: 0, revisaoManual: 0, semDados: 0 };
+    const icms = { correto: 0, divergente: 0, revisaoManual: 0, semBase: 0 };
     const exemplos = [];
 
     for (const doc of docsAtivos) {
@@ -92,6 +106,13 @@ export async function auditarMotorTributario() {
       else if (rtc.status === 'DIVERGENTE') reforma.divergente += 1;
       else if (rtc.status === 'TOTAL_REFORMA_DIVERGENTE') reforma.totalDivergente += 1;
       else reforma.revisaoManual += 1;
+
+      const operacao = classificarOperacao(doc, cliente.cnpj);
+      const icmsDoc = conferirIcmsDocumento(doc, operacao, cliente.regimeTributario);
+      if (icmsDoc.status === 'SEM_BASE_CARREGADA') icms.semBase += 1;
+      else if (icmsDoc.status === 'CORRETO') icms.correto += 1;
+      else if (icmsDoc.status === 'DIVERGENTE') icms.divergente += 1;
+      else icms.revisaoManual += 1;
 
       if (exemplos.length < LIMITE_EXEMPLOS_POR_CLIENTE) {
         if (mat.status === 'DIVERGENCIA_CALCULO') {
@@ -115,6 +136,15 @@ export async function auditarMotorTributario() {
             motor: 'reforma',
             motivo: primeiraDivergencia(rtc) || 'Divergência na conferência de IBS/CBS.',
           });
+        } else if (icmsDoc.status === 'DIVERGENTE') {
+          exemplos.push({
+            chave: doc.chave,
+            tipoDocumento: doc.tipoDocumento,
+            numero: doc.numero,
+            dataEmissao: doc.dataEmissao,
+            motor: 'icms',
+            motivo: primeiraDivergenciaIcms(icmsDoc) || 'Divergência na conferência de ICMS/CFOP/CST.',
+          });
         }
       }
     }
@@ -128,8 +158,12 @@ export async function auditarMotorTributario() {
     totais.reforma.totalDivergente += reforma.totalDivergente;
     totais.reforma.revisaoManual += reforma.revisaoManual;
     totais.reforma.semDados += reforma.semDados;
+    totais.icms.correto += icms.correto;
+    totais.icms.divergente += icms.divergente;
+    totais.icms.revisaoManual += icms.revisaoManual;
+    totais.icms.semBase += icms.semBase;
 
-    const temDivergencia = matematica.divergenciaCalculo > 0 || reforma.divergente > 0 || reforma.totalDivergente > 0;
+    const temDivergencia = matematica.divergenciaCalculo > 0 || reforma.divergente > 0 || reforma.totalDivergente > 0 || icms.divergente > 0;
     linhasClientes.push({
       cnpj: cliente.cnpj,
       nome: cliente.nome,
@@ -137,6 +171,7 @@ export async function auditarMotorTributario() {
       totalDocumentos: docsAtivos.length,
       matematica,
       reforma,
+      icms,
       temDivergencia,
       exemplos,
     });

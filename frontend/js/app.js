@@ -632,6 +632,7 @@ function construirAbaItens(doc) {
 // aqui — só o que precisa de atenção.
 function construirAbaDivergencias(doc) {
   const blocos = [];
+  let icmsSemBase = false;
 
   doc.itens.forEach((item, indice) => {
     const linhasItem = [];
@@ -651,6 +652,17 @@ function construirAbaDivergencias(doc) {
     }
     const divergenciaFiscal = doc.classificacaoMercadorias?.[indice]?.classificacao?.divergenciaFiscal;
     if (divergenciaFiscal) linhasItem.push(`<li>${divergenciaFiscal}</li>`);
+    // Conferência de ICMS/CFOP/CST (tax-engine/icms-engine): compara o que o
+    // XML informou com o que a base de regras diz que deveria ser — só
+    // aponta aqui quando bate uma divergência de verdade (SEM_BASE_CARREGADA
+    // vira um aviso único no fim da aba, não um item repetido por produto).
+    const icmsItem = doc.conferenciaIcms?.itens?.[indice]?.conferencia;
+    if (icmsItem) {
+      if (icmsItem.status === 'SEM_BASE_CARREGADA') icmsSemBase = true;
+      else if (icmsItem.divergencias?.length) {
+        for (const d of icmsItem.divergencias) linhasItem.push(`<li>${d}</li>`);
+      }
+    }
     if (linhasItem.length) {
       blocos.push(`
         <div class="divergencia-bloco">
@@ -683,9 +695,14 @@ function construirAbaDivergencias(doc) {
     `);
   }
 
+  const notaIcmsSemBase = icmsSemBase
+    ? 'Conferência de ICMS/CFOP/CST ainda não disponível — a base de regras (CFOP/CST/alíquota por NCM) ainda não foi cadastrada.'
+    : '';
+
   if (!blocos.length) {
-    return '<p class="hint">Nenhuma divergência encontrada neste documento — cálculos batem e, onde há grupo IBS/CBS, está coerente com a tabela oficial.</p>';
+    return `<p class="hint">Nenhuma divergência encontrada neste documento — cálculos batem e, onde há grupo IBS/CBS, está coerente com a tabela oficial.${notaIcmsSemBase ? ` ${notaIcmsSemBase}` : ''}</p>`;
   }
+  if (notaIcmsSemBase) blocos.push(`<p class="hint">${notaIcmsSemBase}</p>`);
   return blocos.join('');
 }
 
@@ -798,7 +815,8 @@ function contarItensComDivergencia(doc) {
     const temCalc = calc && ['produto', 'icms', 'pis', 'cofins'].some((c) => calc[c] && calc[c].status !== 'CORRETO');
     const temRtc = (doc.validacaoReforma?.itens?.[indice]?.validacao?.divergencias?.length || 0) > 0;
     const temFiscal = Boolean(doc.classificacaoMercadorias?.[indice]?.classificacao?.divergenciaFiscal);
-    return temCalc || temRtc || temFiscal;
+    const temIcms = (doc.conferenciaIcms?.itens?.[indice]?.conferencia?.divergencias?.length || 0) > 0;
+    return temCalc || temRtc || temFiscal || temIcms;
   }).length;
 
   const totaisComProblema =
@@ -1364,7 +1382,7 @@ function exportarExcelCompleto() {
 
 let ultimaAuditoriaMotor = null;
 
-const ROTULO_MOTOR = { matematica: 'Validação matemática', reforma: 'Reforma Tributária (IBS/CBS)' };
+const ROTULO_MOTOR = { matematica: 'Validação matemática', reforma: 'Reforma Tributária (IBS/CBS)', icms: 'ICMS/CFOP/CST' };
 
 // Roda a Validação Matemática e o XML_REFORMA_VALIDATOR sobre todo o cache
 // permanente de documentos, cliente a cliente — é a conferência de verdade
@@ -1392,8 +1410,13 @@ async function rodarAuditoriaMotorTributario() {
         <div class="summary-card"><span class="summary-value">${t.documentosAnalisados}</span><span class="summary-label">Documentos analisados</span></div>
         <div class="summary-card ${t.matematica.divergenciaCalculo ? 'alerta' : ''}"><span class="summary-value">${t.matematica.divergenciaCalculo}</span><span class="summary-label">Divergência de cálculo</span></div>
         <div class="summary-card ${t.reforma.divergente + t.reforma.totalDivergente ? 'alerta' : ''}"><span class="summary-value">${t.reforma.divergente + t.reforma.totalDivergente}</span><span class="summary-label">Divergência Reforma (IBS/CBS)</span></div>
-        <div class="summary-card ${t.reforma.revisaoManual ? 'alerta-leve' : ''}"><span class="summary-value">${t.reforma.revisaoManual}</span><span class="summary-label">Revisão manual (Reforma)</span></div>
+        <div class="summary-card ${t.icms.divergente ? 'alerta' : ''}"><span class="summary-value">${t.icms.divergente}</span><span class="summary-label">Divergência ICMS/CFOP/CST</span></div>
       </div>
+      ${
+        t.icms.semBase
+          ? `<p class="hint">Conferência de ICMS/CFOP/CST ainda pendente em ${t.icms.semBase} documento(s) — falta cadastrar a base de regras (ver tax-engine/icms-engine/README.md).</p>`
+          : ''
+      }
     `;
 
     const linhas = clientesComDados
@@ -1408,7 +1431,7 @@ async function rodarAuditoriaMotorTributario() {
             <td>${divergenciaMat}</td>
             <td>${c.reforma.correto}</td>
             <td>${divergenciaReforma}</td>
-            <td>${c.reforma.revisaoManual}</td>
+            <td>${c.icms.divergente}</td>
           </tr>
         `;
       })
@@ -1423,7 +1446,7 @@ async function rodarAuditoriaMotorTributario() {
             <tr>
               <th>Cliente</th><th>Documentos</th>
               <th>Matemática OK</th><th>Matemática divergente</th>
-              <th>Reforma OK</th><th>Reforma divergente</th><th>Reforma revisão manual</th>
+              <th>Reforma OK</th><th>Reforma divergente</th><th>ICMS/CFOP/CST divergente</th>
             </tr>
           </thead>
           <tbody>${linhas}</tbody>
@@ -1468,7 +1491,13 @@ function abrirModalMotorCliente(cnpj) {
       <div class="summary-card"><span class="summary-value">${cliente.totalDocumentos}</span><span class="summary-label">Documentos analisados</span></div>
       <div class="summary-card ${cliente.matematica.divergenciaCalculo ? 'alerta' : ''}"><span class="summary-value">${cliente.matematica.divergenciaCalculo}</span><span class="summary-label">Matemática divergente</span></div>
       <div class="summary-card ${cliente.reforma.divergente + cliente.reforma.totalDivergente ? 'alerta' : ''}"><span class="summary-value">${cliente.reforma.divergente + cliente.reforma.totalDivergente}</span><span class="summary-label">Reforma divergente</span></div>
+      <div class="summary-card ${cliente.icms.divergente ? 'alerta' : ''}"><span class="summary-value">${cliente.icms.divergente}</span><span class="summary-label">ICMS/CFOP/CST divergente</span></div>
     </div>
+    ${
+      cliente.icms.semBase
+        ? `<p class="hint">Conferência de ICMS/CFOP/CST ainda pendente em ${cliente.icms.semBase} documento(s) deste cliente — falta cadastrar a base de regras.</p>`
+        : ''
+    }
     ${
       linhasExemplos
         ? `
