@@ -321,6 +321,19 @@
       <div class="page-panel" data-page="auditoria" hidden>
         <section class="panel">
           <div class="panel-header">
+            <h2>Conferência do motor tributário</h2>
+            <button id="btnAuditoriaMotor" type="button">Rodar conferência</button>
+          </div>
+          <p class="hint">
+            Roda a Validação Matemática e a conferência de IBS/CBS (Reforma Tributária) sobre todo o cache de
+            documentos fiscais já coletado, cliente a cliente — mostra onde o motor encontrou divergência de cálculo
+            ou de conformidade, sem precisar abrir cliente por cliente na Conferência Fiscal.
+          </p>
+          <div id="auditoriaMotorResultado"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
             <h2>Auditoria de dados</h2>
             <button id="btnAuditoriaDados" type="button">Rodar auditoria</button>
           </div>
@@ -445,6 +458,16 @@
         <button id="btnFecharModalConsolidadoDocs" class="modal-close" type="button" aria-label="Fechar">&times;</button>
       </div>
       <div class="modal-body" id="consolidadoDocsModalCorpo"></div>
+    </div>
+  </div>
+
+  <div id="motorClienteModalOverlay" class="modal-overlay" hidden>
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="motorClienteModalTitulo">Cliente</h2>
+        <button id="btnFecharModalMotorCliente" class="modal-close" type="button" aria-label="Fechar">&times;</button>
+      </div>
+      <div class="modal-body" id="motorClienteModalCorpo"></div>
     </div>
   </div>
 

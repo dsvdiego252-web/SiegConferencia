@@ -6,6 +6,7 @@ import { obterEstado, salvarEstado, estadoDisponivel } from '../services/syncNot
 import { auditarDocumentosFiscais } from '../services/dataAudit.js';
 import { relatorioNcmSemRegra } from '../services/ncmCoverageReport.js';
 import { gerarPainelConsolidado, buscarDocumentosConsolidado } from '../services/painelConsolidado.js';
+import { auditarMotorTributario } from '../services/motorTributarioAudit.js';
 
 export const cronRouter = Router();
 
@@ -234,6 +235,18 @@ cronRouter.get('/painel-consolidado/documentos', async (req, res) => {
     const { cnpj, dia } = req.query;
     if (!cnpj || !dia) return res.status(400).json({ erro: 'Informe "cnpj" e "dia".' });
     const resultado = await buscarDocumentosConsolidado(cnpj, dia);
+    res.json(resultado);
+  } catch (err) {
+    res.status(500).json({ status: 'erro', erro: err.message });
+  }
+});
+
+// Sob demanda (botão "Conferência do motor tributário" na aba Auditoria
+// Fiscal) — roda a Validação Matemática e o XML_REFORMA_VALIDATOR sobre
+// todo o cache permanente, cliente a cliente, só lendo dados já coletados.
+cronRouter.get('/auditoria-motor-tributario', async (req, res) => {
+  try {
+    const resultado = await auditarMotorTributario();
     res.json(resultado);
   } catch (err) {
     res.status(500).json({ status: 'erro', erro: err.message });

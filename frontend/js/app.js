@@ -11,6 +11,7 @@ const els = {
   btnExportarExcel: document.getElementById('btnExportarExcel'),
   btnAuditoriaDados: document.getElementById('btnAuditoriaDados'),
   btnRelatorioNcm: document.getElementById('btnRelatorioNcm'),
+  btnAuditoriaMotor: document.getElementById('btnAuditoriaMotor'),
   emptyStateBanner: document.getElementById('emptyStateBanner'),
   emptyStateDetalhe: document.getElementById('emptyStateDetalhe'),
   statusProgress: document.getElementById('statusProgress'),
@@ -102,6 +103,11 @@ const els = {
   btnFecharModalConsolidadoDocs: document.getElementById('btnFecharModalConsolidadoDocs'),
   auditoriaResultado: document.getElementById('auditoriaResultado'),
   ncmResultado: document.getElementById('ncmResultado'),
+  auditoriaMotorResultado: document.getElementById('auditoriaMotorResultado'),
+  motorClienteModalOverlay: document.getElementById('motorClienteModalOverlay'),
+  motorClienteModalTitulo: document.getElementById('motorClienteModalTitulo'),
+  motorClienteModalCorpo: document.getElementById('motorClienteModalCorpo'),
+  btnFecharModalMotorCliente: document.getElementById('btnFecharModalMotorCliente'),
   pageTitle: document.getElementById('pageTitle'),
   pageSubtitle: document.getElementById('pageSubtitle'),
   sharedToolbar: document.getElementById('sharedToolbar'),
@@ -1349,6 +1355,130 @@ function exportarExcelCompleto() {
   setStatus(`Excel exportado: ${linhasDocumentos.length} documento(s), ${gruposComQuebra.length} quebra(s), ${linhasDivergencias.length} divergência(s).`);
 }
 
+let ultimaAuditoriaMotor = null;
+
+const ROTULO_MOTOR = { matematica: 'Validação matemática', reforma: 'Reforma Tributária (IBS/CBS)' };
+
+// Roda a Validação Matemática e o XML_REFORMA_VALIDATOR sobre todo o cache
+// permanente de documentos, cliente a cliente — é a conferência de verdade
+// do motor tributário em cima dos dados fiscais já coletados, sem precisar
+// abrir cliente por cliente na Conferência Fiscal pra achar divergência.
+async function rodarAuditoriaMotorTributario() {
+  els.btnAuditoriaMotor.disabled = true;
+  els.auditoriaMotorResultado.innerHTML = '<p class="hint">Rodando conferência do motor tributário sobre o cache...</p>';
+  try {
+    const resultado = await apiGet('/api/cron/auditoria-motor-tributario');
+    ultimaAuditoriaMotor = resultado;
+    if (resultado.status === 'ignorado') {
+      els.auditoriaMotorResultado.innerHTML = `<p class="hint">${resultado.motivo}</p>`;
+      return;
+    }
+    const clientesComDados = resultado.clientes.filter((c) => c.temDados);
+    if (!clientesComDados.length) {
+      els.auditoriaMotorResultado.innerHTML = '<p class="hint">Nenhum documento cacheado ainda — busque algum cliente na Conferência Fiscal primeiro.</p>';
+      return;
+    }
+
+    const t = resultado.totais;
+    const resumo = `
+      <div class="summary" style="margin-bottom: 16px;">
+        <div class="summary-card"><span class="summary-value">${t.documentosAnalisados}</span><span class="summary-label">Documentos analisados</span></div>
+        <div class="summary-card ${t.matematica.divergenciaCalculo ? 'alerta' : ''}"><span class="summary-value">${t.matematica.divergenciaCalculo}</span><span class="summary-label">Divergência de cálculo</span></div>
+        <div class="summary-card ${t.reforma.divergente + t.reforma.totalDivergente ? 'alerta' : ''}"><span class="summary-value">${t.reforma.divergente + t.reforma.totalDivergente}</span><span class="summary-label">Divergência Reforma (IBS/CBS)</span></div>
+        <div class="summary-card ${t.reforma.revisaoManual ? 'alerta-leve' : ''}"><span class="summary-value">${t.reforma.revisaoManual}</span><span class="summary-label">Revisão manual (Reforma)</span></div>
+      </div>
+    `;
+
+    const linhas = clientesComDados
+      .map((c) => {
+        const divergenciaMat = c.matematica.divergenciaCalculo;
+        const divergenciaReforma = c.reforma.divergente + c.reforma.totalDivergente;
+        return `
+          <tr class="${c.temDivergencia ? 'row-inconsistente' : 'row-ok'} row-clickable" data-cnpj="${c.cnpj}">
+            <td>${c.nome}</td>
+            <td>${c.totalDocumentos}</td>
+            <td>${c.matematica.correto}</td>
+            <td>${divergenciaMat}</td>
+            <td>${c.reforma.correto}</td>
+            <td>${divergenciaReforma}</td>
+            <td>${c.reforma.revisaoManual}</td>
+          </tr>
+        `;
+      })
+      .join('');
+
+    els.auditoriaMotorResultado.innerHTML = `
+      ${resumo}
+      <p class="hint">${resultado.clientesComDivergencia} de ${clientesComDados.length} cliente(s) com dado cacheado têm alguma divergência. Clique numa linha pra ver exemplos.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Cliente</th><th>Documentos</th>
+              <th>Matemática OK</th><th>Matemática divergente</th>
+              <th>Reforma OK</th><th>Reforma divergente</th><th>Reforma revisão manual</th>
+            </tr>
+          </thead>
+          <tbody>${linhas}</tbody>
+        </table>
+      </div>
+    `;
+    els.auditoriaMotorResultado.querySelectorAll('tr[data-cnpj]').forEach((tr) => {
+      tr.addEventListener('click', () => abrirModalMotorCliente(tr.dataset.cnpj));
+    });
+  } catch (err) {
+    els.auditoriaMotorResultado.innerHTML = `<p class="status error">Falha ao rodar conferência do motor tributário: ${err.message}</p>`;
+  } finally {
+    els.btnAuditoriaMotor.disabled = false;
+  }
+}
+
+function fecharModalMotorCliente() {
+  els.motorClienteModalOverlay.hidden = true;
+}
+
+function abrirModalMotorCliente(cnpj) {
+  const cliente = ultimaAuditoriaMotor?.clientes.find((c) => c.cnpj === cnpj);
+  if (!cliente) return;
+  els.motorClienteModalTitulo.textContent = cliente.nome;
+
+  const linhasExemplos = (cliente.exemplos || [])
+    .map(
+      (ex) => `
+        <tr>
+          <td>${ROTULO_MOTOR[ex.motor] || ex.motor}</td>
+          <td>${ex.tipoDocumento} nº ${ex.numero}</td>
+          <td>${formatDate(ex.dataEmissao)}</td>
+          <td class="chave-col">${ex.chave || '—'}</td>
+          <td>${ex.motivo}</td>
+        </tr>
+      `
+    )
+    .join('');
+
+  els.motorClienteModalCorpo.innerHTML = `
+    <div class="summary" style="margin-bottom: 16px;">
+      <div class="summary-card"><span class="summary-value">${cliente.totalDocumentos}</span><span class="summary-label">Documentos analisados</span></div>
+      <div class="summary-card ${cliente.matematica.divergenciaCalculo ? 'alerta' : ''}"><span class="summary-value">${cliente.matematica.divergenciaCalculo}</span><span class="summary-label">Matemática divergente</span></div>
+      <div class="summary-card ${cliente.reforma.divergente + cliente.reforma.totalDivergente ? 'alerta' : ''}"><span class="summary-value">${cliente.reforma.divergente + cliente.reforma.totalDivergente}</span><span class="summary-label">Reforma divergente</span></div>
+    </div>
+    ${
+      linhasExemplos
+        ? `
+          <p class="hint">Exemplos de documentos com divergência (até ${cliente.exemplos.length}):</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Motor</th><th>Documento</th><th>Emissão</th><th>Chave</th><th>Motivo</th></tr></thead>
+              <tbody>${linhasExemplos}</tbody>
+            </table>
+          </div>
+        `
+        : '<p class="hint">✓ Nenhuma divergência encontrada para este cliente.</p>'
+    }
+  `;
+  els.motorClienteModalOverlay.hidden = false;
+}
+
 // Canário manual contra a classe de bug que já corrompeu NCM e CNPJ no
 // cache permanente (fast-xml-parser perdendo zero à esquerda) — chama a
 // mesma auditoria que roda sozinha no fim da sincronização noturna, mas sob
@@ -1832,6 +1962,11 @@ async function init() {
   els.btnExportarExcel.addEventListener('click', exportarExcelCompleto);
   els.btnAuditoriaDados.addEventListener('click', rodarAuditoriaDados);
   els.btnRelatorioNcm.addEventListener('click', rodarRelatorioNcm);
+  els.btnAuditoriaMotor.addEventListener('click', rodarAuditoriaMotorTributario);
+  els.btnFecharModalMotorCliente.addEventListener('click', fecharModalMotorCliente);
+  els.motorClienteModalOverlay.addEventListener('click', (evento) => {
+    if (evento.target === els.motorClienteModalOverlay) fecharModalMotorCliente();
+  });
   els.btnAtualizarConsolidado.addEventListener('click', carregarConsolidado);
   els.btnAdicionarCliente.addEventListener('click', adicionarCliente);
   els.btnFecharModalCliente.addEventListener('click', fecharModalCliente);
@@ -1876,6 +2011,7 @@ async function init() {
       fecharModalCliente();
       fecharModalConsolidadoCliente();
       fecharModalConsolidadoDocs();
+      fecharModalMotorCliente();
     }
   });
 
