@@ -53,12 +53,32 @@ async function docsCacheadosDoCliente(cnpj, dataInicio, dataFim) {
   return [...porChave.values()].map(linhaParaDocumento);
 }
 
+function direcaoVazia() {
+  return { totalDocumentos: 0, temPendencia: false, dias: [] };
+}
+
+// Fecha o Map por dia numa lista ordenada (mais recente primeiro) e resume
+// o total de documentos e se há pendência — usado uma vez pra saída e outra
+// pra entrada, já que os dois lados são calculados em paralelo a partir do
+// mesmo conjunto de documentos do cliente.
+function finalizarDirecao(porDiaMap) {
+  const dias = [...porDiaMap.values()].sort((a, b) => b.dia.localeCompare(a.dia));
+  return {
+    totalDocumentos: dias.reduce((soma, d) => soma + d.totalDocumentos, 0),
+    temPendencia: dias.some((d) => d.semAdequacao > 0 || d.parciais > 0),
+    dias,
+  };
+}
+
 /**
  * Cruza todos os clientes cadastrados de uma vez, mostrando — pra cada um
  * que já tem algum documento cacheado nos últimos 30 dias — quantos
  * documentos foram encontrados por dia, e quantos desses estão conformes,
- * parcialmente adequados ou sem nenhum campo da Reforma Tributária. Só lê
- * o cache permanente (nunca busca ao vivo na SIEG): 150+ clientes numa
+ * parcialmente adequados ou sem nenhum campo da Reforma Tributária. Separa
+ * saída (o que o cliente emitiu) de entrada (o que ele recebeu) porque são
+ * conferências com finalidade diferente: saída é sobre o próprio emissor do
+ * cliente estar adequado; entrada é sobre os fornecedores dele. Só lê o
+ * cache permanente (nunca busca ao vivo na SIEG): 150+ clientes numa
  * chamada só não cabem no limite de 2 requisições/minuto da SIEG,
  * compartilhado por todo mundo.
  */
@@ -75,44 +95,48 @@ export async function gerarPainelConsolidado() {
   for (const cliente of clientes) {
     const docs = await docsCacheadosDoCliente(cliente.cnpj, dataInicio, dataFim);
     if (!docs.length) {
-      linhasClientes.push({ cnpj: cliente.cnpj, nome: cliente.nome, temDados: false, dias: [] });
+      linhasClientes.push({ cnpj: cliente.cnpj, nome: cliente.nome, temDados: false, saida: direcaoVazia(), entrada: direcaoVazia() });
       continue;
     }
 
-    const porDia = new Map();
-    for (const doc of docs) {
+    const classificados = docs.map((doc) => ({ doc, operacao: classificarOperacao(doc, cliente.cnpj) }));
+    const porDiaSaida = new Map();
+    const porDiaEntrada = new Map();
+    for (const { doc, operacao } of classificados) {
+      if (operacao !== 'saida' && operacao !== 'entrada') continue;
       const dia = String(doc.dataEmissao || '').slice(0, 10);
       if (!dia) continue;
-      if (!porDia.has(dia)) porDia.set(dia, { dia, totalDocumentos: 0, conformes: 0, parciais: 0, semAdequacao: 0 });
-      porDia.get(dia).totalDocumentos += 1;
+      const mapa = operacao === 'saida' ? porDiaSaida : porDiaEntrada;
+      if (!mapa.has(dia)) mapa.set(dia, { dia, totalDocumentos: 0, conformes: 0, parciais: 0, semAdequacao: 0 });
+      mapa.get(dia).totalDocumentos += 1;
     }
 
-    const classificados = docs.map((doc) => ({ doc, operacao: classificarOperacao(doc, cliente.cnpj) }));
     const dataCorteReforma = resolverDataCorteReforma(cliente.regimeTributario);
     const reforma = analisarConformidadeReforma(classificados, dataCorteReforma);
     for (const d of reforma.porDocumento) {
       const dia = String(d.dataEmissao || '').slice(0, 10);
-      const linha = porDia.get(dia);
+      const mapa = d.operacao === 'saida' ? porDiaSaida : porDiaEntrada;
+      const linha = mapa.get(dia);
       if (!linha) continue;
       if (d.situacao === 'conforme') linha.conformes += 1;
       else if (d.situacao === 'parcial') linha.parciais += 1;
       else linha.semAdequacao += 1;
     }
 
-    const dias = [...porDia.values()].sort((a, b) => b.dia.localeCompare(a.dia));
-    const temPendencia = dias.some((d) => d.semAdequacao > 0 || d.parciais > 0);
+    const saida = finalizarDirecao(porDiaSaida);
+    const entrada = finalizarDirecao(porDiaEntrada);
     linhasClientes.push({
       cnpj: cliente.cnpj,
       nome: cliente.nome,
       temDados: true,
-      totalDocumentos: docs.length,
       dataCorteReforma,
-      temPendencia,
-      dias,
+      saida,
+      entrada,
     });
   }
 
-  linhasClientes.sort((a, b) => Number(b.temPendencia === true) - Number(a.temPendencia === true) || Number(b.temDados) - Number(a.temDados));
+  const temPendenciaCombinada = (l) => l.temDados && (l.saida.temPendencia || l.entrada.temPendencia);
+  linhasClientes.sort((a, b) => Number(temPendenciaCombinada(b)) - Number(temPendenciaCombinada(a)) || Number(b.temDados) - Number(a.temDados));
 
   return {
     status: 'concluido',
@@ -120,7 +144,7 @@ export async function gerarPainelConsolidado() {
     executadoEm: new Date().toISOString(),
     totalClientes: clientes.length,
     clientesComDados: linhasClientes.filter((l) => l.temDados).length,
-    clientesComPendencia: linhasClientes.filter((l) => l.temPendencia).length,
+    clientesComPendencia: linhasClientes.filter(temPendenciaCombinada).length,
     clientes: linhasClientes,
   };
 }

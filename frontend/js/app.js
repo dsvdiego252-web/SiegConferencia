@@ -852,6 +852,7 @@ function fecharModal() {
 
 let consolidadoCarregado = false;
 let ultimoConsolidado = null;
+let consolidadoDirecaoAtiva = 'saida';
 
 // Só lê o que já está cacheado (nunca busca ao vivo na SIEG) — cruza todos
 // os clientes cadastrados de uma vez. A tabela é agrupada por cliente (não
@@ -898,6 +899,8 @@ function somarDias(dias) {
 // Aplica o filtro de cliente/período por cima do que já foi buscado — o
 // relatório já cobre os últimos 30 dias numa chamada só, então filtrar não
 // precisa de nova ida ao servidor. Se nada bater, mostra que não achou.
+// A aba ativa (Saídas/Entradas) decide qual lado do cliente ler — cada
+// documento só conta de um lado (saída = ele emitiu, entrada = ele recebeu).
 function renderConsolidadoTabela() {
   if (!ultimoConsolidado || ultimoConsolidado.status !== 'concluido') return;
   const cnpjFiltro = els.consolidadoFiltroCliente.value;
@@ -906,12 +909,15 @@ function renderConsolidadoTabela() {
 
   const clientesFiltrados = ultimoConsolidado.clientes
     .filter((c) => !cnpjFiltro || c.cnpj === cnpjFiltro)
-    .map((c) => ({ ...c, diasFiltrados: c.dias.filter((d) => (!de || d.dia >= de) && (!ate || d.dia <= ate)) }))
+    .map((c) => ({
+      ...c,
+      diasFiltrados: (c[consolidadoDirecaoAtiva]?.dias || []).filter((d) => (!de || d.dia >= de) && (!ate || d.dia <= ate)),
+    }))
     .filter((c) => c.diasFiltrados.length > 0);
 
   if (!clientesFiltrados.length) {
-    els.consolidadoResultado.innerHTML =
-      '<p class="hint">Nenhum documento encontrado no cache para esse cliente/período. Busque na aba "Conferência Fiscal" primeiro, ou tente outro período.</p>';
+    const rotulo = consolidadoDirecaoAtiva === 'saida' ? 'saídas' : 'entradas';
+    els.consolidadoResultado.innerHTML = `<p class="hint">Nenhum documento de ${rotulo} encontrado no cache para esse cliente/período. Busque na aba "Conferência Fiscal" primeiro, ou tente outro período.</p>`;
     return;
   }
 
@@ -957,9 +963,10 @@ function abrirConsolidadoCliente(cnpj) {
   if (!cliente) return;
   const de = els.consolidadoFiltroDe.value;
   const ate = els.consolidadoFiltroAte.value;
-  const dias = cliente.dias.filter((d) => (!de || d.dia >= de) && (!ate || d.dia <= ate));
+  const dias = (cliente[consolidadoDirecaoAtiva]?.dias || []).filter((d) => (!de || d.dia >= de) && (!ate || d.dia <= ate));
 
-  els.consolidadoClienteModalTitulo.textContent = cliente.nome;
+  const rotuloDirecao = consolidadoDirecaoAtiva === 'saida' ? 'Saídas' : 'Entradas';
+  els.consolidadoClienteModalTitulo.textContent = `${cliente.nome} — ${rotuloDirecao}`;
   const linhas = dias
     .map((d) => {
       const pendente = d.semAdequacao > 0 || d.parciais > 0;
@@ -1914,7 +1921,11 @@ async function conferirDominio() {
 
 const PAGINAS = {
   cadastros: { titulo: 'Cadastros', subtitulo: 'Clientes cadastrados no sistema', toolbar: false },
-  conformidade: { titulo: 'Conformidade com a Reforma Tributária', subtitulo: 'Visão de todos os clientes e detalhe do cliente selecionado', toolbar: true },
+  conformidade: {
+    titulo: 'Conformidade com a Reforma Tributária',
+    subtitulo: 'Visão de todos os clientes — sempre a partir do cache, sem gastar cota da SIEG',
+    toolbar: false,
+  },
   conferencia: { titulo: 'Conferência Fiscal', subtitulo: 'Documentos integrados, quebras de sequência e cruzamento tributário', toolbar: true },
   auditoria: { titulo: 'Auditoria Fiscal', subtitulo: 'Saúde dos dados cacheados e cobertura da base de regras da Reforma', toolbar: false },
   dominio: { titulo: 'Domínio x SIEG', subtitulo: 'Cruzamento entre a planilha do Domínio e os documentos da SIEG', toolbar: true },
@@ -1997,6 +2008,15 @@ async function init() {
   els.consolidadoFiltroCliente.addEventListener('change', renderConsolidadoTabela);
   els.consolidadoFiltroDe.addEventListener('change', renderConsolidadoTabela);
   els.consolidadoFiltroAte.addEventListener('change', renderConsolidadoTabela);
+  document.querySelectorAll('[data-consolidado-direcao]').forEach((botao) => {
+    botao.addEventListener('click', () => {
+      consolidadoDirecaoAtiva = botao.dataset.consolidadoDirecao;
+      document
+        .querySelectorAll('[data-consolidado-direcao]')
+        .forEach((b) => b.classList.toggle('tab-button-ativo', b === botao));
+      renderConsolidadoTabela();
+    });
+  });
   els.btnFecharModalConsolidadoCliente.addEventListener('click', fecharModalConsolidadoCliente);
   els.consolidadoClienteModalOverlay.addEventListener('click', (evento) => {
     if (evento.target === els.consolidadoClienteModalOverlay) fecharModalConsolidadoCliente();
