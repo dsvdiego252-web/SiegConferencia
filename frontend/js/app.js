@@ -1390,14 +1390,25 @@ async function atualizar(forcarAtualizacao = false) {
     return;
   }
 
-  els.btnAtualizar.disabled = true;
-  if (els.btnForcarAtualizacao) els.btnForcarAtualizacao.disabled = true;
+  // Uma busca pode levar até 1 minuto (rate limit da SIEG) — sem travar os
+  // campos, dava pra trocar cliente/período enquanto a busca anterior ainda
+  // estava voltando, e quando ela finalmente chegava, mostrava o resultado
+  // do período antigo (correto) enquanto a tela já exibia as datas novas
+  // (ainda não buscadas), parecendo que a busca nova tinha vindo vazia.
+  const camposBusca = [els.btnAtualizar, els.btnForcarAtualizacao, els.clienteSelect, els.dataInicioInput, els.dataFimInput, els.tipoDocSelect];
+  camposBusca.forEach((campo) => { if (campo) campo.disabled = true; });
   setStatus(forcarAtualizacao ? 'Ignorando o cache e buscando tudo de novo...' : 'Buscando na SIEG...', false, true);
   try {
     let query = `cnpj=${encodeURIComponent(cnpj)}&${montarQueryPeriodo()}&tipo=${encodeURIComponent(tipo)}`;
     if (forcarAtualizacao) query += '&forcar=1';
     const painel = await buscarPainelComEspera(query);
     ultimoPainel = painel;
+
+    // Garante que a tela nunca mostre um período diferente do que os dados
+    // exibidos realmente cobrem, mesmo que algo tenha mexido nos campos
+    // entre o disparo da busca e a resposta chegar.
+    els.dataInicioInput.value = painel.periodo.dataInicio;
+    els.dataFimInput.value = painel.periodo.dataFim;
 
     renderDocumentos(painel.xmls.documentos);
     const totalFaltando = renderSequencia(painel.sequence.grupos);
@@ -1411,8 +1422,7 @@ async function atualizar(forcarAtualizacao = false) {
   } catch (err) {
     setStatus(err.message, true);
   } finally {
-    els.btnAtualizar.disabled = false;
-    if (els.btnForcarAtualizacao) els.btnForcarAtualizacao.disabled = false;
+    camposBusca.forEach((campo) => { if (campo) campo.disabled = false; });
   }
 }
 
