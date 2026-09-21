@@ -33,12 +33,22 @@ function comProtecao(rotulo, fn) {
 export function contextoIcmsDocumento(doc, operacao, regimeTributario) {
   const ufEmitente = doc.emitente?.uf || null;
   const ufDestinatario = doc.destinatario?.uf || null;
+  // NFCe (modelo 65) é, por definição do próprio modelo fiscal, restrita a
+  // venda presencial de varejo dentro do estado do emitente — a SEFAZ não
+  // autoriza NFCe em operação interestadual (só NF-e modelo 55 pode). Por
+  // isso, mesmo sem UF de emitente/destinatário disponível (comum: venda a
+  // consumidor final sem endereço, ou documento cacheado antes de o parser
+  // guardar esse campo), dá pra afirmar "mesmo estado" com segurança só
+  // pelo tipo de documento — não é um chute, é uma regra do próprio modelo.
+  const mesmoEstado = ufEmitente && ufDestinatario
+    ? ufEmitente === ufDestinatario
+    : doc.tipoDocumento === 'NFCe' ? true : null;
   return {
     operacao,
     tipoOperacao: operacao === 'saida' ? 'venda' : operacao === 'entrada' ? 'compra' : null,
     regimeTributario: regimeTributario ?? null,
     consumidorFinal: doc.tipoDocumento === 'NFCe' ? true : null,
-    mesmoEstado: ufEmitente && ufDestinatario ? ufEmitente === ufDestinatario : null,
+    mesmoEstado,
     ufEmitente,
     ufDestinatario,
     dataEmissao: String(doc.dataEmissao || '').slice(0, 10) || null,
