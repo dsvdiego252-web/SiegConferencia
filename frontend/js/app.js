@@ -565,6 +565,32 @@ const ROTULO_STATUS_RTC_DOCUMENTO = {
   TOTAL_REFORMA_DIVERGENTE: 'total do documento diverge',
 };
 
+const ROTULO_STATUS_ICMS_DOCUMENTO = {
+  CORRETO: 'coerente com NCM/CFOP/PIS-COFINS/cBenef',
+  REVISAO_MANUAL: 'revisão manual',
+  DIVERGENTE: 'divergências encontradas',
+  SEM_BASE_CARREGADA: 'base de regras não carregada',
+};
+
+// Selo de status da conferência de ICMS/CFOP/CST (tax-engine/icms-engine) —
+// sem isso, um documento sem nenhuma divergência real fica com a aba
+// Divergências idêntica a antes desse motor existir, sem indicar que a
+// conferência rodou. Mesmo padrão visual de badgeValidacaoCalculo/
+// badgeValidacaoReformaDocumento, pra não parecer que só essa conferência
+// "sumiu" quando está tudo certo.
+function badgeConferenciaIcms(conferenciaIcms) {
+  if (!conferenciaIcms) return '<span class="hint">Não avaliado (documento cancelado).</span>';
+  const classe =
+    conferenciaIcms.status === 'CORRETO'
+      ? 'badge-situacao-ok'
+      : conferenciaIcms.status === 'REVISAO_MANUAL'
+        ? 'badge-situacao-inconsistente'
+        : conferenciaIcms.status === 'SEM_BASE_CARREGADA'
+          ? 'badge-desconhecida'
+          : 'badge-erro';
+  return `<span class="badge ${classe}">${ROTULO_STATUS_ICMS_DOCUMENTO[conferenciaIcms.status] || conferenciaIcms.status}</span>`;
+}
+
 // situacaoReforma vem de reformaTributariaAnalyzer.js: 'sem_adequacao'/
 // 'parcial' significam que o documento já está sob a vigência da reforma
 // e deveria ter os campos IBS/CBS, mas não tem — isso é uma inconsistência
@@ -659,9 +685,12 @@ function construirAbaDivergencias(doc) {
     const icmsItem = doc.conferenciaIcms?.itens?.[indice]?.conferencia;
     if (icmsItem) {
       if (icmsItem.status === 'SEM_BASE_CARREGADA') icmsSemBase = true;
-      else if (icmsItem.divergencias?.length) {
-        for (const d of icmsItem.divergencias) linhasItem.push(`<li>${d}</li>`);
-      }
+      for (const d of icmsItem.divergencias || []) linhasItem.push(`<li>${d}</li>`);
+      // Pendências (ex.: "UF não disponível pra conferir alíquota") não são
+      // divergência confirmada, mas também não devem ficar invisíveis — sem
+      // isso, um item "revisão manual" parece idêntico a um item sem
+      // nenhuma conferência rodando.
+      for (const p of icmsItem.pendencias || []) linhasItem.push(`<li class="hint">${p}</li>`);
     }
     if (linhasItem.length) {
       blocos.push(`
@@ -835,6 +864,7 @@ function abrirModalDocumento(doc) {
       <dt>Situação</dt><dd><span class="badge badge-situacao-${doc.situacao}">${ROTULO_SITUACAO[doc.situacao]}</span></dd>
       <dt>Validação matemática</dt><dd>${badgeValidacaoCalculo(doc.validacaoMatematica)}</dd>
       <dt>Conferência RTC (IBS/CBS)</dt><dd>${badgeValidacaoReformaDocumento(doc.validacaoReforma, doc.situacaoReforma)}</dd>
+      <dt>Conferência ICMS/CFOP/CST</dt><dd>${badgeConferenciaIcms(doc.conferenciaIcms)}</dd>
       <dt>Chave de acesso</dt><dd>${doc.chave || '-'}</dd>
       <dt>Emissão</dt><dd>${formatDate(doc.dataEmissao)}</dd>
       <dt>Natureza da operação</dt><dd>${doc.naturezaOperacao || '-'}</dd>
