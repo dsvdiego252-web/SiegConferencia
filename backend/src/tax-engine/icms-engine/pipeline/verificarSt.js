@@ -19,7 +19,7 @@
 // ST) meses depois da revogação.
 
 import { getIcmsSegmentosSt } from '../repository.js';
-import { canonicalizarNcm } from './util.js';
+import { canonicalizarNcm, canonicalizarCst } from './util.js';
 
 // CST de ICMS que indicam "already substituído" (ICMS cobrado
 // anteriormente por Substituição Tributária) — Tabela B do Convênio
@@ -59,7 +59,7 @@ function checarStRevogadaAindaUsada(item, contexto) {
   const ncmCanonico = canonicalizarNcm(item.ncm);
   if (!ncmCanonico || !contexto.dataEmissao) return null;
 
-  const cstXml = item.icms?.cst ? String(item.icms.cst) : null;
+  const cstXml = canonicalizarCst(item.icms?.cst);
   if (!cstXml || !CST_ST_SUBSTITUIDO.has(cstXml)) return null;
 
   for (const { ncmPrefixos, dados } of obterSegmentosRevogados()) {

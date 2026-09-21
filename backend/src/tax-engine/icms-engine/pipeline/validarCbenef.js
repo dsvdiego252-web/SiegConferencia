@@ -6,6 +6,7 @@
 // a compatibilidade cBenef↔CST que a própria tabela declara.
 
 import { getCbenefSp } from '../repository.js';
+import { canonicalizarCst } from './util.js';
 
 let indice = null;
 
@@ -32,7 +33,7 @@ function checarVigencia(regra, dataEmissao) {
 
 export function validarCbenefItem(item, contexto) {
   const { porCodigo, semPreenchimento } = obterIndice();
-  const cstXml = item.icms?.cst ? String(item.icms.cst) : null;
+  const cstXml = canonicalizarCst(item.icms?.cst);
   const cBenefXml = item.icms?.cBenef ? String(item.icms.cBenef).trim().toUpperCase() : null;
   const divergencias = [];
   const pendencias = [];
