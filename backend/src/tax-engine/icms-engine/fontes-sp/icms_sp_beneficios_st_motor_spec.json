@@ -1,0 +1,424 @@
+{
+  "motor": "ICMS_SP_BENEFICIOS_ST",
+  "versao": 1,
+
+  "objetivo": "Construir e manter a base de regras de ICMS/SP para confrontar os dados do XML, usando RICMS/SP Anexo I, RICMS/SP Anexo II e Portaria CAT 68/2019.",
+
+  "principio_geral": "Primeiro determinar como o produto deveria estar tributado. Depois comparar com o que veio no XML.",
+
+  "fontes_oficiais": {
+    "ricms_anexo_i": {
+      "tipo": "ISENCOES",
+      "origem": "SEFAZ-SP",
+      "indice_local": "icms_sp_anexo_i_indice_isencoes.json",
+      "coleta_automatica": true,
+      "url_base": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art{ARTIGO_3_DIGITOS}.aspx"
+    },
+
+    "ricms_anexo_ii": {
+      "tipo": "REDUCOES_BASE_CALCULO",
+      "origem": "SEFAZ-SP",
+      "indice_local": "icms_sp_anexo_ii_indice_reducoes.json",
+      "coleta_automatica": true,
+      "url_base": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art{ARTIGO_3_DIGITOS}.aspx"
+    },
+
+    "icms_st": {
+      "tipo": "SUBSTITUICAO_TRIBUTARIA",
+      "origem": "SEFAZ-SP",
+      "ato_base": "Portaria CAT 68/2019",
+      "base_local": "icms_st_sp_cat68_segmentos_v20260706.json"
+    }
+  },
+
+  "anexo_i": {
+    "nome": "RICMS/SP ANEXO I",
+    "tratamento_principal": "ISENCAO",
+
+    "regra_importante": "O índice do Anexo I serve apenas para localizar o artigo. Nunca confirmar isenção somente pelo título do índice.",
+
+    "fluxo": [
+      "ler_indice_anexo_i",
+      "obter_numero_artigo",
+      "obter_titulo",
+      "acessar_pagina_oficial_do_artigo",
+      "salvar_texto_original",
+      "identificar_redacoes_historicas",
+      "identificar_vigencias",
+      "identificar_produtos_e_operacoes",
+      "identificar_ncm_quando_existir",
+      "identificar_condicoes",
+      "identificar_excecoes",
+      "identificar_destinatario_ou_remetente_especifico",
+      "identificar_referencias_externas",
+      "gerar_regras_estruturadas"
+    ],
+
+    "extrair": [
+      "artigo",
+      "titulo",
+      "ncm",
+      "ncm_prefixo",
+      "descricao_produto",
+      "descricao_contem",
+      "descricao_nao_contem",
+      "tipo_operacao",
+      "cfop_quando_expressamente_relacionado",
+      "destinatario",
+      "remetente",
+      "finalidade_produto",
+      "condicoes",
+      "excecoes",
+      "vigencia_inicio",
+      "vigencia_fim",
+      "ato_alterador",
+      "ato_revogador",
+      "fundamento_legal",
+      "referencias_externas"
+    ],
+
+    "resultado_padrao": {
+      "tratamento": "ISENCAO",
+      "isencao": true,
+      "cst_icms": null,
+      "aliquota": null,
+      "cbenef": null
+    },
+
+    "observacao_cst": "Não preencher CST automaticamente apenas porque o artigo é de isenção. Determinar CST conforme a operação e demais regras aplicáveis.",
+
+    "observacao_cbenef": "Depois de identificar o benefício, cruzar com a base cBenef SP vigente para verificar qual código é permitido e sua compatibilidade com o CST.",
+
+    "status_extracao": [
+      "ESTRUTURADA_AUTOMATICAMENTE",
+      "CONDICIONAL",
+      "DEPENDENCIA_EXTERNA",
+      "REVISAO_MANUAL",
+      "REVOGADO"
+    ]
+  },
+
+  "anexo_ii": {
+    "nome": "RICMS/SP ANEXO II",
+    "tratamento_principal": "REDUCAO_BASE_CALCULO",
+
+    "regra_importante": "O índice do Anexo II serve apenas para localizar o artigo. Nunca aplicar redução ou carga efetiva somente pelo título do índice.",
+
+    "fluxo": [
+      "ler_indice_anexo_ii",
+      "obter_numero_artigo",
+      "obter_titulo",
+      "acessar_pagina_oficial_do_artigo",
+      "salvar_texto_original",
+      "identificar_redacoes_historicas",
+      "identificar_vigencias",
+      "identificar_produtos_e_servicos",
+      "identificar_ncm_quando_existir",
+      "identificar_percentual_ou_carga_efetiva",
+      "identificar_condicoes",
+      "identificar_excecoes",
+      "identificar_destinatario_ou_remetente_especifico",
+      "identificar_referencias_externas",
+      "gerar_regras_estruturadas"
+    ],
+
+    "extrair": [
+      "artigo",
+      "titulo",
+      "ncm",
+      "ncm_prefixo",
+      "descricao_produto",
+      "descricao_contem",
+      "descricao_nao_contem",
+      "tipo_operacao",
+      "cfop_quando_expressamente_relacionado",
+      "aliquota_nominal",
+      "percentual_reducao_base",
+      "carga_tributaria_efetiva",
+      "condicoes",
+      "excecoes",
+      "vigencia_inicio",
+      "vigencia_fim",
+      "ato_alterador",
+      "ato_revogador",
+      "fundamento_legal",
+      "referencias_externas"
+    ],
+
+    "resultado_padrao": {
+      "tratamento": "REDUCAO_BASE_CALCULO",
+      "cst_icms": null,
+      "aliquota_nominal": null,
+      "percentual_reducao_base": null,
+      "carga_tributaria_efetiva": null,
+      "cbenef": null
+    },
+
+    "regra_calculo": "Se a legislação informar apenas a carga tributária resultante, preservar a carga efetiva informada. Não inventar percentual de redução que não esteja claramente definido ou calculável conforme a norma.",
+
+    "observacao_cbenef": "Após determinar a redução aplicável, cruzar com a base cBenef SP vigente.",
+
+    "status_extracao": [
+      "ESTRUTURADA_AUTOMATICAMENTE",
+      "CONDICIONAL",
+      "DEPENDENCIA_EXTERNA",
+      "REVISAO_MANUAL",
+      "REVOGADO"
+    ]
+  },
+
+  "icms_st": {
+    "nome": "ICMS-ST SP",
+    "ato_principal": "Portaria CAT 68/2019",
+
+    "regra_central": "Utilizar a CAT 68 como mapa mestre para descobrir se o produto pertence a um segmento sujeito à ST. A confirmação deve considerar item específico, CEST, NCM/SH, descrição e data da operação.",
+
+    "nunca_fazer": [
+      "confirmar_ST_apenas_pela_NCM",
+      "confirmar_ST_apenas_pelo_CEST",
+      "confirmar_ST_apenas_pelo_segmento",
+      "usar_MVA_sem_base_legal",
+      "usar_item_revogado",
+      "usar_regra_futura_em_documento_antigo"
+    ],
+
+    "entrada": {
+      "data_emissao": "",
+      "descricao_produto": "",
+      "ncm": "",
+      "cest": "",
+      "cfop": "",
+      "cst_icms": "",
+      "uf_origem": "",
+      "uf_destino": ""
+    },
+
+    "fluxo": [
+      "localizar_segmento_cat68",
+      "localizar_anexo",
+      "localizar_item",
+      "comparar_cest",
+      "comparar_ncm",
+      "comparar_descricao",
+      "validar_vigencia_anexo",
+      "validar_vigencia_item",
+      "validar_revogacoes",
+      "determinar_st_sim_ou_nao",
+      "se_st_sim_buscar_mva_iva",
+      "determinar_cst_esperado",
+      "determinar_cfop_esperado",
+      "calcular_base_st",
+      "calcular_icms_st",
+      "comparar_com_xml"
+    ],
+
+    "identificacao_segmento": {
+      "usar": [
+        "anexo",
+        "segmento",
+        "item",
+        "cest",
+        "ncm",
+        "descricao"
+      ],
+
+      "resultado": {
+        "anexo_cat68": "",
+        "segmento": "",
+        "item_cat68": "",
+        "sujeito_st": null,
+        "vigencia_inicio": null,
+        "vigencia_fim": null
+      }
+    },
+
+    "regra_descricao": "Quando a CAT 68 trouxer NCM acompanhada de descrição específica, exigir compatibilidade entre NCM e descrição. A NCM isoladamente não confirma o enquadramento.",
+
+    "regra_cest": "Quando houver CEST definido para o item, confrontar CEST do XML com o CEST esperado.",
+
+    "regra_vigencia": "A situação do item deve ser determinada pela data de emissão do documento. Revogação específica do item prevalece sobre o status geral do anexo.",
+
+    "precedencia_vigencia": [
+      "REVOGACAO_ESPECIFICA_DO_ITEM",
+      "REDACAO_ESPECIFICA_DO_ITEM",
+      "VIGENCIA_ESPECIFICA_DO_ITEM",
+      "REVOGACAO_DO_ANEXO",
+      "REGRA_GERAL_DO_ANEXO"
+    ],
+
+    "mva_iva": {
+      "fonte": "BASE_SEPARADA_POR_SEGMENTO",
+      "regra": "A CAT 68 identifica enquadramento em ST, mas não deve ser utilizada como fonte de MVA/IVA.",
+
+      "chave_consulta": [
+        "segmento",
+        "ncm",
+        "cest",
+        "descricao",
+        "data_emissao",
+        "uf_origem",
+        "uf_destino"
+      ],
+
+      "se_nao_encontrar": {
+        "status": "BASE_MVA_NAO_CADASTRADA",
+        "acao": "REVISAO_MANUAL"
+      },
+
+      "proibicao": "Nunca inventar MVA."
+    },
+
+    "resultado_st": {
+      "sujeito_st": null,
+      "segmento": null,
+      "anexo_cat68": null,
+      "item_cat68": null,
+
+      "cest_xml": null,
+      "cest_esperado": null,
+
+      "ncm_xml": null,
+      "ncm_esperado": null,
+
+      "cst_xml": null,
+      "cst_esperado": null,
+
+      "cfop_xml": null,
+      "cfop_esperado": null,
+
+      "mva": null,
+
+      "base_st_xml": null,
+      "base_st_calculada": null,
+
+      "icms_st_xml": null,
+      "icms_st_calculado": null,
+
+      "fundamento_legal": null,
+
+      "status": null
+    },
+
+    "status_possiveis": [
+      "ST_CONFIRMADA",
+      "NAO_SUJEITO_ST",
+      "ANEXO_REVOGADO_NA_DATA",
+      "ITEM_REVOGADO_NA_DATA",
+      "NCM_DIVERGENTE",
+      "CEST_DIVERGENTE",
+      "DESCRICAO_NAO_COMPATIVEL",
+      "MVA_ENCONTRADA",
+      "BASE_MVA_NAO_CADASTRADA",
+      "CALCULO_ST_DIVERGENTE",
+      "REVISAO_MANUAL"
+    ]
+  },
+
+  "formato_regra_anexo": {
+    "id_regra": "",
+    "tributo": "ICMS",
+    "uf": "SP",
+    "modulo": "",
+    "artigo": "",
+    "titulo": "",
+
+    "tratamento": "",
+
+    "condicao": {
+      "ncm": [],
+      "ncm_prefixo": [],
+      "cest": [],
+      "descricao_contem": [],
+      "descricao_nao_contem": [],
+      "tipo_operacao": [],
+      "cfop": [],
+      "uf_origem": [],
+      "uf_destino": [],
+      "destinatario": [],
+      "remetente": [],
+      "regime_tributario": [],
+      "requisitos_adicionais": []
+    },
+
+    "resultado": {
+      "cst_icms": null,
+      "aliquota_nominal": null,
+      "percentual_reducao_base": null,
+      "carga_tributaria_efetiva": null,
+      "isencao": false,
+      "cbenef": null
+    },
+
+    "excecoes": [],
+
+    "vigencia_inicio": null,
+    "vigencia_fim": null,
+
+    "fundamento_legal": "",
+    "fonte_oficial": "",
+    "texto_legal_origem": "",
+
+    "referencias_externas": [],
+
+    "versao": 1,
+    "prioridade": 100,
+    "status": "ATIVO",
+
+    "nivel_confianca_extracao": "",
+    "necessita_revisao_manual": false
+  },
+
+  "confronto_xml": {
+    "ordem": [
+      "validar_ncm_descricao",
+      "verificar_st_cat68",
+      "verificar_anexo_i",
+      "verificar_anexo_ii",
+      "verificar_aliquota_art52_56c",
+      "verificar_cbenef",
+      "determinar_cst_icms",
+      "determinar_cfop",
+      "calcular_icms",
+      "calcular_icms_st_quando_aplicavel",
+      "comparar_esperado_com_xml"
+    ],
+
+    "saida": {
+      "ncm": {
+        "xml": null,
+        "esperado": null,
+        "status": null
+      },
+
+      "cfop": {
+        "xml": null,
+        "esperado": null,
+        "status": null
+      },
+
+      "icms": {
+        "cst_xml": null,
+        "cst_esperado": null,
+        "aliquota_xml": null,
+        "aliquota_esperada": null,
+        "cbenef_xml": null,
+        "cbenef_esperado": null,
+        "status": null
+      },
+
+      "st": {
+        "xml": null,
+        "esperado": null,
+        "segmento": null,
+        "mva": null,
+        "status": null
+      },
+
+      "fundamento_legal": [],
+      "divergencias": [],
+      "status_final": null
+    }
+  },
+
+  "regra_final": "Nunca concluir que o XML está correto apenas porque CST, CFOP, cBenef, CEST ou alíquota existem. Primeiro determinar a regra tributária aplicável e só depois confrontar os valores informados."
+}

@@ -1,0 +1,414 @@
+{
+  "meta": {
+    "id_base": "SP_CAT68_2019",
+    "nome": "Portaria CAT 68/2019 - ICMS-ST São Paulo",
+    "tributo": "ICMS_ST",
+    "uf": "SP",
+    "versao_motor": 1,
+    "ato_base": "Portaria CAT 68/2019",
+    "vigencia_inicio_ato": "2020-01-01",
+    "fonte_oficial": "https://legislacao.fazenda.sp.gov.br/Paginas/Portaria-CAT-68-de-2019.aspx",
+    "arquivo_fonte_original": "Portaria CAT 68.pdf",
+    "ultima_atualizacao_fonte_identificada": "2026-07-06",
+    "objetivo": "Coletar e versionar todos os itens dos Anexos I a XXII da CAT 68/2019 e utilizá-los para determinar se o produto está sujeito à substituição tributária em SP."
+  },
+  "regra_principal": {
+    "texto": "A CAT 68/2019 é o mapa mestre de enquadramento em ICMS-ST no Estado de São Paulo. Para confirmar ST, o motor deve validar ANEXO/SEGMENTO + ITEM + CEST + NCM/SH + DESCRIÇÃO + DATA DA OPERAÇÃO. NCM, CEST ou segmento isoladamente não confirmam ST.",
+    "campos_minimos": [
+      "data_emissao",
+      "descricao_produto",
+      "ncm"
+    ],
+    "campos_recomendados": [
+      "cest",
+      "cfop",
+      "cst_icms",
+      "uf_origem",
+      "uf_destino"
+    ]
+  },
+  "fonte_e_coleta": {
+    "usar_somente_fonte_oficial": true,
+    "url": "https://legislacao.fazenda.sp.gov.br/Paginas/Portaria-CAT-68-de-2019.aspx",
+    "salvar_conteudo_bruto": true,
+    "salvar_hash_conteudo": true,
+    "versionar_alteracoes": true,
+    "nunca_apagar_historico": true,
+    "recoleta": {
+      "modo": "MANUAL_OU_AGENDADO",
+      "ao_detectar_hash_diferente": "GERAR_NOVA_VERSAO_E_DIFF",
+      "nao_sobrescrever_regra_antiga": true
+    }
+  },
+  "coletor_itens": {
+    "escopo": "ANEXOS_I_A_XXII",
+    "extrair_por_item": [
+      "anexo",
+      "segmento",
+      "artigo_ricms",
+      "item",
+      "cest",
+      "ncm_sh",
+      "descricao",
+      "texto_status_item",
+      "ato_criacao",
+      "ato_alteracao",
+      "ato_revogacao",
+      "vigencia_inicio",
+      "vigencia_fim"
+    ],
+    "preservar_redacoes_historicas": true,
+    "regra_historico": "Se o mesmo item aparecer com redações diferentes, gerar uma versão para cada período de vigência.",
+    "resultado_arquivo": "icms_st_sp_cat68_itens.json"
+  },
+  "schema_item": {
+    "id_regra": "SP_CAT68_{ANEXO}_{ITEM}_{VERSAO}",
+    "tributo": "ICMS_ST",
+    "uf": "SP",
+    "anexo": "",
+    "segmento": "",
+    "artigo_ricms": "",
+    "item": "",
+    "cest": "",
+    "ncm_sh": [],
+    "descricao": "",
+    "condicao": {
+      "ncm": [],
+      "ncm_prefixo": [],
+      "cest": [],
+      "descricao_contem": [],
+      "descricao_nao_contem": [],
+      "uf_origem": [],
+      "uf_destino": [],
+      "tipo_operacao": []
+    },
+    "resultado": {
+      "sujeito_st": true
+    },
+    "vigencia_inicio": null,
+    "vigencia_fim": null,
+    "ato_criacao": null,
+    "ato_alteracao": null,
+    "ato_revogacao": null,
+    "fundamento_legal": "",
+    "fonte_oficial": "SEFAZ-SP",
+    "versao": 1,
+    "status": "ATIVO_CONFORME_VIGENCIA",
+    "necessita_revisao_manual": false
+  },
+  "matching": {
+    "ordem": [
+      "validar_data_emissao",
+      "localizar_anexo_segmento",
+      "localizar_item_por_cest",
+      "comparar_ncm",
+      "comparar_descricao",
+      "validar_vigencia_item",
+      "validar_vigencia_anexo",
+      "aplicar_revogacoes",
+      "determinar_st"
+    ],
+    "regras": {
+      "cest": "Quando o XML possuir CEST, usá-lo como uma das chaves de busca, mas nunca como prova isolada de ST.",
+      "ncm": "Aceitar correspondência exata ou por prefixo somente quando a própria CAT 68 usar posição/subposição abrangente.",
+      "descricao": "A descrição legal é obrigatória quando restringir o alcance da NCM. Expressões como 'exceto', 'para uso em', 'em embalagem de', 'de uso doméstico' e limites de peso/volume devem ser tratadas como condições.",
+      "vigencia": "A data de emissão determina qual redação e qual status do item devem ser utilizados."
+    }
+  },
+  "mva_iva": {
+    "separar_da_cat68": true,
+    "texto": "A CAT 68 determina enquadramento em ST. A MVA/IVA deve ser obtida em base separada por segmento e vigência.",
+    "arquivo_destino": "mva_iva_sp_por_segmento.json",
+    "chave_consulta": [
+      "segmento",
+      "ncm",
+      "cest",
+      "descricao",
+      "data_emissao"
+    ],
+    "se_nao_encontrar": {
+      "status": "BASE_MVA_NAO_CADASTRADA",
+      "acao": "REVISAO_MANUAL"
+    },
+    "proibicao": "Nunca inventar MVA/IVA."
+  },
+  "confronto_xml": {
+    "comparar": [
+      "ncm",
+      "cest",
+      "cfop",
+      "cst_icms",
+      "presenca_st",
+      "base_st",
+      "mva_iva",
+      "aliquota_st",
+      "valor_icms_st",
+      "fcp_st"
+    ],
+    "saida": {
+      "segmento": null,
+      "anexo_cat68": null,
+      "item_cat68": null,
+      "sujeito_st_esperado": null,
+      "sujeito_st_xml": null,
+      "cest_xml": null,
+      "cest_esperado": null,
+      "cst_xml": null,
+      "cst_esperado": null,
+      "cfop_xml": null,
+      "cfop_esperado": null,
+      "mva_iva": null,
+      "base_st_xml": null,
+      "base_st_calculada": null,
+      "icms_st_xml": null,
+      "icms_st_calculado": null,
+      "fundamento_legal": [],
+      "divergencias": [],
+      "status": null
+    }
+  },
+  "status_possiveis": [
+    "ST_CONFIRMADA",
+    "NAO_SUJEITO_ST",
+    "ITEM_REVOGADO_NA_DATA",
+    "ANEXO_REVOGADO_NA_DATA",
+    "CEST_DIVERGENTE",
+    "NCM_DIVERGENTE",
+    "DESCRICAO_NAO_COMPATIVEL",
+    "REGRA_NAO_ENCONTRADA",
+    "BASE_MVA_NAO_CADASTRADA",
+    "CALCULO_ST_DIVERGENTE",
+    "REVISAO_MANUAL"
+  ],
+  "anexos": [
+    {
+      "anexo": "I",
+      "segmento": "FUMO_OU_SUCEDANEOS_MANUFATURADOS",
+      "titulo": "Fumo ou seus sucedâneos manufaturados",
+      "artigo_ricms": "289",
+      "status": "ATIVO",
+      "vigencia_fim": null,
+      "nao_st_a_partir_de": null,
+      "ato_revogador": null
+    },
+    {
+      "anexo": "II",
+      "segmento": "CIMENTO",
+      "titulo": "Cimento",
+      "artigo_ricms": "291",
+      "status": "ATIVO",
+      "vigencia_fim": null,
+      "nao_st_a_partir_de": null,
+      "ato_revogador": null
+    },
+    {
+      "anexo": "III",
+      "segmento": "CERVEJA_CHOPE_REFRIGERANTE_AGUA_OUTRAS_BEBIDAS",
+      "titulo": "Cerveja, chope, refrigerante, água e outras bebidas",
+      "artigo_ricms": "293",
+      "status": "ATIVO_COM_REVOGACOES_POR_ITEM",
+      "vigencia_fim": null,
+      "nao_st_a_partir_de": null,
+      "ato_revogador": null
+    },
+    {
+      "anexo": "IV",
+      "segmento": "SORVETE_PREPARADOS",
+      "titulo": "Sorvete e preparado para fabricação de sorvete em máquina",
+      "artigo_ricms": "295",
+      "status": "REVOGADO",
+      "vigencia_fim": "2026-06-30",
+      "nao_st_a_partir_de": "2026-07-01",
+      "ato_revogador": "SRE-09/2026"
+    },
+    {
+      "anexo": "V",
+      "segmento": "VEICULO_NOVO_DUAS_TRES_RODAS",
+      "titulo": "Veículo novo de duas e três rodas motorizado",
+      "artigo_ricms": "299",
+      "status": "ATIVO",
+      "vigencia_fim": null,
+      "nao_st_a_partir_de": null,
+      "ato_revogador": null
+    },
+    {
+      "anexo": "VI",
+      "segmento": "VEICULO_AUTOMOTOR_NOVO",
+      "titulo": "Veículo automotor novo",
+      "artigo_ricms": "301",
+      "status": "ATIVO",
+      "vigencia_fim": null,
+      "nao_st_a_partir_de": null,
+      "ato_revogador": null
+    },
+    {
+      "anexo": "VII",
+      "segmento": "PNEUMATICOS_CAMARAS_PROTETORES",
+      "titulo": "Pneumáticos, câmaras de ar e protetores de borracha",
+      "artigo_ricms": "310",
+      "status": "REVOGACAO_PROGRAMADA",
+      "vigencia_fim": "2026-09-30",
+      "nao_st_a_partir_de": "2026-10-01",
+      "ato_revogador": "SRE-34/2026"
+    },
+    {
+      "anexo": "VIII",
+      "segmento": "TINTAS_VERNIZES_PRODUTOS_QUIMICOS",
+      "titulo": "Tintas, vernizes e outros produtos da indústria química",
+      "artigo_ricms": "312",
+      "status": "REVOGACAO_PROGRAMADA",
+      "vigencia_fim": "2026-09-30",
+      "nao_st_a_partir_de": "2026-10-01",
+      "ato_revogador": "SRE-34/2026"
+    },
+    {
+      "anexo": "IX",
+      "segmento": "MEDICAMENTOS",
+      "titulo": "Medicamentos",
+      "artigo_ricms": "313-A",
+      "status": "REVOGADO",
+      "vigencia_fim": "2025-12-31",
+      "nao_st_a_partir_de": "2026-01-01",
+      "ato_revogador": "SRE-64/2025"
+    },
+    {
+      "anexo": "X",
+      "segmento": "BEBIDAS_ALCOOLICAS",
+      "titulo": "Bebidas alcoólicas",
+      "artigo_ricms": "313-C",
+      "status": "REVOGADO",
+      "vigencia_fim": "2025-12-31",
+      "nao_st_a_partir_de": "2026-01-01",
+      "ato_revogador": "SRE-64/2025"
+    },
+    {
+      "anexo": "XI",
+      "segmento": "PERFUMARIA_HIGIENE_PESSOAL",
+      "titulo": "Produtos de perfumaria e de higiene pessoal",
+      "artigo_ricms": "313-E",
+      "status": "REVOGADO",
+      "vigencia_fim": "2026-03-31",
+      "nao_st_a_partir_de": "2026-04-01",
+      "ato_revogador": "SRE-94/2025"
+    },
+    {
+      "anexo": "XII",
+      "segmento": "RACAO_ANIMAL",
+      "titulo": "Ração animal",
+      "artigo_ricms": "313-I",
+      "status": "REVOGADO",
+      "vigencia_fim": "2026-07-31",
+      "nao_st_a_partir_de": "2026-08-01",
+      "ato_revogador": "SRE-20/2026"
+    },
+    {
+      "anexo": "XIII",
+      "segmento": "PRODUTOS_LIMPEZA",
+      "titulo": "Produtos de limpeza",
+      "artigo_ricms": "313-K",
+      "status": "REVOGADO",
+      "vigencia_fim": "2026-07-31",
+      "nao_st_a_partir_de": "2026-08-01",
+      "ato_revogador": "SRE-20/2026"
+    },
+    {
+      "anexo": "XIV",
+      "segmento": "AUTOPECAS",
+      "titulo": "Autopeças",
+      "artigo_ricms": "313-O",
+      "status": "REVOGACAO_PROGRAMADA",
+      "vigencia_fim": "2026-09-30",
+      "nao_st_a_partir_de": "2026-10-01",
+      "ato_revogador": "SRE-34/2026"
+    },
+    {
+      "anexo": "XV",
+      "segmento": "LAMPADAS_REATORES_STARTER",
+      "titulo": "Lâmpadas, reatores e starter",
+      "artigo_ricms": "313-S",
+      "status": "REVOGADO",
+      "vigencia_fim": "2025-12-31",
+      "nao_st_a_partir_de": "2026-01-01",
+      "ato_revogador": "SRE-64/2025"
+    },
+    {
+      "anexo": "XVI",
+      "segmento": "PRODUTOS_INDUSTRIA_ALIMENTICIA",
+      "titulo": "Produtos da indústria alimentícia",
+      "artigo_ricms": "313-W",
+      "status": "ATIVO_COM_REVOGACOES_POR_ITEM",
+      "vigencia_fim": null,
+      "nao_st_a_partir_de": null,
+      "ato_revogador": null
+    },
+    {
+      "anexo": "XVII",
+      "segmento": "MATERIAIS_CONSTRUCAO_CONGENERES",
+      "titulo": "Materiais de construção e congêneres",
+      "artigo_ricms": "313-Y",
+      "status": "ATIVO_COM_POSSIVEIS_ALTERACOES_POR_ITEM",
+      "vigencia_fim": null,
+      "nao_st_a_partir_de": null,
+      "ato_revogador": null
+    },
+    {
+      "anexo": "XVIII",
+      "segmento": "FERRAMENTAS",
+      "titulo": "Ferramentas",
+      "artigo_ricms": "313-Z3",
+      "status": "REVOGACAO_PROGRAMADA",
+      "vigencia_fim": "2026-09-30",
+      "nao_st_a_partir_de": "2026-10-01",
+      "ato_revogador": "SRE-34/2026"
+    },
+    {
+      "anexo": "XIX",
+      "segmento": "PAPELARIA_PAPEL",
+      "titulo": "Produtos de papelaria e papel",
+      "artigo_ricms": "313-Z13",
+      "status": "REVOGADO",
+      "vigencia_fim": "2026-06-30",
+      "nao_st_a_partir_de": "2026-07-01",
+      "ato_revogador": "SRE-09/2026"
+    },
+    {
+      "anexo": "XX",
+      "segmento": "ARTEFATOS_USO_DOMESTICO",
+      "titulo": "Artefatos de uso doméstico",
+      "artigo_ricms": "313-Z15",
+      "status": "REVOGADO",
+      "vigencia_fim": "2025-12-31",
+      "nao_st_a_partir_de": "2026-01-01",
+      "ato_revogador": "SRE-64/2025"
+    },
+    {
+      "anexo": "XXI",
+      "segmento": "MATERIAIS_ELETRICOS",
+      "titulo": "Materiais elétricos",
+      "artigo_ricms": "313-Z17",
+      "status": "REVOGACAO_PROGRAMADA",
+      "vigencia_fim": "2026-09-30",
+      "nao_st_a_partir_de": "2026-10-01",
+      "ato_revogador": "SRE-34/2026"
+    },
+    {
+      "anexo": "XXII",
+      "segmento": "ELETRONICOS_ELETROELETRONICOS_ELETRODOMESTICOS",
+      "titulo": "Produtos eletrônicos, eletroeletrônicos e eletrodomésticos",
+      "artigo_ricms": "313-Z19",
+      "status": "ATIVO_COM_REVOGACOES_POR_ITEM",
+      "vigencia_fim": null,
+      "nao_st_a_partir_de": null,
+      "ato_revogador": null
+    }
+  ],
+  "validacoes_de_seguranca": [
+    "Não usar regra com vigência posterior à data do XML.",
+    "Não considerar item revogado como sujeito a ST após sua data final.",
+    "Revogação específica do item prevalece sobre status geral do anexo.",
+    "Redação específica do item prevalece sobre redação histórica anterior.",
+    "Não inferir ST somente pela NCM.",
+    "Não inferir MVA pela CAT 68.",
+    "Quando houver conflito ou descrição insuficiente, retornar REVISAO_MANUAL."
+  ]
+}

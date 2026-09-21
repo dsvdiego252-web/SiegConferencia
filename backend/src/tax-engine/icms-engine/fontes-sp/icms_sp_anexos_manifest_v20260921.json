@@ -1,0 +1,13 @@
+{
+  "modulo": "ICMS_SP_ANEXOS_I_II",
+  "data_referencia": "2026-09-21",
+  "status": "COLETA_PARCIAL_VALIDADA",
+  "catalogo_total": 265,
+  "regras_validadas": 13,
+  "pendentes_extracao_integral": 252,
+  "arquivos": [
+    "icms_sp_anexos_catalogo_265_v20260921.json",
+    "icms_sp_anexos_regras_validadas_v20260921.json"
+  ],
+  "regra_seguranca": "Não aplicar benefício automaticamente a partir do título do índice. Exigir regra validada a partir do texto oficial."
+}

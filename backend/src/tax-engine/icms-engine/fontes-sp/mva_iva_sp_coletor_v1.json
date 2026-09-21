@@ -1,0 +1,635 @@
+{
+  "meta": {
+    "id": "SP_MVA_IVA_COLLECTOR_V1",
+    "nome": "Coletor automático de MVA/IVA/PMPF para ICMS-ST de São Paulo",
+    "versao": 1,
+    "data_criacao": "2026-09-21",
+    "uf": "SP",
+    "tributo": "ICMS_ST",
+    "objetivo": "Descobrir, coletar, versionar e estruturar automaticamente as normas oficiais da SEFAZ-SP que definem base de cálculo de ICMS-ST, MVA/IVA-ST, IVA-ST ajustado, PMPF/preço fixado e regras equivalentes por segmento da Portaria CAT 68/2019.",
+    "fonte_segmentos": "cat68_sp_motor_coletor_v1.json",
+    "fonte_oficial_primaria": "https://legislacao.fazenda.sp.gov.br/",
+    "principio": "Primeiro confirmar que o item está sujeito à ST pela CAT 68 na data da operação; somente depois procurar a regra de base de cálculo/MVA/IVA/PMPF aplicável ao respectivo segmento e período."
+  },
+  "escopo": {
+    "segmentos_cat68": [
+      {
+        "anexo": "I",
+        "segmento": "FUMO_OU_SUCEDANEOS_MANUFATURADOS",
+        "titulo": "Fumo ou seus sucedâneos manufaturados",
+        "artigo_ricms": "289",
+        "status": "ATIVO",
+        "vigencia_fim": null,
+        "nao_st_a_partir_de": null,
+        "ato_revogador": null
+      },
+      {
+        "anexo": "II",
+        "segmento": "CIMENTO",
+        "titulo": "Cimento",
+        "artigo_ricms": "291",
+        "status": "ATIVO",
+        "vigencia_fim": null,
+        "nao_st_a_partir_de": null,
+        "ato_revogador": null
+      },
+      {
+        "anexo": "III",
+        "segmento": "CERVEJA_CHOPE_REFRIGERANTE_AGUA_OUTRAS_BEBIDAS",
+        "titulo": "Cerveja, chope, refrigerante, água e outras bebidas",
+        "artigo_ricms": "293",
+        "status": "ATIVO_COM_REVOGACOES_POR_ITEM",
+        "vigencia_fim": null,
+        "nao_st_a_partir_de": null,
+        "ato_revogador": null
+      },
+      {
+        "anexo": "IV",
+        "segmento": "SORVETE_PREPARADOS",
+        "titulo": "Sorvete e preparado para fabricação de sorvete em máquina",
+        "artigo_ricms": "295",
+        "status": "REVOGADO",
+        "vigencia_fim": "2026-06-30",
+        "nao_st_a_partir_de": "2026-07-01",
+        "ato_revogador": "SRE-09/2026"
+      },
+      {
+        "anexo": "V",
+        "segmento": "VEICULO_NOVO_DUAS_TRES_RODAS",
+        "titulo": "Veículo novo de duas e três rodas motorizado",
+        "artigo_ricms": "299",
+        "status": "ATIVO",
+        "vigencia_fim": null,
+        "nao_st_a_partir_de": null,
+        "ato_revogador": null
+      },
+      {
+        "anexo": "VI",
+        "segmento": "VEICULO_AUTOMOTOR_NOVO",
+        "titulo": "Veículo automotor novo",
+        "artigo_ricms": "301",
+        "status": "ATIVO",
+        "vigencia_fim": null,
+        "nao_st_a_partir_de": null,
+        "ato_revogador": null
+      },
+      {
+        "anexo": "VII",
+        "segmento": "PNEUMATICOS_CAMARAS_PROTETORES",
+        "titulo": "Pneumáticos, câmaras de ar e protetores de borracha",
+        "artigo_ricms": "310",
+        "status": "REVOGACAO_PROGRAMADA",
+        "vigencia_fim": "2026-09-30",
+        "nao_st_a_partir_de": "2026-10-01",
+        "ato_revogador": "SRE-34/2026"
+      },
+      {
+        "anexo": "VIII",
+        "segmento": "TINTAS_VERNIZES_PRODUTOS_QUIMICOS",
+        "titulo": "Tintas, vernizes e outros produtos da indústria química",
+        "artigo_ricms": "312",
+        "status": "REVOGACAO_PROGRAMADA",
+        "vigencia_fim": "2026-09-30",
+        "nao_st_a_partir_de": "2026-10-01",
+        "ato_revogador": "SRE-34/2026"
+      },
+      {
+        "anexo": "IX",
+        "segmento": "MEDICAMENTOS",
+        "titulo": "Medicamentos",
+        "artigo_ricms": "313-A",
+        "status": "REVOGADO",
+        "vigencia_fim": "2025-12-31",
+        "nao_st_a_partir_de": "2026-01-01",
+        "ato_revogador": "SRE-64/2025"
+      },
+      {
+        "anexo": "X",
+        "segmento": "BEBIDAS_ALCOOLICAS",
+        "titulo": "Bebidas alcoólicas",
+        "artigo_ricms": "313-C",
+        "status": "REVOGADO",
+        "vigencia_fim": "2025-12-31",
+        "nao_st_a_partir_de": "2026-01-01",
+        "ato_revogador": "SRE-64/2025"
+      },
+      {
+        "anexo": "XI",
+        "segmento": "PERFUMARIA_HIGIENE_PESSOAL",
+        "titulo": "Produtos de perfumaria e de higiene pessoal",
+        "artigo_ricms": "313-E",
+        "status": "REVOGADO",
+        "vigencia_fim": "2026-03-31",
+        "nao_st_a_partir_de": "2026-04-01",
+        "ato_revogador": "SRE-94/2025"
+      },
+      {
+        "anexo": "XII",
+        "segmento": "RACAO_ANIMAL",
+        "titulo": "Ração animal",
+        "artigo_ricms": "313-I",
+        "status": "REVOGADO",
+        "vigencia_fim": "2026-07-31",
+        "nao_st_a_partir_de": "2026-08-01",
+        "ato_revogador": "SRE-20/2026"
+      },
+      {
+        "anexo": "XIII",
+        "segmento": "PRODUTOS_LIMPEZA",
+        "titulo": "Produtos de limpeza",
+        "artigo_ricms": "313-K",
+        "status": "REVOGADO",
+        "vigencia_fim": "2026-07-31",
+        "nao_st_a_partir_de": "2026-08-01",
+        "ato_revogador": "SRE-20/2026"
+      },
+      {
+        "anexo": "XIV",
+        "segmento": "AUTOPECAS",
+        "titulo": "Autopeças",
+        "artigo_ricms": "313-O",
+        "status": "REVOGACAO_PROGRAMADA",
+        "vigencia_fim": "2026-09-30",
+        "nao_st_a_partir_de": "2026-10-01",
+        "ato_revogador": "SRE-34/2026"
+      },
+      {
+        "anexo": "XV",
+        "segmento": "LAMPADAS_REATORES_STARTER",
+        "titulo": "Lâmpadas, reatores e starter",
+        "artigo_ricms": "313-S",
+        "status": "REVOGADO",
+        "vigencia_fim": "2025-12-31",
+        "nao_st_a_partir_de": "2026-01-01",
+        "ato_revogador": "SRE-64/2025"
+      },
+      {
+        "anexo": "XVI",
+        "segmento": "PRODUTOS_INDUSTRIA_ALIMENTICIA",
+        "titulo": "Produtos da indústria alimentícia",
+        "artigo_ricms": "313-W",
+        "status": "ATIVO_COM_REVOGACOES_POR_ITEM",
+        "vigencia_fim": null,
+        "nao_st_a_partir_de": null,
+        "ato_revogador": null
+      },
+      {
+        "anexo": "XVII",
+        "segmento": "MATERIAIS_CONSTRUCAO_CONGENERES",
+        "titulo": "Materiais de construção e congêneres",
+        "artigo_ricms": "313-Y",
+        "status": "ATIVO_COM_POSSIVEIS_ALTERACOES_POR_ITEM",
+        "vigencia_fim": null,
+        "nao_st_a_partir_de": null,
+        "ato_revogador": null
+      },
+      {
+        "anexo": "XVIII",
+        "segmento": "FERRAMENTAS",
+        "titulo": "Ferramentas",
+        "artigo_ricms": "313-Z3",
+        "status": "REVOGACAO_PROGRAMADA",
+        "vigencia_fim": "2026-09-30",
+        "nao_st_a_partir_de": "2026-10-01",
+        "ato_revogador": "SRE-34/2026"
+      },
+      {
+        "anexo": "XIX",
+        "segmento": "PAPELARIA_PAPEL",
+        "titulo": "Produtos de papelaria e papel",
+        "artigo_ricms": "313-Z13",
+        "status": "REVOGADO",
+        "vigencia_fim": "2026-06-30",
+        "nao_st_a_partir_de": "2026-07-01",
+        "ato_revogador": "SRE-09/2026"
+      },
+      {
+        "anexo": "XX",
+        "segmento": "ARTEFATOS_USO_DOMESTICO",
+        "titulo": "Artefatos de uso doméstico",
+        "artigo_ricms": "313-Z15",
+        "status": "REVOGADO",
+        "vigencia_fim": "2025-12-31",
+        "nao_st_a_partir_de": "2026-01-01",
+        "ato_revogador": "SRE-64/2025"
+      },
+      {
+        "anexo": "XXI",
+        "segmento": "MATERIAIS_ELETRICOS",
+        "titulo": "Materiais elétricos",
+        "artigo_ricms": "313-Z17",
+        "status": "REVOGACAO_PROGRAMADA",
+        "vigencia_fim": "2026-09-30",
+        "nao_st_a_partir_de": "2026-10-01",
+        "ato_revogador": "SRE-34/2026"
+      },
+      {
+        "anexo": "XXII",
+        "segmento": "ELETRONICOS_ELETROELETRONICOS_ELETRODOMESTICOS",
+        "titulo": "Produtos eletrônicos, eletroeletrônicos e eletrodomésticos",
+        "artigo_ricms": "313-Z19",
+        "status": "ATIVO_COM_REVOGACOES_POR_ITEM",
+        "vigencia_fim": null,
+        "nao_st_a_partir_de": null,
+        "ato_revogador": null
+      }
+    ],
+    "processar_somente_segmentos_sujeitos_st_na_data": true,
+    "nao_procurar_mva_para_segmento_revogado_na_data": true,
+    "permitir_historico_para_xml_antigo": true,
+    "preservar_normas_revogadas": true
+  },
+  "fontes_e_descoberta": {
+    "usar_somente_fontes_oficiais": true,
+    "dominios_permitidos": [
+      "legislacao.fazenda.sp.gov.br",
+      "portal.fazenda.sp.gov.br"
+    ],
+    "nao_usar_como_fonte_da_regra": [
+      "blogs",
+      "sites_contabeis",
+      "sites_tributarios_privados",
+      "foruns",
+      "resumos_de_terceiros",
+      "respostas_de_llm"
+    ],
+    "estrategia_busca_por_segmento": [
+      "consultar o segmento/anexo da CAT 68",
+      "buscar atos CAT/SRE que mencionem o Anexo correspondente da Portaria CAT 68/2019",
+      "buscar atos com termos 'base de cálculo', 'IVA-ST', 'Índice de Valor Adicionado Setorial', 'PMPF', 'preço final', 'preço a consumidor', 'substituição tributária'",
+      "identificar norma vigente para a data de emissão",
+      "seguir atos alteradores, revogadores e normas anteriores quando necessário",
+      "montar cadeia normativa completa"
+    ],
+    "termos_busca_modelo": [
+      "\"Anexo {ANEXO}\" \"Portaria CAT 68/19\" \"IVA-ST\"",
+      "\"Anexo {ANEXO}\" \"Portaria CAT 68/19\" \"base de cálculo\"",
+      "\"{SEGMENTO}\" \"IVA-ST\" \"Portaria SRE\"",
+      "\"{SEGMENTO}\" \"PMPF\" \"Portaria SRE\"",
+      "\"{ARTIGO_RICMS}\" \"base de cálculo\" \"Portaria SRE\""
+    ]
+  },
+  "pipeline": [
+    {
+      "passo": 1,
+      "acao": "receber_data_emissao_e_produto",
+      "entrada": [
+        "data_emissao",
+        "ncm",
+        "descricao",
+        "cest",
+        "uf_origem",
+        "uf_destino"
+      ]
+    },
+    {
+      "passo": 2,
+      "acao": "consultar_cat68",
+      "resultado": [
+        "sujeito_st",
+        "anexo",
+        "segmento",
+        "item_cat68",
+        "vigencia_item"
+      ]
+    },
+    {
+      "passo": 3,
+      "acao": "se_nao_st_encerrar",
+      "status": "NAO_SUJEITO_ST_NA_DATA"
+    },
+    {
+      "passo": 4,
+      "acao": "descobrir_norma_base_calculo_do_segmento",
+      "usar_portal_oficial": true
+    },
+    {
+      "passo": 5,
+      "acao": "baixar_e_salvar_fonte_original",
+      "salvar_html": true,
+      "salvar_texto_extraido": true,
+      "salvar_hash_sha256": true
+    },
+    {
+      "passo": 6,
+      "acao": "resolver_cadeia_normativa",
+      "itens": [
+        "ato_principal",
+        "ato_alterador",
+        "ato_revogador",
+        "vigencia_inicio",
+        "vigencia_fim",
+        "norma_anterior",
+        "norma_posterior"
+      ]
+    },
+    {
+      "passo": 7,
+      "acao": "identificar_metodo_base_calculo",
+      "metodos_possiveis": [
+        "IVA_ST",
+        "IVA_ST_AJUSTADO",
+        "PMPF",
+        "PRECO_FIXADO",
+        "PAUTA",
+        "PRECO_SUGERIDO",
+        "PERCENTUAL_MARGEM",
+        "OUTRO_METODO_OFICIAL"
+      ]
+    },
+    {
+      "passo": 8,
+      "acao": "extrair_tabelas_e_regras"
+    },
+    {
+      "passo": 9,
+      "acao": "versionar_por_vigencia"
+    },
+    {
+      "passo": 10,
+      "acao": "validar_contra_cat68"
+    },
+    {
+      "passo": 11,
+      "acao": "publicar_base_local",
+      "arquivo": "mva_iva_sp_por_segmento.json"
+    }
+  ],
+  "extracao_ato": {
+    "campos": [
+      "tipo_ato",
+      "numero_ato",
+      "ano_ato",
+      "data_ato",
+      "data_publicacao",
+      "ementa",
+      "ultima_atualizacao_pagina",
+      "url_oficial",
+      "segmento",
+      "anexo_cat68",
+      "artigos_ricms_referenciados",
+      "vigencia_inicio",
+      "vigencia_fim",
+      "ato_revogado",
+      "atos_alteradores",
+      "metodo_base_calculo",
+      "formula_base_calculo",
+      "formula_iva_ajustado",
+      "condicoes_especiais",
+      "excecoes",
+      "texto_legal_origem"
+    ]
+  },
+  "extracao_item_mva": {
+    "schema": {
+      "id_regra": "SP_ST_{SEGMENTO}_{ATO}_{ITEM}_{VERSAO}",
+      "tributo": "ICMS_ST",
+      "uf": "SP",
+      "segmento": "",
+      "anexo_cat68": "",
+      "item_norma": "",
+      "cest": [],
+      "ncm": [],
+      "descricao": "",
+      "descricao_contem": [],
+      "descricao_nao_contem": [],
+      "condicoes": {
+        "uf_origem": [],
+        "uf_destino": [
+          "SP"
+        ],
+        "tipo_remetente": [],
+        "tipo_destinatario": [],
+        "varejista_recebimento_direto_outro_estado": null,
+        "acordo_interestadual_exigido": null,
+        "marca": [],
+        "tipo_embalagem": [],
+        "volume_minimo": null,
+        "volume_maximo": null,
+        "peso_minimo": null,
+        "peso_maximo": null,
+        "outras": []
+      },
+      "resultado": {
+        "metodo_base_calculo": null,
+        "iva_st_original_percentual": null,
+        "iva_st_ajustado_aplicavel": null,
+        "pmpf_valor": null,
+        "preco_fixado_valor": null,
+        "pauta_valor": null,
+        "aliquota_interna_referencia": null
+      },
+      "vigencia_inicio": null,
+      "vigencia_fim": null,
+      "ato_base": "",
+      "atos_alteradores": [],
+      "ato_revogador": null,
+      "fundamento_legal": "",
+      "fonte_oficial": "",
+      "hash_fonte": "",
+      "versao": 1,
+      "prioridade": 100,
+      "status": "ATIVO_CONFORME_VIGENCIA",
+      "necessita_revisao_manual": false
+    }
+  },
+  "regras_de_matching": {
+    "ordem": [
+      "data_emissao",
+      "segmento_anexo_cat68",
+      "cest",
+      "ncm",
+      "descricao",
+      "condicoes_especificas_da_norma",
+      "metodo_base_calculo"
+    ],
+    "regras": [
+      "Nunca escolher MVA/IVA apenas por NCM.",
+      "Quando a norma contiver CEST + NCM + descrição, validar os três.",
+      "Quando houver marca, embalagem, volume, peso, tipo de remetente/destinatário ou finalidade, essas condições são obrigatórias.",
+      "Se o mesmo item tiver mais de uma redação, escolher a versão cuja vigência contenha a data de emissão.",
+      "Se houver conflito entre norma atual e histórica, a data de emissão decide.",
+      "Se não for possível comprovar a regra aplicável, retornar REVISAO_MANUAL."
+    ]
+  },
+  "iva_ajustado": {
+    "usar_somente_quando_a_norma_previr": true,
+    "formula_padrao_identificada_em_normas_sp": "[(1 + IVA_ST_ORIGINAL) * (1 - ALQ_INTER) / (1 - ALQ_INTRA)] - 1",
+    "variaveis": {
+      "IVA_ST_ORIGINAL": "IVA-ST aplicável na operação interna",
+      "ALQ_INTER": "alíquota interestadual efetivamente aplicada pelo remetente",
+      "ALQ_INTRA": "alíquota interna aplicável à mercadoria em São Paulo"
+    },
+    "regra": "Não aplicar automaticamente a fórmula a todos os segmentos. Confirmar no texto da norma do segmento/data que o IVA-ST ajustado é exigido."
+  },
+  "pmpf_e_precos": {
+    "suportar": true,
+    "regra": "Quando a norma trouxer PMPF/preço fixado por marca, descrição, embalagem ou volume, armazenar esses valores como regras específicas. Não substituir automaticamente por IVA-ST.",
+    "precedencia": "A precedência entre PMPF/preço fixado e IVA-ST deve ser extraída do próprio ato. Não assumir uma precedência universal.",
+    "fallback": "Quando o próprio ato determinar que, em certas hipóteses, o PMPF não se aplica e deve ser usado IVA-ST, modelar essa condição explicitamente."
+  },
+  "controle_vigencia": {
+    "obrigatorio": true,
+    "campos": [
+      "vigencia_inicio",
+      "vigencia_fim",
+      "data_publicacao",
+      "data_revogacao",
+      "efeitos_a_partir_de"
+    ],
+    "historico": "Nunca apagar regra antiga. XML histórico deve ser auditado com a regra válida na data da emissão."
+  },
+  "controle_atualizacao": {
+    "salvar_snapshot_fonte": true,
+    "hash": "SHA256",
+    "ao_hash_igual": "NENHUMA_ALTERACAO",
+    "ao_hash_diferente": [
+      "salvar_novo_snapshot",
+      "gerar_diff",
+      "identificar_ato_alterador",
+      "criar_nova_versao_da_regra",
+      "manter_versao_anterior",
+      "marcar_regra_nova_como_CANDIDATA_REVISAO"
+    ],
+    "nunca_sobrescrever_historico": true
+  },
+  "tratamento_erros": {
+    "status": [
+      "NORMA_ENCONTRADA",
+      "NORMA_NAO_ENCONTRADA",
+      "MULTIPLAS_NORMAS_CANDIDATAS",
+      "VIGENCIA_AMBIGUA",
+      "ITEM_NAO_ENCONTRADO_NA_NORMA",
+      "BASE_MVA_NAO_CADASTRADA",
+      "DEPENDENCIA_EXTERNA",
+      "REVISAO_MANUAL"
+    ],
+    "proibicoes": [
+      "Não inventar MVA/IVA.",
+      "Não reaproveitar MVA de outro segmento por semelhança.",
+      "Não usar norma revogada para XML posterior à revogação.",
+      "Não usar norma futura para XML anterior à sua vigência."
+    ]
+  },
+  "integracao_motor": {
+    "entrada": {
+      "data_emissao": "",
+      "ncm": "",
+      "descricao": "",
+      "cest": "",
+      "cfop": "",
+      "cst_icms": "",
+      "uf_origem": "",
+      "uf_destino": "SP",
+      "valor_produto": null,
+      "frete": null,
+      "seguro": null,
+      "outras_despesas": null,
+      "ipi": null,
+      "base_st_xml": null,
+      "valor_icms_st_xml": null
+    },
+    "fluxo": [
+      "confirmar_st_cat68",
+      "localizar_segmento",
+      "buscar_regra_mva_iva_vigente",
+      "determinar_metodo_base_calculo",
+      "calcular_iva_ajustado_quando_exigido",
+      "calcular_base_st",
+      "calcular_icms_st",
+      "comparar_com_xml"
+    ],
+    "saida": {
+      "sujeito_st": null,
+      "segmento": null,
+      "anexo_cat68": null,
+      "norma_base_calculo": null,
+      "metodo_base_calculo": null,
+      "iva_st_original": null,
+      "iva_st_ajustado": null,
+      "pmpf": null,
+      "base_st_calculada": null,
+      "base_st_xml": null,
+      "icms_st_calculado": null,
+      "icms_st_xml": null,
+      "fundamento_legal": [],
+      "divergencias": [],
+      "status": null
+    }
+  },
+  "exemplos_oficiais_para_teste_do_coletor": [
+    {
+      "ato": "Portaria SRE 12/2026",
+      "segmento": "PRODUTOS_INDUSTRIA_ALIMENTICIA",
+      "anexo_cat68": "XVI",
+      "url": "https://legislacao.fazenda.sp.gov.br/Paginas/Portaria-SRE-12-de-2026.aspx",
+      "vigencia_principal": {
+        "inicio": "2026-05-01",
+        "fim": "2029-01-31"
+      },
+      "metodo": "IVA_ST",
+      "possui_iva_ajustado": true,
+      "observacao": "Usar como caso de teste de tabela ITEM + CEST + NCM + DESCRIÇÃO + IVA-ST e cadeia de revogação da norma anterior."
+    },
+    {
+      "ato": "Portaria SRE 27/2026",
+      "segmento": "CERVEJA_CHOPE_REFRIGERANTE_AGUA_OUTRAS_BEBIDAS",
+      "anexo_cat68": "III",
+      "url": "https://legislacao.fazenda.sp.gov.br/Paginas/Portaria-SRE-27-de-2026.aspx",
+      "vigencia_principal": {
+        "inicio": "2026-07-01",
+        "fim": "2026-12-31"
+      },
+      "metodos": [
+        "PMPF_OU_VALORES_FIXADOS",
+        "IVA_ST_EM_HIPOTESES_ESPECIFICAS"
+      ],
+      "observacao": "Usar como caso de teste em que a norma possui valores específicos e, em hipóteses determinadas pelo próprio ato, aplica IVA-ST."
+    },
+    {
+      "ato": "Portaria SRE 24/2026",
+      "segmento": "ELETRONICOS_ELETROELETRONICOS_ELETRODOMESTICOS",
+      "anexo_cat68": "XXII",
+      "url": "https://legislacao.fazenda.sp.gov.br/Paginas/Portaria-SRE-24-de-2026.aspx",
+      "metodo": "ALTERACAO_DE_NORMA_ANTERIOR",
+      "observacao": "Usar como teste para seguir cadeia normativa: a Portaria altera a SRE 59/2023 e não deve ser interpretada isoladamente como uma tabela nova completa."
+    }
+  ],
+  "primeira_execucao": {
+    "modo": "TESTE_ANTES_DA_COLETA_TOTAL",
+    "testar": [
+      {
+        "segmento": "PRODUTOS_INDUSTRIA_ALIMENTICIA",
+        "anexo": "XVI",
+        "ato_candidato": "SRE 12/2026"
+      },
+      {
+        "segmento": "CERVEJA_CHOPE_REFRIGERANTE_AGUA_OUTRAS_BEBIDAS",
+        "anexo": "III",
+        "ato_candidato": "SRE 27/2026"
+      },
+      {
+        "segmento": "ELETRONICOS_ELETROELETRONICOS_ELETRODOMESTICOS",
+        "anexo": "XXII",
+        "ato_candidato": "SRE 24/2026 + SRE 59/2023"
+      }
+    ],
+    "validar_antes_de_expandir": [
+      "ato correto",
+      "segmento correto",
+      "vigencia correta",
+      "mva_iva correta",
+      "PMPF quando existir",
+      "condicoes e excecoes",
+      "cadeia de alteracoes/revogacoes",
+      "formula de IVA ajustado quando aplicável"
+    ],
+    "apos_validacao": "executar_para_todos_os_segmentos_cat68_relevantes"
+  },
+  "arquivo_saida": {
+    "principal": "mva_iva_sp_por_segmento.json",
+    "fontes": "legal-sources/SP/mva-iva/",
+    "logs": "logs/mva_iva_sp_update.json",
+    "diffs": "legal-sources/SP/mva-iva/diffs/"
+  }
+}

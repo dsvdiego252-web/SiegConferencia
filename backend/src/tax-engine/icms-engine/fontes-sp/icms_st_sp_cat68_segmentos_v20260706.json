@@ -1,0 +1,293 @@
+{
+  "meta": {
+    "nome": "Base de roteamento ICMS-ST SP por segmento - Portaria CAT 68/2019",
+    "uf": "SP",
+    "tributo": "ICMS_ST",
+    "ato_base": "Portaria CAT 68/2019",
+    "vigencia_inicio_ato": "2020-01-01",
+    "versao_consolidada_referencia": "2026-07-06",
+    "arquivo_origem_usuario": "Portaria CAT 68.pdf",
+    "fonte_oficial": "https://legislacao.fazenda.sp.gov.br/Paginas/Portaria-CAT-68-de-2019.aspx",
+    "quantidade_segmentos_anexos": 22,
+    "finalidade": "Identificar o segmento/anexo e determinar se a mercadoria pode estar sujeita ao regime de substituição tributária em São Paulo, respeitando item, CEST, NCM/SH, descrição e vigência."
+  },
+  "observacao_motor": {
+    "texto": "UTILIZAR A PORTARIA CAT 68/2019 COMO MAPA MESTRE DA ST DE SÃO PAULO POR SEGMENTO. O MOTOR DEVE PRIMEIRO IDENTIFICAR O SEGMENTO/ANEXO E, DEPOIS, VALIDAR O ITEM ESPECÍFICO PELA COMBINAÇÃO CEST + NCM/SH + DESCRIÇÃO + DATA DA OPERAÇÃO. NCM OU SEGMENTO ISOLADAMENTE NÃO CONFIRMAM ST. REVOGAÇÕES E REDAÇÕES POR ITEM PREVALECEM SOBRE O STATUS GERAL DO ANEXO.",
+    "mva": "A PORTARIA CAT 68/2019 NÃO DEVE SER USADA COMO FONTE DE MVA/IVA. APÓS CONFIRMAR QUE O ITEM ESTÁ SUJEITO À ST, O MOTOR DEVE CONSULTAR A BASE DE MVA/IVA DO RESPECTIVO SEGMENTO, VIGENTE NA DATA DA OPERAÇÃO.",
+    "sem_base_mva": "SE O ITEM ESTIVER EM ST MAS A BASE DE MVA/IVA DO SEGMENTO AINDA NÃO ESTIVER CADASTRADA, RETORNAR BASE_MVA_NAO_CADASTRADA / REVISAO_MANUAL. NUNCA INVENTAR MVA.",
+    "precedencia": [
+      "VIGENCIA_ESPECIFICA_DO_ITEM",
+      "REVOGACAO_ESPECIFICA_DO_ITEM",
+      "REDACAO_ESPECIFICA_DO_ITEM",
+      "REVOGACAO_DO_ANEXO",
+      "REGRA_GERAL_DO_ANEXO"
+    ]
+  },
+  "regra_de_confronto": {
+    "entrada_minima": [
+      "data_emissao",
+      "ncm",
+      "descricao_produto"
+    ],
+    "entrada_recomendada": [
+      "cest",
+      "cfop",
+      "cst_icms",
+      "uf_origem",
+      "uf_destino"
+    ],
+    "fluxo": [
+      "localizar_segmento_por_ncm_cest_descricao",
+      "validar_vigencia_do_anexo",
+      "validar_vigencia_especifica_do_item",
+      "confirmar_correspondencia_ncm_cest_descricao",
+      "determinar_st_sim_nao",
+      "se_st_sim_consultar_mva_segmento",
+      "determinar_cst_cfop_base_st_valores_esperados",
+      "comparar_com_xml"
+    ],
+    "status_possiveis": [
+      "ST_CONFIRMADA",
+      "NAO_SUJEITO_ST_NA_DATA",
+      "ITEM_REVOGADO_NA_DATA",
+      "ANEXO_REVOGADO_NA_DATA",
+      "CEST_DIVERGENTE",
+      "NCM_DIVERGENTE",
+      "DESCRICAO_NAO_COMPATIVEL",
+      "BASE_MVA_NAO_CADASTRADA",
+      "REVISAO_MANUAL"
+    ]
+  },
+  "segmentos": [
+    {
+      "anexo": "I",
+      "segmento": "FUMO_OU_SUCEDANEOS_MANUFATURADOS",
+      "titulo": "Fumo ou seus sucedâneos manufaturados",
+      "artigo_ricms": "289",
+      "vigencia_fim_anexo": null,
+      "status_anexo": "ATIVO",
+      "validacao_item_obrigatoria": true
+    },
+    {
+      "anexo": "II",
+      "segmento": "CIMENTO",
+      "titulo": "Cimento",
+      "artigo_ricms": "291",
+      "vigencia_fim_anexo": null,
+      "status_anexo": "ATIVO",
+      "validacao_item_obrigatoria": true
+    },
+    {
+      "anexo": "III",
+      "segmento": "BEBIDAS_NAO_ALCOOLICAS_CERVEJA_CHOPE_AGUA",
+      "titulo": "Cerveja, chope, refrigerante, água e outras bebidas",
+      "artigo_ricms": "293",
+      "vigencia_fim_anexo": null,
+      "status_anexo": "ATIVO_COM_REVOGACOES_POR_ITEM",
+      "validacao_item_obrigatoria": true,
+      "observacao": "Há itens e redações com vigências próprias, inclusive revogações com efeitos em 01/07/2026."
+    },
+    {
+      "anexo": "IV",
+      "segmento": "SORVETES_E_PREPARADOS",
+      "titulo": "Sorvete e preparado para fabricação de sorvete em máquina",
+      "artigo_ricms": "295",
+      "vigencia_fim_anexo": "2026-06-30",
+      "nao_st_a_partir_de": "2026-07-01",
+      "ato_revogador": "Portaria SRE 09/2026",
+      "status_anexo": "REVOGADO",
+      "validacao_item_obrigatoria": true
+    },
+    {
+      "anexo": "V",
+      "segmento": "VEICULO_NOVO_DUAS_TRES_RODAS",
+      "titulo": "Veículo novo de duas e três rodas motorizado",
+      "artigo_ricms": "299",
+      "vigencia_fim_anexo": null,
+      "status_anexo": "ATIVO",
+      "validacao_item_obrigatoria": true
+    },
+    {
+      "anexo": "VI",
+      "segmento": "VEICULO_AUTOMOTOR_NOVO",
+      "titulo": "Veículo automotor novo",
+      "artigo_ricms": "301",
+      "vigencia_fim_anexo": null,
+      "status_anexo": "ATIVO",
+      "validacao_item_obrigatoria": true
+    },
+    {
+      "anexo": "VII",
+      "segmento": "PNEUMATICOS_CAMARAS_PROTETORES_BORRACHA",
+      "titulo": "Pneumáticos, câmaras de ar e protetores de borracha",
+      "artigo_ricms": "310",
+      "vigencia_fim_anexo": "2026-09-30",
+      "nao_st_a_partir_de": "2026-10-01",
+      "ato_revogador": "Portaria SRE 34/2026",
+      "status_anexo": "REVOGACAO_FUTURA_NA_VERSAO",
+      "validacao_item_obrigatoria": true
+    },
+    {
+      "anexo": "VIII",
+      "segmento": "TINTAS_VERNIZES_INDUSTRIA_QUIMICA",
+      "titulo": "Tintas, vernizes e outros produtos da indústria química",
+      "artigo_ricms": "312",
+      "vigencia_fim_anexo": "2026-09-30",
+      "nao_st_a_partir_de": "2026-10-01",
+      "ato_revogador": "Portaria SRE 34/2026",
+      "status_anexo": "REVOGACAO_FUTURA_NA_VERSAO",
+      "validacao_item_obrigatoria": true
+    },
+    {
+      "anexo": "IX",
+      "segmento": "MEDICAMENTOS",
+      "titulo": "Medicamentos",
+      "artigo_ricms": "313-A",
+      "vigencia_fim_anexo": "2025-12-31",
+      "nao_st_a_partir_de": "2026-01-01",
+      "ato_revogador": "Portaria SRE 64/2025",
+      "status_anexo": "REVOGADO",
+      "validacao_item_obrigatoria": true
+    },
+    {
+      "anexo": "X",
+      "segmento": "BEBIDAS_ALCOOLICAS",
+      "titulo": "Bebidas alcoólicas",
+      "artigo_ricms": "313-C",
+      "vigencia_fim_anexo": "2025-12-31",
+      "nao_st_a_partir_de": "2026-01-01",
+      "ato_revogador": "Portaria SRE 64/2025",
+      "status_anexo": "REVOGADO",
+      "validacao_item_obrigatoria": true
+    },
+    {
+      "anexo": "XI",
+      "segmento": "PERFUMARIA_HIGIENE_PESSOAL",
+      "titulo": "Produtos de perfumaria e de higiene pessoal",
+      "artigo_ricms": "313-E",
+      "vigencia_fim_anexo": "2026-03-31",
+      "nao_st_a_partir_de": "2026-04-01",
+      "ato_revogador": "Portaria SRE 94/2025",
+      "status_anexo": "REVOGADO",
+      "validacao_item_obrigatoria": true
+    },
+    {
+      "anexo": "XII",
+      "segmento": "RACAO_ANIMAL",
+      "titulo": "Ração animal",
+      "artigo_ricms": "313-I",
+      "vigencia_fim_anexo": "2026-07-31",
+      "nao_st_a_partir_de": "2026-08-01",
+      "ato_revogador": "Portaria SRE 20/2026",
+      "status_anexo": "REVOGADO",
+      "validacao_item_obrigatoria": true
+    },
+    {
+      "anexo": "XIII",
+      "segmento": "PRODUTOS_LIMPEZA",
+      "titulo": "Produtos de limpeza",
+      "artigo_ricms": "313-K",
+      "vigencia_fim_anexo": "2026-07-31",
+      "nao_st_a_partir_de": "2026-08-01",
+      "ato_revogador": "Portaria SRE 20/2026",
+      "status_anexo": "REVOGADO",
+      "validacao_item_obrigatoria": true
+    },
+    {
+      "anexo": "XIV",
+      "segmento": "AUTOPECAS",
+      "titulo": "Autopeças",
+      "artigo_ricms": "313-O",
+      "vigencia_fim_anexo": "2026-09-30",
+      "nao_st_a_partir_de": "2026-10-01",
+      "ato_revogador": "Portaria SRE 34/2026",
+      "status_anexo": "REVOGACAO_FUTURA_NA_VERSAO",
+      "validacao_item_obrigatoria": true
+    },
+    {
+      "anexo": "XV",
+      "segmento": "LAMPADAS_REATORES_STARTER",
+      "titulo": "Lâmpadas, reatores e starter",
+      "artigo_ricms": "313-S",
+      "vigencia_fim_anexo": "2025-12-31",
+      "nao_st_a_partir_de": "2026-01-01",
+      "ato_revogador": "Portaria SRE 64/2025",
+      "status_anexo": "REVOGADO",
+      "validacao_item_obrigatoria": true
+    },
+    {
+      "anexo": "XVI",
+      "segmento": "PRODUTOS_INDUSTRIA_ALIMENTICIA",
+      "titulo": "Produtos da indústria alimentícia",
+      "artigo_ricms": "313-W",
+      "vigencia_fim_anexo": null,
+      "status_anexo": "ATIVO_COM_REVOGACOES_POR_ITEM",
+      "validacao_item_obrigatoria": true,
+      "observacao": "Diversos itens foram revogados em 01/01/2026; não concluir ST pelo segmento ou NCM isoladamente."
+    },
+    {
+      "anexo": "XVII",
+      "segmento": "MATERIAIS_CONSTRUCAO_CONGENERES",
+      "titulo": "Materiais de construção e congêneres",
+      "artigo_ricms": "313-Y",
+      "vigencia_fim_anexo": null,
+      "status_anexo": "ATIVO_COM_REVOGACOES_POR_ITEM",
+      "validacao_item_obrigatoria": true,
+      "observacao": "Há revogações pontuais por item; validar vigência individual."
+    },
+    {
+      "anexo": "XVIII",
+      "segmento": "FERRAMENTAS",
+      "titulo": "Ferramentas",
+      "artigo_ricms": "313-Z3",
+      "vigencia_fim_anexo": "2026-09-30",
+      "nao_st_a_partir_de": "2026-10-01",
+      "ato_revogador": "Portaria SRE 34/2026",
+      "status_anexo": "REVOGACAO_FUTURA_NA_VERSAO",
+      "validacao_item_obrigatoria": true
+    },
+    {
+      "anexo": "XIX",
+      "segmento": "PAPELARIA_PAPEL",
+      "titulo": "Produtos de papelaria e papel",
+      "artigo_ricms": "313-Z13",
+      "vigencia_fim_anexo": "2026-06-30",
+      "nao_st_a_partir_de": "2026-07-01",
+      "ato_revogador": "Portaria SRE 09/2026",
+      "status_anexo": "REVOGADO",
+      "validacao_item_obrigatoria": true
+    },
+    {
+      "anexo": "XX",
+      "segmento": "ARTEFATOS_USO_DOMESTICO",
+      "titulo": "Artefatos de uso doméstico",
+      "artigo_ricms": "313-Z15",
+      "vigencia_fim_anexo": "2025-12-31",
+      "nao_st_a_partir_de": "2026-01-01",
+      "ato_revogador": "Portaria SRE 64/2025",
+      "status_anexo": "REVOGADO",
+      "validacao_item_obrigatoria": true
+    },
+    {
+      "anexo": "XXI",
+      "segmento": "MATERIAIS_ELETRICOS",
+      "titulo": "Materiais elétricos",
+      "artigo_ricms": "313-Z17",
+      "vigencia_fim_anexo": "2026-09-30",
+      "nao_st_a_partir_de": "2026-10-01",
+      "ato_revogador": "Portaria SRE 34/2026",
+      "status_anexo": "REVOGACAO_FUTURA_NA_VERSAO",
+      "validacao_item_obrigatoria": true
+    },
+    {
+      "anexo": "XXII",
+      "segmento": "ELETRONICOS_ELETROELETRONICOS_ELETRODOMESTICOS",
+      "titulo": "Produtos eletrônicos, eletroeletrônicos e eletrodomésticos",
+      "artigo_ricms": "313-Z19",
+      "vigencia_fim_anexo": null,
+      "status_anexo": "ATIVO_COM_REVOGACOES_POR_ITEM",
+      "validacao_item_obrigatoria": true,
+      "observacao": "Diversos itens possuem revogações próprias em 2026; validar item e data, não apenas o anexo."
+    }
+  ]
+}

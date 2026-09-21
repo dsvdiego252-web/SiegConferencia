@@ -1,0 +1,22 @@
+{
+  "arquivo_principal": "mva_iva_sp_por_segmento_v20260921.json",
+  "arquivo_tabular": "mva_iva_sp_por_segmento_v20260921.csv",
+  "data_referencia": "2026-09-21",
+  "quantidade_regras": 296,
+  "regras_por_anexo": {
+    "I": 1,
+    "II": 1,
+    "III": 19,
+    "V": 1,
+    "VI": 1,
+    "VII": 8,
+    "VIII": 3,
+    "XIV": 5,
+    "XVI": 69,
+    "XVII": 63,
+    "XVIII": 19,
+    "XXI": 9,
+    "XXII": 97
+  },
+  "observacao_integracao": "Para registros marcados com descrição genérica 'usar item correspondente', fazer join por anexo_cat68 + item_norma com a base de itens da CAT 68."
+}

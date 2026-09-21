@@ -209,11 +209,18 @@ export function parseNfeXml(xmlString) {
     const ncmBruto = String(prod.NCM ?? '');
     const ncm = ncmBruto ? ncmBruto.padStart(8, '0') : '';
 
+    // CEST tem sempre 7 dígitos (formato NN.NNN.NN) e é filho de <prod>, não
+    // do grupo de imposto — mesmo risco de perda de zero à esquerda do
+    // fast-xml-parser que já afeta NCM/CST.
+    const cestBruto = String(prod.CEST ?? '');
+    const cest = cestBruto ? cestBruto.padStart(7, '0') : null;
+
     return {
       numeroItem: Number(det['@_nItem']) || undefined,
       codigo: String(prod.cProd ?? ''),
       descricao: String(prod.xProd ?? ''),
       ncm,
+      cest,
       cfop: String(prod.CFOP ?? ''),
       quantidade: toNumber(prod.qCom),
       valorUnitario: toNumber(prod.vUnCom),
@@ -226,6 +233,10 @@ export function parseNfeXml(xmlString) {
         aliquota: toNumber(icms.pICMS),
         valor: toNumber(icms.vICMS),
         baseCalculo: toNumber(icms.vBC),
+        // cBenef pode estar em profundidades diferentes conforme a variante
+        // do grupo ICMS (ICMS00/ICMS20/ICMS40/ICMSSN101 etc.) — mesma busca
+        // recursiva já usada pro cBenef da Reforma Tributária (extrairReformaTributaria).
+        cBenef: buscarValorRecursivo(imposto.ICMS, 'cBenef'),
       },
       pis: {
         cst: normalizarCodigoFiscal(pis.CST, 2),
@@ -255,8 +266,12 @@ export function parseNfeXml(xmlString) {
     naturezaOperacao: ide.natOp ?? '',
     tpNF: ide.tpNF !== undefined ? Number(ide.tpNF) : null, // 0=entrada, 1=saída (segundo o próprio emitente)
     cancelada: String(cStat) === '101' || String(cStat) === '151',
-    emitente: { cnpj: normalizarCnpj(emit.CNPJ), nome: emit.xNome ?? '' },
-    destinatario: { cnpj: normalizarCnpj(dest.CNPJ), nome: dest.xNome ?? '' },
+    // UF de emitente/destinatário — necessária pra conferência de ICMS/CFOP
+    // (interno x interestadual). Não persistida no cache permanente ainda
+    // (exigiria migração de schema no Supabase); disponível só em buscas ao
+    // vivo desta sessão, não em documentos já cacheados antes desta mudança.
+    emitente: { cnpj: normalizarCnpj(emit.CNPJ), nome: emit.xNome ?? '', uf: emit.enderEmit?.UF ?? null },
+    destinatario: { cnpj: normalizarCnpj(dest.CNPJ), nome: dest.xNome ?? '', uf: dest.enderDest?.UF ?? null },
     valorTotal: toNumber(total.vNF),
     valorIcmsTotal: toNumber(total.vICMS),
     valorProdutosTotal: toNumber(total.vProd),

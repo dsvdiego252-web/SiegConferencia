@@ -1,0 +1,433 @@
+{
+  "meta": {
+    "nome": "Regras validadas - RICMS/SP Anexos I e II",
+    "data_referencia": "2026-09-21",
+    "quantidade": 13,
+    "regra_de_uso": "Somente registros com nivel_extracao VALIDADO_* podem ser usados como regra automática. Demais artigos do catálogo são apenas roteadores até que o texto oficial seja extraído."
+  },
+  "regras": [
+    {
+      "id_regra": "SP_ICMS_AN1_ART001",
+      "anexo": "I",
+      "artigo": 1,
+      "titulo": "ADJUDICAÇÃO EFETUADA PELO ESTADO",
+      "tratamento": "ISENCAO",
+      "condicao": {
+        "operacao": [
+          "AQUISICAO_POR_ADJUDICACAO_PELO_ESTADO"
+        ],
+        "observacao": "Mercadoria oferecida à penhora."
+      },
+      "resultado": {
+        "isencao": true,
+        "cst_icms": null,
+        "cbenef": null
+      },
+      "vigencia_inicio": null,
+      "vigencia_fim": "2026-12-31",
+      "status": "ATIVO_NA_DATA_REFERENCIA",
+      "fonte_oficial": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art001.aspx",
+      "fundamento_legal": "RICMS/SP, Anexo I, art. 1º",
+      "nivel_extracao": "VALIDADO_FONTE_OFICIAL"
+    },
+    {
+      "id_regra": "SP_ICMS_AN1_ART036",
+      "anexo": "I",
+      "artigo": 36,
+      "titulo": "HORTIFRUTIGRANJEIROS",
+      "tratamento": "ISENCAO",
+      "condicao": {
+        "operacao": [
+          "INTERNA",
+          "INTERESTADUAL"
+        ],
+        "estado_produto": [
+          "ESTADO_NATURAL"
+        ],
+        "descricao_produtos": [
+          "hortifrutigranjeiros e itens listados no artigo"
+        ],
+        "descricao_nao_contem": [
+          "destinação à industrialização, salvo regras específicas"
+        ],
+        "ncm_especificos": {
+          "açafrão": [
+            "0910.20.00"
+          ],
+          "açafrão-da-terra": [
+            "0910.30.00"
+          ],
+          "alecrim": [
+            "0910.99.00"
+          ],
+          "erva-doce_folhas_sene": [
+            "1211.90.90"
+          ],
+          "folhas_louro": [
+            "0910.99.00"
+          ],
+          "hortelã": [
+            "1211.90.90"
+          ],
+          "manjerona_manjericão": [
+            "1211.90.90"
+          ],
+          "orégano": [
+            "1211.90.10"
+          ],
+          "sálvia": [
+            "0910.99.00"
+          ],
+          "anis": [
+            "0909.10.10"
+          ],
+          "badiana": [
+            "0909.10.20"
+          ],
+          "coentro_semente": [
+            "0909.20.00"
+          ],
+          "cominho_semente": [
+            "0909.30.00"
+          ],
+          "funcho_semente": [
+            "0909.50.00"
+          ],
+          "tomilho": [
+            "0910.99.00"
+          ]
+        },
+        "observacao": "Produtos resfriados: benefício somente nas operações internas. Preparações físicas simples podem manter isenção nas condições dos §§4º e 5º."
+      },
+      "resultado": {
+        "isencao": true,
+        "cst_icms": null,
+        "cbenef": null
+      },
+      "vigencia_inicio": null,
+      "vigencia_fim": "2026-12-31",
+      "status": "ATIVO_NA_DATA_REFERENCIA",
+      "fonte_oficial": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art036.aspx",
+      "fundamento_legal": "RICMS/SP, Anexo I, art. 36",
+      "nivel_extracao": "VALIDADO_FONTE_OFICIAL"
+    },
+    {
+      "id_regra": "SP_ICMS_AN1_ART043",
+      "anexo": "I",
+      "artigo": 43,
+      "titulo": "LEITE PASTEURIZADO",
+      "tratamento": "ISENCAO",
+      "condicao": {
+        "operacao": [
+          "SAIDA_INTERNA_VAREJISTA"
+        ],
+        "destinatario": [
+          "CONSUMIDOR_FINAL"
+        ],
+        "produto": [
+          "leites pasteurizados descritos no artigo"
+        ]
+      },
+      "resultado": {
+        "isencao": true
+      },
+      "vigencia_fim": "2024-12-31",
+      "status": "ENCERRADO_NA_DATA_REFERENCIA",
+      "fonte_oficial": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art043.aspx",
+      "fundamento_legal": "RICMS/SP, Anexo I, art. 43",
+      "nivel_extracao": "VALIDADO_FONTE_OFICIAL"
+    },
+    {
+      "id_regra": "SP_ICMS_AN1_ART081",
+      "anexo": "I",
+      "artigo": 81,
+      "titulo": "USINAS PRODUTORAS DE ENERGIA ELÉTRICA",
+      "tratamento": "ISENCAO",
+      "condicao": {
+        "produto": [
+          "máquinas, aparelhos, equipamentos, partes e peças"
+        ],
+        "finalidade": [
+          "construção ou ampliação de usinas produtoras de energia elétrica"
+        ],
+        "dependencia_externa": true
+      },
+      "resultado": {
+        "isencao": true
+      },
+      "vigencia_fim": "2024-12-31",
+      "status": "ENCERRADO_NA_DATA_REFERENCIA",
+      "fonte_oficial": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art081.aspx",
+      "fundamento_legal": "RICMS/SP, Anexo I, art. 81",
+      "nivel_extracao": "VALIDADO_FONTE_OFICIAL"
+    },
+    {
+      "id_regra": "SP_ICMS_AN1_ART123",
+      "anexo": "I",
+      "artigo": 123,
+      "titulo": "FARINHA DE MANDIOCA",
+      "tratamento": "ISENCAO",
+      "condicao": {
+        "operacao": [
+          "INTERNA"
+        ],
+        "produto": [
+          "farinha de mandioca"
+        ]
+      },
+      "resultado": {
+        "isencao": true
+      },
+      "vigencia_fim": "2026-12-31",
+      "status": "ATIVO_NA_DATA_REFERENCIA",
+      "fonte_oficial": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art123.aspx",
+      "fundamento_legal": "RICMS/SP, Anexo I, art. 123",
+      "nivel_extracao": "VALIDADO_FONTE_OFICIAL"
+    },
+    {
+      "id_regra": "SP_ICMS_AN1_ART140",
+      "anexo": "I",
+      "artigo": 140,
+      "titulo": "MAÇÃ E PÊRA",
+      "tratamento": "ISENCAO",
+      "condicao": {
+        "operacao": [
+          "INTERNA"
+        ],
+        "produto": [
+          "maçã",
+          "pêra"
+        ]
+      },
+      "resultado": {
+        "isencao": true
+      },
+      "vigencia_fim": "2026-12-31",
+      "status": "ATIVO_NA_DATA_REFERENCIA",
+      "fonte_oficial": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art140.aspx",
+      "fundamento_legal": "RICMS/SP, Anexo I, art. 140",
+      "nivel_extracao": "VALIDADO_FONTE_OFICIAL"
+    },
+    {
+      "id_regra": "SP_ICMS_AN1_ART185",
+      "anexo": "I",
+      "artigo": 185,
+      "titulo": "ÁREAS DE LIVRE COMÉRCIO",
+      "tratamento": "ISENCAO",
+      "condicao": {
+        "operacao": [
+          "SAIDA"
+        ],
+        "produto_origem": [
+          "NACIONAL"
+        ],
+        "destino": [
+          "Áreas de Livre Comércio indicadas no artigo"
+        ],
+        "descricao_nao_contem": [
+          "armas e munições",
+          "perfume",
+          "fumo",
+          "bebida alcoólica",
+          "automóvel de passageiros"
+        ]
+      },
+      "resultado": {
+        "isencao": true
+      },
+      "vigencia_inicio": "2026-01-30",
+      "vigencia_fim": null,
+      "status": "ATIVO_NA_DATA_REFERENCIA",
+      "fonte_oficial": "https://legislacao.fazenda.sp.gov.br/Paginas/RICMS---Anexo-I---Isen%C3%A7%C3%B5es---Artigo-185.aspx",
+      "fundamento_legal": "RICMS/SP, Anexo I, art. 185",
+      "nivel_extracao": "VALIDADO_FONTE_OFICIAL"
+    },
+    {
+      "id_regra": "SP_ICMS_AN2_ART003",
+      "anexo": "II",
+      "artigo": 3,
+      "titulo": "CESTA BÁSICA",
+      "tratamento": "REDUCAO_BASE_CALCULO",
+      "condicao": {
+        "operacao": [
+          "INTERNA"
+        ],
+        "produtos": [
+          "produtos listados nos incisos do art. 3º"
+        ],
+        "observacao": "Há incisos revogados e redações históricas; selecionar por data. Inclui, entre outros, leite em pó, café, óleos vegetais, açúcar, farinha/fubá, pescados, manteiga/margarina, massas, biscoitos populares, pão francês, farinha de mandioca, charque, sal, água mineral retornável, arroz e feijão com condições."
+      },
+      "resultado": {
+        "carga_tributaria_efetiva_percentual": 7.0,
+        "reducao_base_percentual": null
+      },
+      "vigencia_fim": "2026-12-31",
+      "status": "ATIVO_NA_DATA_REFERENCIA",
+      "fonte_oficial": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art003.aspx",
+      "fundamento_legal": "RICMS/SP, Anexo II, art. 3º",
+      "nivel_extracao": "VALIDADO_FONTE_OFICIAL",
+      "necessita_versionamento_por_inciso": true
+    },
+    {
+      "id_regra": "SP_ICMS_AN2_ART012",
+      "anexo": "II",
+      "artigo": 12,
+      "titulo": "MÁQUINAS INDUSTRIAIS E IMPLEMENTOS AGRÍCOLAS",
+      "tratamento": "REDUCAO_BASE_CALCULO",
+      "condicao": {
+        "produto": [
+          "máquinas, aparelhos, equipamentos industriais, máquinas e implementos agrícolas"
+        ],
+        "dependencia_externa": [
+          "Convênio ICMS 52/91 - Anexos I e II"
+        ]
+      },
+      "resultado": {
+        "carga_tributaria_efetiva_percentual": null
+      },
+      "status": "CONDICIONAL_DEPENDENCIA_EXTERNA",
+      "fonte_oficial": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art012.aspx",
+      "fundamento_legal": "RICMS/SP, Anexo II, art. 12",
+      "nivel_extracao": "VALIDADO_CAPUT_DEPENDENCIA_EXTERNA"
+    },
+    {
+      "id_regra": "SP_ICMS_AN2_ART039",
+      "anexo": "II",
+      "artigo": 39,
+      "titulo": "PRODUTOS ALIMENTÍCIOS",
+      "tratamento": "REDUCAO_BASE_CALCULO",
+      "condicao": {
+        "operacao": [
+          "SAIDA_INTERNA"
+        ],
+        "remetente": [
+          "FABRICANTE",
+          "ATACADISTA"
+        ],
+        "destinacao": [
+          "ALIMENTACAO_HUMANA"
+        ],
+        "ncm_capitulos_posicoes": [
+          "03",
+          "04",
+          "07",
+          "08",
+          "0902-0910",
+          "11",
+          "12",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20",
+          "21",
+          "2209.00.00",
+          "2202.99.00"
+        ],
+        "nao_aplica_se": [
+          "produto não destinado à alimentação humana",
+          "destinatário Simples Nacional",
+          "consumidor final",
+          "outro benefício fiscal"
+        ],
+        "observacao": "Não cumulativo. Há condições de regularidade fiscal e, para atacadista, regra de não preponderância de saídas internas ao varejo."
+      },
+      "resultado": {
+        "carga_tributaria_efetiva_percentual": 12.0
+      },
+      "vigencia_inicio": "2004-12-01",
+      "vigencia_fim": "2026-12-31",
+      "status": "ATIVO_NA_DATA_REFERENCIA",
+      "fonte_oficial": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art039.aspx",
+      "fundamento_legal": "RICMS/SP, Anexo II, art. 39",
+      "nivel_extracao": "VALIDADO_FONTE_OFICIAL"
+    },
+    {
+      "id_regra": "SP_ICMS_AN2_ART045",
+      "anexo": "II",
+      "artigo": 45,
+      "titulo": "CARNE",
+      "tratamento": "REDUCAO_BASE_CALCULO",
+      "condicao": {
+        "operacao": [
+          "SAIDA_INTERESTADUAL"
+        ],
+        "produto": [
+          "carne e demais produtos comestíveis frescos resultantes de abate de ave, leporídeo e gado bovino, bufalino, caprino, ovino ou suíno",
+          "jerked beef"
+        ],
+        "estado_produto": [
+          "resfriado",
+          "congelado",
+          "salgado",
+          "seco",
+          "temperado"
+        ]
+      },
+      "resultado": {
+        "carga_tributaria_efetiva_percentual": 7.0
+      },
+      "vigencia_fim": "2026-12-31",
+      "status": "ATIVO_NA_DATA_REFERENCIA",
+      "fonte_oficial": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art045.aspx",
+      "fundamento_legal": "RICMS/SP, Anexo II, art. 45",
+      "nivel_extracao": "VALIDADO_FONTE_OFICIAL"
+    },
+    {
+      "id_regra": "SP_ICMS_AN2_ART051",
+      "anexo": "II",
+      "artigo": 51,
+      "titulo": "QUEIJOS",
+      "tratamento": "REDUCAO_BASE_CALCULO",
+      "condicao": {
+        "operacao": [
+          "INTERNA"
+        ],
+        "produto": [
+          "queijo mussarela",
+          "queijo prato",
+          "queijo minas"
+        ]
+      },
+      "resultado": {
+        "carga_tributaria_efetiva_percentual_historica": [
+          12.0,
+          13.3
+        ]
+      },
+      "vigencia_fim": "2021-03-31",
+      "status": "REVOGADO",
+      "fonte_oficial": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art051.aspx",
+      "fundamento_legal": "RICMS/SP, Anexo II, art. 51",
+      "nivel_extracao": "VALIDADO_FONTE_OFICIAL"
+    },
+    {
+      "id_regra": "SP_ICMS_AN2_ART080",
+      "anexo": "II",
+      "artigo": 80,
+      "titulo": "IMPORTAÇÃO POR REMESSAS POSTAIS OU EXPRESSAS",
+      "tratamento": "REDUCAO_BASE_CALCULO",
+      "condicao": {
+        "operacao": [
+          "DESEMBARACO_ADUANEIRO_IMPORTACAO_REMESSA_POSTAL_OU_EXPRESSA"
+        ],
+        "requisito": [
+          "submissão ao Regime de Tributação Simplificada - RTS"
+        ],
+        "nao_cumular_com": [
+          "outros benefícios fiscais, salvo Anexo I art. 37"
+        ]
+      },
+      "resultado": {
+        "carga_tributaria_efetiva_percentual": 17.0
+      },
+      "vigencia_inicio": "2023-09-19",
+      "vigencia_fim": "2026-12-31",
+      "status": "ATIVO_NA_DATA_REFERENCIA",
+      "fonte_oficial": "https://legislacao.fazenda.sp.gov.br/Paginas/RICMS---Anexo-II---Redu%C3%A7%C3%B5es-de-Base-de-C%C3%A1lculo---Artigo-80.aspx",
+      "fundamento_legal": "RICMS/SP, Anexo II, art. 80",
+      "nivel_extracao": "VALIDADO_FONTE_OFICIAL"
+    }
+  ]
+}

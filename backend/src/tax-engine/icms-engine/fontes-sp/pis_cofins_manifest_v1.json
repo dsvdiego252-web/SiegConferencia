@@ -1,0 +1,44 @@
+{
+  "modulo": "PIS_COFINS",
+  "versao": 1,
+  "fontes": [
+    {
+      "tabela": "4.3.10",
+      "arquivo": "pis_cofins_tabela_4_3_10_v1_25.json",
+      "tratamentos": [
+        "CST_02_ALIQUOTAS_DIFERENCIADAS",
+        "CST_04_REVENDA_MONOFASICA_ALIQUOTA_ZERO"
+      ],
+      "versao": "1.25",
+      "atualizada_em": "2026-03-30"
+    },
+    {
+      "tabela": "4.3.13",
+      "arquivo": "pis_cofins_tabela_4_3_13_v1_36.json",
+      "tratamentos": [
+        "CST_06_ALIQUOTA_ZERO"
+      ],
+      "versao": "1.36",
+      "atualizada_em": "2026-09-16"
+    }
+  ],
+  "fluxo_motor": [
+    "identificar_regime_tributario",
+    "identificar_ncm_e_descricao",
+    "identificar_tipo_operacao_e_papel_do_contribuinte",
+    "consultar_tabela_4_3_10",
+    "consultar_tabela_4_3_13",
+    "validar_vigencia",
+    "determinar_cst_pis_cofins_esperado",
+    "determinar_aliquotas_esperadas",
+    "comparar_com_xml"
+  ],
+  "regras_de_seguranca": [
+    "Não concluir tratamento apenas pela NCM.",
+    "Considerar descrição e condições textuais da linha.",
+    "Respeitar início e término de escrituração.",
+    "Para monofásico, distinguir fabricante/industrial/importador/equiparado de revendedor.",
+    "Preservar versões históricas para auditoria de XML antigo.",
+    "Quando a fonte não for suficiente para decidir a operação, retornar REVISAO_MANUAL."
+  ]
+}

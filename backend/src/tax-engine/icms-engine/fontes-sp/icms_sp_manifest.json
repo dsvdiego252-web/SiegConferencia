@@ -1,0 +1,18 @@
+{
+  "modulo": "ICMS_SP",
+  "arquivos": [
+    "icms_sp_art52_56c.json",
+    "icms_sp_anexo_i_indice_isencoes.json",
+    "icms_sp_anexo_ii_indice_reducoes.json"
+  ],
+  "status": {
+    "arts_52_56c": "BASE_UTILIZAVEL_COM_CONTROLE_DE_VIGENCIA",
+    "anexo_i": "INDICE_APENAS_TEXTO_DOS_ARTIGOS_PENDENTE",
+    "anexo_ii": "INDICE_APENAS_TEXTO_DOS_ARTIGOS_PENDENTE"
+  },
+  "regra_motor": "Nunca confirmar isenção ou redução de base usando apenas o título do índice do Anexo I/II.",
+  "contagens": {
+    "anexo_i_artigos_indexados": 185,
+    "anexo_ii_artigos_indexados": 80
+  }
+}

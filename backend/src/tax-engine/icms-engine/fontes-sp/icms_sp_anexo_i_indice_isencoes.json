@@ -1,0 +1,1315 @@
+{
+  "meta": {
+    "nome": "RICMS/SP Anexo I - Índice de Isenções",
+    "arquivo_origem": "RICMS - Anexo I.pdf",
+    "quantidade_artigos_indexados": 185,
+    "completo_para_validacao_beneficio": false,
+    "motivo": "O PDF enviado contém o índice dos artigos, mas não o texto normativo individual de cada artigo.",
+    "uso_permitido": [
+      "rotear assunto/artigo candidato",
+      "identificar artigos marcados como revogados no índice"
+    ],
+    "uso_nao_permitido": [
+      "confirmar isenção",
+      "determinar NCM abrangida",
+      "determinar condições, vigência ou exceções do benefício"
+    ]
+  },
+  "artigos": [
+    {
+      "artigo": 1,
+      "titulo_indice": "ADJUDICAÇÃO EFETUADA PELO ESTADO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 2,
+      "titulo_indice": "AIDS - MEDICAMENTOS PARA TRATAMENTO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 3,
+      "titulo_indice": "AMOSTRA GRÁTIS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 4,
+      "titulo_indice": "APAE - IMPORTAÇÃO DE MEDICAMENTOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 5,
+      "titulo_indice": "ÁREAS DE LIVRE COMÉRCIO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 6,
+      "titulo_indice": "ARTESANATO REGIONAL (revogado)",
+      "revogado_no_indice": true,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 7,
+      "titulo_indice": "ARRENDAMENTO MERCANTIL",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 8,
+      "titulo_indice": "BAGAGEM DE VIAJANTE",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 9,
+      "titulo_indice": "BANCO DE ALIMENTOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 10,
+      "titulo_indice": "BEFIEX",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 11,
+      "titulo_indice": "BRITA E CIMENTO - DOAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 12,
+      "titulo_indice": "BULBO DE CEBOLA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 13,
+      "titulo_indice": "BUTANTAN - SOROS E VACINAS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 14,
+      "titulo_indice": "CIRURGIAS - EQUIPAMENTOS E INSUMOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 15,
+      "titulo_indice": "COLETORES DE VOTO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 16,
+      "titulo_indice": "DEFICIENTES - CADEIRA DE RODAS E PRÓTESES",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 17,
+      "titulo_indice": "DEFICIENTES - PRODUTOS DIVERSOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 18,
+      "titulo_indice": "DEFICIENTES - PRODUTOS PARA INSTITUIÇÃO PÚBLICA OU ENTIDADE ASSISTENCIAL",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 19,
+      "titulo_indice": "DEFICIENTE FÍSICO - VEÍCULO AUTOMOTOR",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 20,
+      "titulo_indice": "DIFERENCIAL DE ALÍQUOTA - ATIVO IMOBILIZADO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 21,
+      "titulo_indice": "DIFUSÃO SONORA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 22,
+      "titulo_indice": "\"DRAWBACK\"",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 23,
+      "titulo_indice": "EMBARCAÇÃO NACIONAL",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 24,
+      "titulo_indice": "EMBARCAÇÃO PESQUEIRA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 25,
+      "titulo_indice": "EMBARCAÇÕES E AERONAVES - COMBUSTÍVEIS E LUBRIFICANTES (revogado)",
+      "revogado_no_indice": true,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 26,
+      "titulo_indice": "EMBRAPA - IMPORTAÇÃO DE PRODUTOS PARA PESQUISA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 27,
+      "titulo_indice": "EMBRAPA - OPERAÇÕES DIVERSAS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 28,
+      "titulo_indice": "EMBRIÃO/SÊMEN",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 29,
+      "titulo_indice": "ENERGIA ELÉTRICA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 30,
+      "titulo_indice": "ENERGIA SOLAR E EÓLICA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 31,
+      "titulo_indice": "ENTIDADE ASSISTENCIAL OU DE EDUCAÇÃO - PRODUÇÃO PRÓPRIA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 32,
+      "titulo_indice": "ENTIDADE ASSISTENCIAL/EDUCACIONAL - IMPORTAÇÃO DE MERCADORIA DOADA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 33,
+      "titulo_indice": "EXPOSIÇÕES/FEIRAS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 34,
+      "titulo_indice": "FUNDAÇÃO NACIONAL DE SAÚDE - IMPORTAÇÃO - MEDICAMENTOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 35,
+      "titulo_indice": "GASODUTO BRASIL-BOLÍVIA (revogado)",
+      "revogado_no_indice": true,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 36,
+      "titulo_indice": "HORTIFRUTIGRANJEIROS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 37,
+      "titulo_indice": "IMPORTAÇÃO - HIPÓTESES DIVERSAS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 38,
+      "titulo_indice": "IMPORTAÇÃO DE PRODUTOS HOSPITALARES",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 39,
+      "titulo_indice": "IMPORTAÇÃO - RETORNO DE EXPORTAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 40,
+      "titulo_indice": "IMPORTAÇÃO - SANEAMENTO BÁSICO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 41,
+      "titulo_indice": "INSUMOS AGROPECUÁRIOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 42,
+      "titulo_indice": "ITAIPU BINACIONAL",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 43,
+      "titulo_indice": "LEITE PASTEURIZADO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 44,
+      "titulo_indice": "LOJA FRANCA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 45,
+      "titulo_indice": "MÁQUINA DE SELECIONAR FRUTA - IMPORTAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 46,
+      "titulo_indice": "METRÔ",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 47,
+      "titulo_indice": "MICROCOMPUTADOR USADO - DOAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 48,
+      "titulo_indice": "MINISTÉRIO DA EDUCAÇÃO E DO DESPORTO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 49,
+      "titulo_indice": "MOLUSCOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 50,
+      "titulo_indice": "MUDA DE PLANTA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 51,
+      "titulo_indice": "ÓLEO LUBRIFICANTE USADO OU CONTAMINADO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 52,
+      "titulo_indice": "ÓRGÃOS PÚBLICOS - DOAÇÕES PARA A SECRETARIA DA EDUCAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 53,
+      "titulo_indice": "ÓRGÃOS PÚBLICOS - DOAÇÕES PARA VÍTIMAS DA SECA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 54,
+      "titulo_indice": "ÓRGÃOS PÚBLICOS - DOAÇÕES PARA VÍTIMAS DE CATÁSTROFES",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 55,
+      "titulo_indice": "ÓRGÃOS PÚBLICOS - AQUISIÇÃO DE BENS, MERCADORIAS OU SERVIÇOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 56,
+      "titulo_indice": "ÓRGÃOS PÚBLICOS - IMPORTAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 57,
+      "titulo_indice": "ÓRGÃOS PÚBLICOS - IMPORTAÇÃO (revogado)",
+      "revogado_no_indice": true,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 58,
+      "titulo_indice": "ÓRGÃOS PÚBLICOS - MERCADORIA PARA INDUSTRIALIZAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 59,
+      "titulo_indice": "ÓRGÃOS PÚBLICOS - PRODUTO FARMACÊUTICO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 60,
+      "titulo_indice": "ÓRGÃOS PÚBLICOS - PRODUTOS E EQUIPAMENTOS MÉDICOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 61,
+      "titulo_indice": "ÓRGÃOS PÚBLICOS - PROGRAMA DE MODERNIZAÇÃO FISCAL",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 62,
+      "titulo_indice": "ÓRGÃOS PÚBLICOS - VEÍCULOS PARA A POLÍCIA FEDERAL, POLÍCIA RODOVIÁRIA FEDERAL E AERONÁUTICA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 63,
+      "titulo_indice": "ÓRGÃOS PÚBLICOS - VEÍCULOS PARA AS SECRETARIAS DA FAZENDA E DE SEGURANÇA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 64,
+      "titulo_indice": "PENITENCIÁRIAS - MERCADORIAS PRODUZIDAS POR DETENTOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 65,
+      "titulo_indice": "PÓS-LARVA DE CAMARÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 66,
+      "titulo_indice": "PRESERVATIVOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 67,
+      "titulo_indice": "PRODEA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 68,
+      "titulo_indice": "PRÓ-TAMAR",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 69,
+      "titulo_indice": "REFEIÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 70,
+      "titulo_indice": "REPETRO - PLATAFORMAS DE PETRÓLEO E EMBARCAÇÕES (revogado)",
+      "revogado_no_indice": true,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 71,
+      "titulo_indice": "REPRESENTAÇÕES DIPLOMÁTICAS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 72,
+      "titulo_indice": "REPRODUTOR CAPRINO - IMPORTAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 73,
+      "titulo_indice": "REPRODUTOR/MATRIZ BOVINO, OVINO OU SUÍNO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 74,
+      "titulo_indice": "RORAIMA - INSUMOS E IMPLEMENTOS AGRÍCOLAS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 75,
+      "titulo_indice": "SANGUE - IMPORTAÇÃO DE INSUMOS POR ENTIDADE DE HEMATOLOGIA OU HEMOTERAPIA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 76,
+      "titulo_indice": "SENAI",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 77,
+      "titulo_indice": "TÁXI - PRESTAÇÃO DE SERVIÇO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 78,
+      "titulo_indice": "TRANSPORTE DE PASSAGEIROS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 79,
+      "titulo_indice": "TRANSPORTE FERROVIÁRIO DE CARGA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 80,
+      "titulo_indice": "TRENS METROPOLITANOS - IMPORTAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 81,
+      "titulo_indice": "USINAS PRODUTORAS DE ENERGIA ELÉTRICA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 82,
+      "titulo_indice": "VASILHAME/RECIPIENTE/EMBALAGEM",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 83,
+      "titulo_indice": "VÍTIMAS DE CALAMIDADES - DOAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 84,
+      "titulo_indice": "ZONA FRANCA DE MANAUS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 85,
+      "titulo_indice": "ÓRGÃOS PÚBLICOS - REEQUIPAMENTO HOSPITALAR",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 86,
+      "titulo_indice": "ÁGUA NATURAL CANALIZADA (revogado)",
+      "revogado_no_indice": true,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 87,
+      "titulo_indice": "LÂMPADA FLUORESCENTE",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 88,
+      "titulo_indice": "TÁXI - VEÍCULO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 89,
+      "titulo_indice": "AGROTÓXICO - EMBALAGEM - VAZIA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 90,
+      "titulo_indice": "OBRAS DE ARTE - IMPORTAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 91,
+      "titulo_indice": "FUNDO SOCIAL DE SÃO PAULO - DOAÇÕES",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 92,
+      "titulo_indice": "MEDICAMENTOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 93,
+      "titulo_indice": "PROJETO COURO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 94,
+      "titulo_indice": "MEDICAMENTOS - ÓRGÃOS PÚBLICOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 95,
+      "titulo_indice": "FURNAS - DOAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 96,
+      "titulo_indice": "MEDICAMENTOS NÃO REGISTRADOS PELA ANVISA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 97,
+      "titulo_indice": "PROGRAMA DE SEGURANÇA ALIMENTAR E NUTRICIONAL",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 98,
+      "titulo_indice": "ALGODÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 99,
+      "titulo_indice": "BORRACHA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 100,
+      "titulo_indice": "CANA-DE-AÇÚCAR/ PRODUTOS RESULTANTES DA INDUSTRIALIZAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 101,
+      "titulo_indice": "COELHO E AVE",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 102,
+      "titulo_indice": "GADO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 103,
+      "titulo_indice": "LEITE",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 104,
+      "titulo_indice": "HORTIFRUTIGRANJEIROS PARA INDUSTRIALIZAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 105,
+      "titulo_indice": "PARTES E PEÇAS PARA FABRICAÇÃO DE TRATOR, CAMINHÃO E ÔNIBUS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 106,
+      "titulo_indice": "INSUMOS E PRODUTOS ACABADOS DA INDÚSTRIA DE ELETRÔNICOS (revogado)",
+      "revogado_no_indice": true,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 107,
+      "titulo_indice": "INDÚSTRIA NAVAL/INFRA-ESTRUTURA PORTUÁRIA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 108,
+      "titulo_indice": "REPETRO/INDÚSTRIA PAULISTA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 109,
+      "titulo_indice": "AERONAVES - INSUMOS PARA A FABRICAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 110,
+      "titulo_indice": "INSTITUTO LUDWIG - DESEMBARAÇO ADUANEIRO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 111,
+      "titulo_indice": "PIANO - IMPORTAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 112,
+      "titulo_indice": "FUNDAÇÃO ZERBINI",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 113,
+      "titulo_indice": "AMIGOS DO BEM - DOAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 114,
+      "titulo_indice": "INSTITUTO CRIAR DE TV E CINEMA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 115,
+      "titulo_indice": "FARMÁCIA POPULAR DO BRASIL",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 116,
+      "titulo_indice": "REPORTO - MODERNIZAÇÃO DE ZONAS PORTUÁRIAS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 117,
+      "titulo_indice": "DEPÓSITO AFIANÇADO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 118,
+      "titulo_indice": "TRATORES AGRÍCOLAS E COLHEITADEIRAS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 119,
+      "titulo_indice": "PILHAS E BATERIAS USADAS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 120,
+      "titulo_indice": "ÓRGÃOS PÚBLICOS - PROGRAMAS DE FORTALECIMENTO E MODERNIZAÇÃO ESTADUAL",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 121,
+      "titulo_indice": "TRIGO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 122,
+      "titulo_indice": "AVIÕES",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 123,
+      "titulo_indice": "FARINHA DE MANDIOCA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 124,
+      "titulo_indice": "GASODUTO BRASIL-BOLÍVIA - MANUTENÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 125,
+      "titulo_indice": "LOCOMOTIVA E TRILHO - IMPORTAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 126,
+      "titulo_indice": "SISTEMAS DE MEDIÇÃO DE VAZÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 127,
+      "titulo_indice": "PEÇA DE VEÍCULO AUTOMOTOR SUBSTITUÍDA EM GARANTIA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 128,
+      "titulo_indice": "OBRAS DE ARTE",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 129,
+      "titulo_indice": "REAGENTE PARA DIAGNÓSTICO DA DOENÇA DE CHAGAS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 130,
+      "titulo_indice": "MEDICAMENTOS E EQUIPAMENTOS DESTINADOS À PESQUISA COM SERES HUMANOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 131,
+      "titulo_indice": "MÁQUINAS E EQUIPAMENTOS DE RADIODIFUSÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 132,
+      "titulo_indice": "PEÇA SUBSTITUÍDA EM VIRTUDE DE GARANTIA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 133,
+      "titulo_indice": "METRÔ - IMPLANTAÇÃO DA LINHA 4",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 134,
+      "titulo_indice": "PROGRAMA CAMINHO DA ESCOLA - MINISTÉRIO DA EDUCAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 135,
+      "titulo_indice": "FARINHA DE TRIGO E PRODUTOS RESULTANTES DE SUA INDUSTRIALIZAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 136,
+      "titulo_indice": "GESAC - GOVERNO FEDERAL",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 137,
+      "titulo_indice": "ÓLEO COMESTÍVEL",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 138,
+      "titulo_indice": "PROINFO - MINISTÉRIO DA EDUCAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 139,
+      "titulo_indice": "TRANSPORTE INTERMUNICIPAL DE CARGAS (revogado)",
+      "revogado_no_indice": true,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 140,
+      "titulo_indice": "OPERAÇÕES INTERNAS COM MAÇÃ E PÊRA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 141,
+      "titulo_indice": "TRATADO BINACIONAL BRASILUCRÂNIA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 142,
+      "titulo_indice": "AACD",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 143,
+      "titulo_indice": "PEÇA DE AERONAVE SUBSTITUÍDA EM VIRTUDE DE GARANTIA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 144,
+      "titulo_indice": "CARNE",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 145,
+      "titulo_indice": "PROGRAMA BANDA LARGA POPULAR",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 146,
+      "titulo_indice": "IMPORTAÇÃO - EQUIPAMENTO MÉDICO-HOSPITALAR",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 147,
+      "titulo_indice": "ÓRGÃOS PÚBLICOS - EQUIPAMENTOS DE SEGURANÇA ELETRÔNICA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 148,
+      "titulo_indice": "IMPORTAÇÃO - FORÇAS ARMADAS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 149,
+      "titulo_indice": "SERVIÇO DE TRANSPORTE - EXPORTAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 150,
+      "titulo_indice": "GRIPE A - MEDICAMENTO PARA TRATAMENTO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 151,
+      "titulo_indice": "LOCOMOTIVA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 152,
+      "titulo_indice": "UNIÃO DOS ESCOTEIROS DO BRASIL",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 153,
+      "titulo_indice": "FUNDAÇÃO FACULDADE DE MEDICINA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 154,
+      "titulo_indice": "TRATAMENTO DE CÂNCER",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 155,
+      "titulo_indice": "TRANSPORTE DE PASSAGEIROS - CPTM",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 156,
+      "titulo_indice": "OBRA SOCIAL NOSSA SENHORA DA GLÓRIA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 157,
+      "titulo_indice": "HEMOBRÁS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 158,
+      "titulo_indice": "TREM, LOCOMOTIVA OU VAGÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 159,
+      "titulo_indice": "MATÉRIA-PRIMA, MATERIAL SECUNDÁRIO, EMBALAGENS, PARTES, PEÇAS, MÁQUINAS E EQUIPAMENTOS -",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 160,
+      "titulo_indice": "METRÔ - IMPLANTAÇÃO DA LINHA 6",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 161,
+      "titulo_indice": "METRÔ - IMPLANTAÇÃO DA LINHA 18",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 162,
+      "titulo_indice": "PARCERIA PÚBLICO-PRIVADA - HOSPITAIS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 163,
+      "titulo_indice": "BOLA DE AÇO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 164,
+      "titulo_indice": "FUNDAÇÃO MUSEU DA IMAGEM E DO SOM – MIS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 165,
+      "titulo_indice": "MUDAS DE SERINGUEIRA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 166,
+      "titulo_indice": "ENERGIA ELÉTRICA - MICROGERADORES E MINIGERADORES",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 167,
+      "titulo_indice": "ALIMENTOS (revogado)",
+      "revogado_no_indice": true,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 168,
+      "titulo_indice": "ARROZ",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 169,
+      "titulo_indice": "FEIJÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 170,
+      "titulo_indice": "ENERGIA SOLAR - PRÉDIOS PÚBLICOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 171,
+      "titulo_indice": "IPT – MATERIAIS DE REFERÊNCIA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 172,
+      "titulo_indice": "BENS E MERCADORIAS DIGITAIS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 173,
+      "titulo_indice": "AME – MEDICAMENTO PARA TRATAMENTO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 174,
+      "titulo_indice": "AUTOMATED PEOPLE MOVER",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 175,
+      "titulo_indice": null,
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 176,
+      "titulo_indice": "ABSORVENTES",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 177,
+      "titulo_indice": "ACELERADORES LINEARES",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 178,
+      "titulo_indice": "METRÔ - EXPANSÃO DA LINHA 2",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 179,
+      "titulo_indice": "FIBROSE CÍSTICA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 180,
+      "titulo_indice": "DMD - MEDICAMENTO PARA TRATAMENTO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 181,
+      "titulo_indice": "EQUIPAMENTOS RECREATIVOS PARA USO EM PARQUE DE DIVERSÃO - IMPORTAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 182,
+      "titulo_indice": "REFEIÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 183,
+      "titulo_indice": "LEVEDURA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 184,
+      "titulo_indice": "TREM INTERCIDADES - TIC EIXO NORTE",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 185,
+      "titulo_indice": "ÁREAS DE LIVRE COMÉRCIO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "ISENCAO",
+      "texto_normativo_disponivel_neste_pdf": false
+    }
+  ]
+}

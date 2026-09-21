@@ -1,0 +1,581 @@
+{
+  "meta": {
+    "nome": "RICMS/SP Anexo II - Índice de Reduções de Base de Cálculo",
+    "arquivo_origem": "RICMS - Anexo II.pdf",
+    "quantidade_artigos_indexados": 80,
+    "completo_para_validacao_beneficio": false,
+    "motivo": "O PDF enviado contém o índice dos artigos, mas não o texto normativo individual de cada artigo.",
+    "uso_permitido": [
+      "rotear assunto/artigo candidato",
+      "identificar artigos marcados como revogados no índice"
+    ],
+    "uso_nao_permitido": [
+      "confirmar redução de base",
+      "calcular carga efetiva",
+      "determinar NCM abrangida",
+      "determinar condições, vigência ou exceções"
+    ]
+  },
+  "artigos": [
+    {
+      "artigo": 1,
+      "titulo_indice": "AERONAVES, PARTES E PEÇAS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 2,
+      "titulo_indice": "BEFIEX",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 3,
+      "titulo_indice": "CESTA BÁSICA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 4,
+      "titulo_indice": "DIAMANTES E ESMERALDAS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 5,
+      "titulo_indice": "EMPRESA JORNALÍSTICA/EDITORA DE LIVROS/EMPRESA DE RADIODIFUSÃO - IMPORTAÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 6,
+      "titulo_indice": "EQÜINO PURO-SANGUE",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 7,
+      "titulo_indice": "FLOTIGAM EDA-B",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 8,
+      "titulo_indice": "GÁS NATURAL",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 9,
+      "titulo_indice": "INSUMOS AGROPECUÁRIOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 10,
+      "titulo_indice": "INSUMOS AGROPECUÁRIOS - RAÇÕES E ADUBOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 11,
+      "titulo_indice": "MÁQUINAS, APARELHOS E VEÍCULOS USADOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 12,
+      "titulo_indice": "MÁQUINAS INDUSTRIAIS E IMPLEMENTOS AGRÍCOLAS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 13,
+      "titulo_indice": "OBRA DE ARTE (revogado)",
+      "revogado_no_indice": true,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 14,
+      "titulo_indice": "PEDRA BRITADA E PEDRA-DE-MÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 15,
+      "titulo_indice": "PÓ DE ALUMÍNIO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 16,
+      "titulo_indice": "RADIOCHAMADA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 17,
+      "titulo_indice": "REFEIÇÃO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 18,
+      "titulo_indice": "TELEVISÃO POR ASSINATURA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 19,
+      "titulo_indice": "TRANSPORTE DE LEITE",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 20,
+      "titulo_indice": "USINAS PRODUTORAS DE ENERGIA ELÉTRICA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 21,
+      "titulo_indice": "ZONA FRANCA DE MANAUS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 22,
+      "titulo_indice": "MEDICAMENTOS E COSMÉTICOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 23,
+      "titulo_indice": "INTERNET - PROVEDOR DE ACESSO (revogado)",
+      "revogado_no_indice": true,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 24,
+      "titulo_indice": "PNEUS - CÂMARAS-DE-AR",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 25,
+      "titulo_indice": "VEÍCULOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 26,
+      "titulo_indice": "DESENVOLVIMENTOAGROPECUÁRIO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 27,
+      "titulo_indice": "DESENVOLVIMENTO INDUSTRIAL E AGROPECUÁRIO, PROGRAMA HABITACIONAL E OUTROS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 28,
+      "titulo_indice": "DESENVOLVIMENTO INDUSTRIAL/CONSTRUÇÃO CIVIL",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 29,
+      "titulo_indice": "CARROÇARIA DE ÔNIBUS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 30,
+      "titulo_indice": "PRODUTOS DE COURO, SAPATOS, BOLSAS, CINTOS, CARTEIRAS E OUTROS ACESSÓRIOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 31,
+      "titulo_indice": "ALGODÃO EM PLUMA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 32,
+      "titulo_indice": "ATACADISTA DE COURO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 33,
+      "titulo_indice": "VINHO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 34,
+      "titulo_indice": "PERFUMES, COSMETICOS E PRODUTOS DE HIGIENE PESSOAL",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 35,
+      "titulo_indice": "INSTRUMENTOS MUSICAIS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 36,
+      "titulo_indice": "AUTOPEÇAS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 37,
+      "titulo_indice": "BRINQUEDOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 38,
+      "titulo_indice": "REGIME DE ADMISSÃO TEMPORÁRIA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 39,
+      "titulo_indice": "PRODUTOS ALIMENTÍCIOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 40,
+      "titulo_indice": "CRISTAL E PORCELANA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 41,
+      "titulo_indice": "NOVILHO PRECOCE",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 42,
+      "titulo_indice": "ALHO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 43,
+      "titulo_indice": "MANDIOCA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 44,
+      "titulo_indice": "TELECOMUNICAÇÕES - \"CALL CENTER\")",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 45,
+      "titulo_indice": "CARNE",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 46,
+      "titulo_indice": "BIODIESEL - B-100",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 47,
+      "titulo_indice": "RASTREAMENTO DE VEÍCULO E CARGA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 48,
+      "titulo_indice": "PRODUTOS QUÍMICOS E PETROQUÍMICOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 49,
+      "titulo_indice": "PARTES DE ELEVADORES, ESCADAS E TAPETES ROLANTES",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 50,
+      "titulo_indice": "VEICULAÇÃO DE MENSAGENS DE PUBLICIDADE E PROPAGANDA NA TELEVISÃO POR ASSINATURA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 51,
+      "titulo_indice": "QUEIJOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 52,
+      "titulo_indice": "PRODUTOS TÊXTEIS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 53,
+      "titulo_indice": "HIDROCARBONETOS LÍQUIDOS - SOLVENTES",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 54,
+      "titulo_indice": "ELETRODOMÉSTICOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 55,
+      "titulo_indice": "LÂMPADAS LED, LUMINÁRIAS LED, REFLETORES LED, FITAS LED E PAINÉIS LED",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 56,
+      "titulo_indice": "MDP, MDF e CHAPAS DE FIBRAS DE MADEIRA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 57,
+      "titulo_indice": "CÉLULAS FOTOVOLTAICAS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 58,
+      "titulo_indice": "BARRAS DE AÇO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 59,
+      "titulo_indice": "TRATAMENTO DE EFLUENTES DOMÉSTICOS E INDUSTRIAIS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 60,
+      "titulo_indice": "PAPEL CUTSIZE",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 61,
+      "titulo_indice": "SUCO DE LARANJA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 62,
+      "titulo_indice": "SOLUÇÃO PARENTERAL",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 63,
+      "titulo_indice": "REGIME DE TRIBUTAÇÃO UNIFICADA - RTU",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 64,
+      "titulo_indice": "VEÍCULOS MILITARES",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 65,
+      "titulo_indice": "CARROCERIAS SOBRE CHASSI, VAGÕES FERROVIÁRIOS DE CARGA, CARROCERIAS PARA VEÍCULOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 66,
+      "titulo_indice": "MERCADORIAS DE COBRE",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 67,
+      "titulo_indice": "VEICULAÇÃO DE MENSAGENS DE PUBLICIDADE E PROPAGANDA EM MÍDIA EXTERIOR",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 68,
+      "titulo_indice": "COMPONENTES DE SISTEMAS ESPACIAIS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 69,
+      "titulo_indice": "BIOGÁS E BIOMETANO",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 70,
+      "titulo_indice": "AREIA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 71,
+      "titulo_indice": "ORIUNDOS DO MILHO, AMIDO MODIFICADO E DEXTRINA DE MILHO, COLAS À BASE DE AMIDOS DE MILHO,",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 72,
+      "titulo_indice": "ÔNIBUS MOVIDO A ENERGIA ELÉTRICA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 73,
+      "titulo_indice": "SOFTWARES",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 74,
+      "titulo_indice": "CARNE",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 75,
+      "titulo_indice": "PNEUS E CÂMARAS DE AR – SAÍDA INTERNA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 76,
+      "titulo_indice": "FLUORDEOXIGLICOSE-FDG",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 77,
+      "titulo_indice": "INSUMOS AGROPECUÁRIOS - ADUBOS",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 78,
+      "titulo_indice": null,
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 79,
+      "titulo_indice": "LEITE VEGETAL DE AVEIA",
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    },
+    {
+      "artigo": 80,
+      "titulo_indice": null,
+      "revogado_no_indice": false,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "texto_normativo_disponivel_neste_pdf": false
+    }
+  ]
+}

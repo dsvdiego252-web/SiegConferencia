@@ -1,100 +1,74 @@
-# Motor de ICMS/CFOP/CST (sistema atual, pré-Reforma)
+# Motor de ICMS/CFOP/CST/PIS-COFINS (sistema atual, pré-Reforma) — São Paulo
 
-Estrutura irmã do `tax-engine/goods-engine` (Reforma Tributária/IBS-CBS), mas para o sistema
-**hoje em vigor**: ICMS, CFOP e CST/CSOSN. É um domínio de regras completamente diferente da
-Reforma (varia por estado, por regime tributário do emitente, por Substituição Tributária) e
-**nenhuma regra tributária foi inventada aqui** — os três arquivos em `data/` estão vazios
-(`[]`) até você fornecer a base real, no mesmo espírito de `legal-rules/data/` (que veio
-pronta do "RTC Motor Modular v4.34" enviado por você).
+Pipeline de conferência fiscal para SP, construído inteiramente a partir de bases oficiais
+fornecidas pelo usuário (`fontes-sp/`, cada arquivo rastreável até a fonte declarada no
+próprio `meta`) — nenhuma regra tributária foi inventada aqui. Mesmo princípio de todo o
+motor tributário deste projeto: **primeiro descobrir como deveria estar tributado, depois
+comparar com o que veio no documento** — e nunca confirmar uma divergência sem uma base real
+por trás.
 
-Enquanto os arquivos estiverem vazios, `conferirIcmsItem`/`conferirIcmsDocumento` sempre
-devolvem `status: 'SEM_BASE_CARREGADA'` — nunca inventam um CFOP/CST/alíquota "provável". Assim
-que você popular os JSONs abaixo (mesmo que parcialmente — só CFOP, por exemplo), a conferência
-correspondente passa a rodar de verdade, sem precisar mexer no código do motor.
+## Estrutura
 
-## Arquivos esperados em `data/`
+- `fontes-sp/` — os JSONs originais, exatamente como fornecidos (dados + specs de coleta).
+- `repository.js` — loader (só lê e cacheia os JSONs, sem lógica tributária).
+- `pipeline/` — um módulo por estágio da conferência, cada um isolado e protegido contra
+  exceção:
+  - `validarNcm.js` — existência da NCM na TIPI (10.515 códigos) + situação de IPI + Ex.
+  - `validarCfop.js` — existência do CFOP (619 códigos, IT 2023.002) + consistência de
+    movimento (entrada/saída) e âmbito (dentro/fora do estado, quando a UF está disponível).
+  - `validarPisCofins.js` — CST/alíquota de PIS/COFINS contra as tabelas SPED 4.3.10
+    (monofásico/pauta) e 4.3.13 (alíquota zero), por NCM e vigência.
+  - `validarAliquotaIcms.js` — alíquota de ICMS esperada (RICMS/SP arts. 52-56C: 18% interna,
+    exceções por NCM dos arts. 54-A/55-A, 7%/12% interestadual por região).
+  - `validarCbenef.js` — compatibilidade cBenef × CST (Tabela CST x cBenef oficial de SP,
+    313 regras).
+  - `verificarSt.js` — ICMS-ST (CAT 68/2019 + MVA/IVA por segmento) — ver limitação abaixo.
+  - `verificarBeneficiosAnexos.js` — Anexos I (isenções) e II (reduções) do RICMS/SP — ver
+    limitação abaixo.
+- `conferirIcms.js` — orquestrador: roda os 7 estágios em sequência sobre cada item e
+  combina o resultado num veredito só (`conferirIcmsItem`/`conferirIcmsDocumento`).
 
-### `cfop_rules.json`
+## Limitações conhecidas (documentadas, não escondidas)
 
-Determina o CFOP esperado a partir do contexto da operação (não do NCM). Cada regra:
+1. **ICMS-ST por item**: a CAT 68/2019 chegou completa no nível de segmento (22 anexos, com
+   vigência) e a base de MVA/IVA-ST por segmento também (296 regras) — mas o vínculo item a
+   item (qual CEST/NCM pertence a qual item de cada anexo) nunca foi fornecido. Sem essa
+   peça, `verificarSt.js` nunca confirma nem descarta ST — só sinaliza REVISAO_MANUAL quando
+   o próprio XML já traz um CEST preenchido (indício de que o emissor considerou o item
+   sujeito a ST). Ver `fontes-sp/cat68_sp_motor_coletor_v1.json` pro schema esperado do
+   arquivo que resolveria isso (`icms_st_sp_cat68_itens.json`).
 
-```json
-{
-  "condicoes": { "tipoOperacao": "venda", "mesmoEstado": true, "consumidorFinal": false },
-  "cfopEsperado": "5102",
-  "descricao": "Venda de mercadoria adquirida ou recebida de terceiros, dentro do estado"
-}
-```
+2. **Anexos I/II (isenções/reduções)**: só 13 dos 265 artigos catalogados têm o texto oficial
+   validado — os outros 252 são só título de índice, nunca usados pra confirmar benefício
+   (a própria fonte é explícita: "nunca confirmar isenção/redução usando apenas o título").
+   Dos 13 validados, só 2 têm critério de NCM verificável automaticamente (Anexo I art. 36 —
+   hortifrutigranjeiros; Anexo II art. 39 — produtos alimentícios); os demais dependem de
+   condições só textuais (remetente específico, dependência externa tipo Convênio ICMS
+   52/91) que este motor não confere sozinho.
 
-- `tipoOperacao`: `"venda"` (documento de saída) ou `"compra"` (documento de entrada) — hoje é
-  tudo que o sistema classifica; devolução/transferência podem ser adicionados depois se
-  precisar.
-- `mesmoEstado`: `true`/`false`/omitido (`omitido` = regra vale pros dois casos). Comparação
-  entre UF do emitente e UF do destinatário — **ainda não persistimos UF no cache** (ver
-  "Limitação atual" abaixo), então por enquanto toda regra que depende disso cai em
-  `REVISAO_MANUAL` em vez de comparar.
-- `consumidorFinal`: `true`/`false`/omitido. Aproximado hoje como `true` sempre que o documento
-  é NFCe (venda presencial ao consumidor); para NFe fica `null` (desconhecido) até você indicar
-  outra forma de inferir.
-- A primeira regra cujas condições batem "vence" — a ordem no array importa.
+3. **Alíquota de ICMS — arts. 53-A/54/55**: dependem de "o produto constar no artigo" sem
+   lista de NCM na fonte fornecida — por isso uma alíquota que não bate com a regra geral
+   (18% interna) vira REVISAO_MANUAL, não DIVERGENTE automático (pode ser um produto nomeado
+   nesses artigos que este motor não tem como conferir).
 
-### `cst_icms_rules.json`
+4. **Origem da mercadoria (importado)**: o parser ainda não extrai o campo `orig` do grupo
+   ICMS do XML — a alíquota interestadual de 4% (mercadoria importada com conteúdo de
+   importação > 40%, art. 52 §2º) fica sempre em REVISAO_MANUAL, nunca confirmada nem
+   rejeitada.
 
-Determina o CST (Regime Normal) ou CSOSN (Simples Nacional/MEI) esperado a partir do regime
-tributário do cliente e da situação da operação. Cada regra:
+5. **FECOP (art. 56-C)**: adicional de 2% pra NCM 2203/capítulo 24 a consumidor final SP —
+   não conferido ainda (depende de extrair `vFCP`/`pFCP` do grupo ICMS, que o parser não
+   captura).
 
-```json
-{
-  "condicoes": { "regimeTributario": "lucro_presumido", "beneficio": "nenhum" },
-  "cstEsperado": "00",
-  "descricao": "Tributação integral, sem benefício"
-}
-```
-
-- `regimeTributario`: os mesmos valores já usados no cadastro de cliente
-  (`simples_nacional`, `mei`, `lucro_presumido`, `lucro_real`) ou omitido (vale pra todos).
-- `beneficio`: rótulo livre que você definir (ex.: `"nenhum"`, `"substituicao_tributaria"`,
-  `"reducao_base"`, `"isencao"`) — o motor não tem hoje como inferir isso sozinho a partir do
-  XML; enquanto não houver uma forma de derivar `beneficio` automaticamente, essas regras só
-  disparam quando a condição não depender dele (omitida).
-
-### `icms_aliquota_por_ncm.json`
-
-Tabela de alíquota de ICMS por faixa de NCM e par de UF (interna x interestadual). Cada linha:
-
-```json
-{
-  "ncmPrefixo": "3004",
-  "ufOrigem": "SP",
-  "ufDestino": "SP",
-  "aliquotaInterna": 18,
-  "aliquotaInterestadual": 12,
-  "observacao": "Medicamentos — alíquota interna SP"
-}
-```
-
-- `ncmPrefixo`: prefixo do NCM (mesma lógica de prefixo do `goods-engine` — quanto mais dígitos,
-  mais específico; a primeira linha cujo prefixo bate "vence").
-- `ufOrigem`/`ufDestino`: opcionais — omitir os dois faz a linha valer pra qualquer par de
-  estados (útil se você só tiver a alíquota interna padrão de um estado, sem diferenciar
-  origem/destino).
-- `aliquotaInterna`: usada quando emitente e destinatário estão no mesmo estado.
-- `aliquotaInterestadual`: usada quando estão em estados diferentes; se omitida, cai de volta
-  pra `aliquotaInterna`.
-
-## Limitação atual: UF do emitente/destinatário
-
-O XML já traz a UF de quem emite e de quem recebe (`enderEmit`/`enderDest`), mas o parser
-(`xmlParser.js`) ainda não extrai esse campo, e o cache permanente (`documentos_fiscais` no
-Supabase) não tem colunas pra guardá-lo — adicionar isso é uma migração de schema (nova coluna),
-que não fizemos aqui pra não alterar sua tabela em produção sem você pedir. Enquanto isso não
-existir, qualquer regra de CFOP/alíquota que dependa de UF (`mesmoEstado`, `ufOrigem`/
-`ufDestino`) fica em `REVISAO_MANUAL` em vez de arriscar uma comparação errada. Regras de CST
-que não dependem de UF (só de regime tributário) já funcionam hoje.
+6. **UF de emitente/destinatário**: extraída do XML em buscas ao vivo (`xmlParser.js`), mas
+   **não persistida no cache permanente** (exigiria migração de schema no Supabase, não feita
+   sem pedido explícito). Documentos já cacheados antes desta mudança, ou lidos só do cache
+   (painel consolidado, auditoria fiscal agregada), não têm UF — os estágios que dependem
+   dela (alíquota interestadual, âmbito do CFOP) caem em REVISAO_MANUAL nesses casos.
 
 ## Onde isso aparece no sistema
 
-- Modal de detalhe do documento (aba "Divergências"): mostra a comparação item a item quando a
-  base já tiver dado suficiente pra aquele item.
-- Aba "Auditoria Fiscal": relatório agregado (`GET /api/cron/auditoria-icms-cfop-cst`), no mesmo
-  formato do relatório do motor de Validação Matemática/Reforma já existente.
+- Modal de detalhe do documento (aba "Divergências"): mostra as divergências reais por item,
+  cada uma já citando a fonte (tabela, artigo, fundamento legal).
+- Aba "Auditoria Fiscal": contagem agregada de divergências de ICMS/CFOP/CST por cliente,
+  ao lado da Validação Matemática e da Reforma Tributária.

@@ -1,0 +1,355 @@
+{
+  "meta": {
+    "nome": "RICMS/SP - Arts. 52 a 56-C",
+    "arquivo_origem": "RICMS - Artigo 52 a 56 C.pdf",
+    "finalidade": "Base de alíquotas e regras gerais de ICMS/SP para confronto com XML.",
+    "observacao": "O PDF contém redações históricas e notas. O motor deve usar vigência e não tratar toda ocorrência textual como regra atual.",
+    "artigos_detectados": [
+      "52",
+      "53",
+      "53-A",
+      "54",
+      "54-A",
+      "55",
+      "55-A",
+      "56",
+      "56-A",
+      "56-B",
+      "56-C"
+    ]
+  },
+  "regras_motor": [
+    {
+      "id_regra": "SP_ICMS_ART52_INTERNA_18",
+      "tributo": "ICMS",
+      "uf": "SP",
+      "artigo": "52",
+      "tratamento": "ALIQUOTA_INTERNA_GERAL",
+      "condicao": {
+        "tipo_operacao": [
+          "INTERNA"
+        ],
+        "excecoes": [
+          "ART53A",
+          "ART54",
+          "ART54A",
+          "ART55",
+          "ART55A",
+          "OUTRAS_REGRAS_ESPECIFICAS"
+        ]
+      },
+      "resultado": {
+        "aliquota": 18
+      },
+      "fundamento_legal": "RICMS/SP, art. 52, I",
+      "status": "ATIVO_CONFORME_TEXTO_FONTE"
+    },
+    {
+      "id_regra": "SP_ICMS_ART52_INTERESTADUAL_7",
+      "tributo": "ICMS",
+      "uf": "SP",
+      "artigo": "52",
+      "tratamento": "ALIQUOTA_INTERESTADUAL",
+      "condicao": {
+        "tipo_operacao": [
+          "INTERESTADUAL"
+        ],
+        "destino_regioes": [
+          "NORTE",
+          "NORDESTE",
+          "CENTRO_OESTE"
+        ],
+        "destino_uf": [
+          "ES"
+        ],
+        "observacao": "Aplicar ressalvas do §2º do art. 52."
+      },
+      "resultado": {
+        "aliquota": 7
+      },
+      "fundamento_legal": "RICMS/SP, art. 52, II",
+      "status": "ATIVO_CONFORME_TEXTO_FONTE"
+    },
+    {
+      "id_regra": "SP_ICMS_ART52_INTERESTADUAL_12",
+      "tributo": "ICMS",
+      "uf": "SP",
+      "artigo": "52",
+      "tratamento": "ALIQUOTA_INTERESTADUAL",
+      "condicao": {
+        "tipo_operacao": [
+          "INTERESTADUAL"
+        ],
+        "destino_regioes": [
+          "SUL",
+          "SUDESTE"
+        ],
+        "excluir_uf": [
+          "ES"
+        ],
+        "observacao": "Aplicar ressalvas do §2º do art. 52."
+      },
+      "resultado": {
+        "aliquota": 12
+      },
+      "fundamento_legal": "RICMS/SP, art. 52, III",
+      "status": "ATIVO_CONFORME_TEXTO_FONTE"
+    },
+    {
+      "id_regra": "SP_ICMS_ART52_IMPORTADOS_4",
+      "tributo": "ICMS",
+      "uf": "SP",
+      "artigo": "52",
+      "tratamento": "ALIQUOTA_INTERESTADUAL_IMPORTADO",
+      "condicao": {
+        "tipo_operacao": [
+          "INTERESTADUAL"
+        ],
+        "mercadoria_importada": true,
+        "conteudo_importacao_superior_40": true,
+        "aplicar_excecoes_paragrafo_2": true
+      },
+      "resultado": {
+        "aliquota": 4
+      },
+      "fundamento_legal": "RICMS/SP, art. 52, §2º",
+      "status": "ATIVO_CONFORME_TEXTO_FONTE"
+    },
+    {
+      "id_regra": "SP_ICMS_ART53A_7",
+      "tributo": "ICMS",
+      "uf": "SP",
+      "artigo": "53-A",
+      "tratamento": "ALIQUOTA_7",
+      "condicao": {
+        "tipo_operacao": [
+          "INTERNA"
+        ],
+        "produto_deve_constar_no_artigo": true
+      },
+      "resultado": {
+        "aliquota": 7
+      },
+      "fundamento_legal": "RICMS/SP, art. 53-A",
+      "status": "ATIVO_CONFORME_TEXTO_FONTE"
+    },
+    {
+      "id_regra": "SP_ICMS_ART54_12",
+      "tributo": "ICMS",
+      "uf": "SP",
+      "artigo": "54",
+      "tratamento": "ALIQUOTA_12",
+      "condicao": {
+        "tipo_operacao": [
+          "INTERNA"
+        ],
+        "produto_ou_servico_deve_constar_no_artigo": true
+      },
+      "resultado": {
+        "aliquota": 12
+      },
+      "fundamento_legal": "RICMS/SP, art. 54",
+      "status": "ATIVO_CONFORME_TEXTO_FONTE",
+      "observacao": "A identificação do inciso/parágrafo aplicável deve usar o texto integral do artigo e regras complementares referenciadas."
+    },
+    {
+      "id_regra": "SP_ICMS_ART54A_20",
+      "tributo": "ICMS",
+      "uf": "SP",
+      "artigo": "54-A",
+      "tratamento": "ALIQUOTA_20",
+      "condicao": {
+        "tipo_operacao": [
+          "INTERNA"
+        ],
+        "ncm_posicao": [
+          "2203"
+        ]
+      },
+      "resultado": {
+        "aliquota": 20
+      },
+      "fundamento_legal": "RICMS/SP, art. 54-A",
+      "status": "ATIVO_CONFORME_TEXTO_FONTE"
+    },
+    {
+      "id_regra": "SP_ICMS_ART55_25",
+      "tributo": "ICMS",
+      "uf": "SP",
+      "artigo": "55",
+      "tratamento": "ALIQUOTA_25",
+      "condicao": {
+        "tipo_operacao": [
+          "INTERNA"
+        ],
+        "produto_ou_servico_deve_constar_no_artigo": true
+      },
+      "resultado": {
+        "aliquota": 25
+      },
+      "fundamento_legal": "RICMS/SP, art. 55",
+      "status": "ATIVO_CONFORME_TEXTO_FONTE"
+    },
+    {
+      "id_regra": "SP_ICMS_ART55A_30",
+      "tributo": "ICMS",
+      "uf": "SP",
+      "artigo": "55-A",
+      "tratamento": "ALIQUOTA_30",
+      "condicao": {
+        "tipo_operacao": [
+          "INTERNA"
+        ],
+        "ncm_capitulo": [
+          "24"
+        ]
+      },
+      "resultado": {
+        "aliquota": 30
+      },
+      "fundamento_legal": "RICMS/SP, art. 55-A",
+      "status": "ATIVO_CONFORME_TEXTO_FONTE"
+    },
+    {
+      "id_regra": "SP_ICMS_ART56_DIFAL",
+      "tributo": "ICMS",
+      "uf": "SP",
+      "artigo": "56",
+      "tratamento": "DIFAL",
+      "condicao": {
+        "operacao_sujeita_difal": true
+      },
+      "resultado": {
+        "usar_carga_interna_efetiva": true,
+        "considerar_isencoes_reducoes": true
+      },
+      "fundamento_legal": "RICMS/SP, art. 56",
+      "status": "ATIVO_CONFORME_TEXTO_FONTE"
+    },
+    {
+      "id_regra": "SP_ICMS_ART56A_REVOGADO",
+      "tributo": "ICMS",
+      "uf": "SP",
+      "artigo": "56-A",
+      "tratamento": "REGRA_REVOGADA",
+      "vigencia_fim": "2015-12-31",
+      "resultado": {
+        "aplicar": false
+      },
+      "fundamento_legal": "RICMS/SP, art. 56-A; revogado com efeitos a partir de 01/01/2016",
+      "status": "REVOGADO"
+    },
+    {
+      "id_regra": "SP_ICMS_ART56B_SIMPLES",
+      "tributo": "ICMS",
+      "uf": "SP",
+      "artigo": "56-B",
+      "tratamento": "SIMPLES_NACIONAL",
+      "condicao": {
+        "regime_tributario": [
+          "SIMPLES_NACIONAL"
+        ]
+      },
+      "resultado": {
+        "aplicar_regras_lc123_art18": true
+      },
+      "fundamento_legal": "RICMS/SP, art. 56-B",
+      "status": "ATIVO_CONFORME_TEXTO_FONTE"
+    },
+    {
+      "id_regra": "SP_ICMS_ART56C_FECOP_2",
+      "tributo": "ICMS",
+      "uf": "SP",
+      "artigo": "56-C",
+      "tratamento": "ADICIONAL_2",
+      "condicao": {
+        "destino_consumidor_final_sp": true,
+        "ncm_posicao_ou_capitulo": [
+          "2203",
+          "24"
+        ]
+      },
+      "resultado": {
+        "adicional_aliquota": 2
+      },
+      "fundamento_legal": "RICMS/SP, art. 56-C",
+      "status": "ATIVO_CONFORME_TEXTO_FONTE"
+    }
+  ],
+  "artigos_texto_fonte": [
+    {
+      "artigo": "52",
+      "versoes_extraidas": [
+        "Artigo 52 - As alíquotas do imposto, salvo exceções previstas nesta seção, são: (Redação dada ao \"caput\" do artigo, mantidos os\n   seus incisos, pelo Decreto 61.838, de 18-02-2016; DOE 19-02-2016; Efeitos a partir de 23-02-2016)",
+        "Artigo 52 - As alíquotas do imposto, salvo exceções previstas nos artigos 53, 54, 55 e 56-B, são: (Lei 6.374/89, art. 34, \"caput\",\n   com alterações da Lei 10.619/00, arts. 1º, XVIII, e 2º, IV, § 1º, 4, e § 4º, Lei 6.556/89, art. 1º, Lei 10.991/01, art. 1º, Resoluções\n   do Senado Federal nº 22, de 19-05-89, nº 95, de 13-12-96 e nº 13, de 25-04-12, e Lei Complementar nº 123/06): (Redação dada\n   ao \"caput\" do artigo, mantidos os seus incisos, pelo Decreto 58.923, de 27-02-2013; DOE 28-02-2013; Efeitos desde 1º de janeiro\n   de 2013)",
+        "Artigo 52 - As alíquotas do imposto, salvo exceções previstas nos artigos 53, 54, 55 e 56-B, são: (Lei 6.374/89, art. 34, “caput”,\n   com alterações da Lei 10.619/00, arts. 1º, XVIII, e 2º, IV, § 1º, 4, e § 4º, Lei 6.556/89, art. 1º, Lei 10.991/01, art. 1º, Resoluções\n   do Senado Federal nº 22, de 19-05-89 e nº 95, de 13-12-96 e Lei Complementar nº 123/06): (Redação dada ao \"caput\" do artigo,\n   mantidos os seus incisos, pelo Decreto 52.104, de 29-08-2007; DOE 30-08-2007)",
+        "Artigo 52 - As alíquotas do imposto, salvo exceções previstas nos artigos 53, 54 e 55, são (Lei 6.374/89, art. 34, \"caput\", com\n   alterações da Lei 10.619/00, arts. 1º, XVIII, e 2º, IV, § 1º, 4, e § 4º, Lei 6.556/89, art. 1º, Lei 10.991/01, art. 1º, Resoluções do\n   Senado Federal nº 22, de 19-05-89 e nº 95, de 13-12-96): (Redação dada ao \"caput\" do artigo, mantidos os seus incisos, pelo\n   Decreto 46.529, de 04-02-2002; DOE 05-02-2002; Efeitos a partir de 22-12-2001)",
+        "Artigo 52 - As alíquotas do imposto, salvo exceções previstas nos artigos 53, 54 e 55, são (Lei 6.374/89, art. 34, \"caput\", com\n   alterações da Lei 10.619/00, arts. 1º, XVIII, e 2º, IV, § 1º, 4, e § 4º, Lei 6.556/89, art. 1º, Lei 10.706/00, art. 1º, Resoluções do\n   Senado Federal nº 22, de 19-05-89 e nº 95, de 13-12-96): (Redação dada ao \"caput\" do artigo, mantidos os seus incisos, pelo\n   Decreto 46.027, de 22-08-2001; DOE 23-08-2001; Efeitos a partir de 01-01-2001)\n   I - nas operações ou prestações internas, ainda que iniciadas no exterior, 18% (dezoito por cento);\n\n   II - nas operações interestaduais que destinarem mercadorias aos Estados das regiões Norte, Nordeste e Centro-Oeste e ao Estado\n   do Espírito Santo, assim como nas prestações interestaduais cujo destino seja estes Estados, 7% (sete por cento), observado o\n   disposto no § 2º; (Redação dada ao inciso pelo Decreto 61.744, de 23-12-2015, DOE 24-12-2015; produzindo efeitos a partir de\n   01-01-2016)\n\n   II - nas operações ou prestações interestaduais que destinarem mercadorias ou serviços a contribuintes localizados nos Estados das\n   regiões Norte, Nordeste e Centro-Oeste e no Estado do Espírito Santo, 7% (sete por cento), observado o disposto no § 2º;\n   (Redação dada inciso pelo Decreto 58.923, de 27-02-2013; DOE 28-02-2013; Efeitos desde 1º de janeiro de 2013)\n\n   II - nas operações ou prestações interestaduais que destinarem mercadorias ou serviços a contribuintes localizados nos Estados das\n   regiões Norte, Nordeste e Centro-Oeste e no Estado do Espírito Santo, 7% (sete por cento);\n   III - nas operações interestaduais que destinarem mercadorias aos Estados das regiões Sul e Sudeste, assim como nas prestações\n   interestaduais cujo destino seja estes Estados, 12% (doze por cento), observado o disposto no § 2º; (Redação dada ao inciso pelo\n   Decreto 61.744, de 23-12-2015, DOE 24-12-2015; produzindo efeitos a partir de 01-01-2016)\n\n   NOTA - V. DECISÃO NORMATIVA CAT-07/16, de 24-11-2016 (DOE 25-11-2016). ICMS - Operações e prestações interestaduais\n   destinadas a contribuinte do ICMS que também desenvolve atividades não sujeitas a esse imposto.\n\n   III - nas operações ou prestações interestaduais que destinarem mercadorias ou serviços a contribuintes localizados nos Estados\n   das regiões Sul e Sudeste, 12% (doze por cento), observado o disposto no § 2º; (Redação dada inciso pelo Decreto 58.923, de 27-\n   02-2013; DOE 28-02-2013; Efeitos desde 1º de janeiro de 2013)\n   III - nas operações ou prestações interestaduais que destinarem mercadorias ou serviços a contribuintes localizados nos Estados\n   das regiões Sul e Sudeste, 12% (doze por cento);\n   IV - nas prestações interestaduais de transporte aéreo de passageiro, carga e mala postal, 4% (quatro por cento); (Redação dada\n                                                                                                                                    \n   ao inciso pelo Decreto 61.744, de 23-12-2015, DOE 24-12-2015; produzindo efeitos a partir de 01-01-2016)\n\fIV - nas prestações interestaduais de transporte aéreo de passageiro, carga e mala postal, em que o destinatário do serviço seja\ncontribuinte do imposto, 4% (quatro por cento);\nV - Nas operações com energia elétrica, no que respeita aos fornecimentos adiante indicados:\n\n\n   a) 12% (doze por cento), em relação à conta residencial que apresentar consumo mensal de até 200 (duzentos) kWh;\n\n   b) 25% (vinte e cinco por cento), em relação à conta residencial que apresentar consumo mensal acima de 200 (duzentos)\n   kWh;\n\n   NOTA - V. ITEM 4 DO INFORMATIVO SFP (DOE 27-06-2022).​\n\n   c) 12% (doze por cento), quando utilizada no transporte público eletrificado de passageiros;\n\n   d) 12% (doze por cento), nas operações com energia elétrica utilizada em propriedade rural, assim considerada a que\n   efetivamente mantiver exploração agrícola ou pastoril e estiver inscrita no Cadastro de Contribuintes do ICMS.\n\n§ 1 º - O imposto incidente sobre o serviço prestado no exterior deverá ser calculado mediante aplicação da alíquota prevista no\ninciso I. (Parágrafo único passou a denominar-se § 1º pelo Decreto 58.923, de 27-02-2013; DOE 28-02-2013; Efeitos desde 1º de\njaneiro de 2013)\n\n§ 2º - Relativamente aos incisos II e III, nas operações interestaduais com bens e mercadorias importados do exterior, a alíquota\nserá de 4%, observado o seguinte: (Parágrafo acrescentado pelo Decreto 58.923, de 27-02-2013; DOE 28-02-2013; Efeitos desde\n1º de janeiro de 2013)\n\n\n   1 - a alíquota de 4% será aplicada nas operações com bens e mercadorias importados do exterior que, após o desembaraço\n   aduaneiro:\n\n\n       a) não tenham sido submetidos a processo de industrialização;\n\n       b) ainda que submetidos a processo de transformação, beneficiamento, montagem, acondicionamento,\n       reacondicionamento, renovação ou recondicionamento, resultem em mercadorias ou bens com conteúdo de\n       importação superior a 40% (quarenta por cento), conforme disciplina específica;\n\n   2 - a alíquota de 4% não será aplicada nas operações com os seguintes bens e mercadorias:\n\n\n       a) bens e mercadorias importados do exterior que não tenham similar nacional, assim considerados aqueles\n       previstos em lista publicada pelo Conselho de Ministros da Câmara de Comércio Exterior - CAMEX para os fins da\n       Resolução do Senado Federal nº 13, de 25 de abril de 2012;\n\n       b) bens e mercadorias produzidos em conformidade com os processos produtivos básicos de que tratam o Decreto-\n       Lei nº 288, de 28 de fevereiro de 1967, e as Leis nºs 8.248, de 23 de outubro de 1991, 8.387, de 30 de dezembro\n       de 1991, 10.176, de 11 de janeiro de 2001, e 11.484, de 31 de maio de 2007;\n\n       c) gás natural importado do exterior.\n\n\nNOTA - V. PORTARIA CAT-64/13, de 28-06-2013 (DOE 29-06-2013). Dispõe sobre os procedimentos que devem ser observados na\naplicação da alíquota de 4% nas operações interestaduais com bens e mercadorias importados do exterior.\n\n§ 3º - São internas, para fins do disposto neste artigo: (Redação dada ao parágrafo pelo Decreto 66.559, de 11-03-2022, DOE 12-\n03-2022; Retroagindo seus efeitos a 5 de janeiro de 2022)\n\n       1. as operações com mercadorias entregues a consumidor final não contribuinte do imposto no território deste Estado,\n       independentemente do seu domicílio ou da sua eventual inscrição no Cadastro de Contribuintes do ICMS de outra unidade\n       federada;\n\n       2. as prestações de serviço de transporte de passageiros iniciadas no território deste Estado com destino a outro Estado ou\n       ao Distrito Federal, quando o tomador não for contribuinte do imposto localizado na unidade federada de destino.\n\n\n§ 3º - São internas, para fins do disposto neste artigo, as operações com mercadorias entregues a consumidor final não contribuinte\ndo imposto no território deste Estado, independentemente do seu domicílio ou da sua eventual inscrição no Cadastro de\nContribuintes do ICMS de outra unidade federada. (Parágrafo acrescentado pelo Decreto 61.744, de 23-12-2015, DOE 24-12-2015;\nproduzindo efeitos a partir de 01-01-2016)\n\nNOTA - V. DECISÃO NORMATIVA CAT-02/06, de 10-10-2006 (DOE 11-10-2006). ICMS-Incidência-Venda de veículos novos e usados\npor parte de empresas locadoras de veículos-Considerações."
+      ]
+    },
+    {
+      "artigo": "53",
+      "versoes_extraidas": [
+        "Artigo 53 - Revogado pelo Decreto 51.520, de 29-01-2007; DOE 30-01-2007; Efeitos para os fatos geradores que ocorrerem a\npartir de 1º de fevereiro de 2007.\n\n                                                                                                                               ",
+        "Artigo 53 - Aplica-se a alíquota de 7% (sete por cento) nas operações internas com os produtos adiante indicados, ainda que se\ntiverem iniciado no exterior (Lei 6.374/89, art. 34, § 1º, itens 3, 11, 14, 16, 17 e § 8º, o primeiro na redação da Lei 8.996/94, art.\n1º, I, alterado pela Lei 10.619/00, art. 1º, XVIII, o segundo na redação da Lei 9.278/95, art. 1º, II, o terceiro acrescentado pela Lei\n9.399/96, art. 2º, V, o quarto acrescentado pela Lei 9.794/97, art. 4º, o quinto na redação da Lei 10.619/00, art. 1º, XVIII, e o\núltimo acrescentado pela Lei 10.619/00, art. 2º, IV):\n\nI - arroz, farinha de mandioca, feijão, charque, pão francês ou de sal e sal de cozinha;\n\nII - lingüiça, mortadela, salsicha, sardinha enlatada e vinagre;\n\nIII - produtos da indústria de processamento eletrônico de dados, fabricados por estabelecimento industrial que atenda às\ndisposições do artigo 4º da Lei federal 8.248, de 23-10-91, e cujo produto esteja beneficiado com isenção do Imposto sobre\nProdutos Industrializados;\n\nIV - preservativos classificados no código 4014.10.0000 da Nomenclatura Brasileira de Mercadorias do Sistema Harmonizado -\nNBM/SH vigente em 31 de dezembro de 1996;\nV- ovo integral pasteurizado, ovo integral pasteurizado desidratado, clara pasteurizada desidratada ou resfriada e gema\npasteurizada desidratada ou resfriada;\n\nVI - embalagens para ovo \"in natura\", do tipo bandeja ou estojo, com capacidade para acondicionamento de até 30 (trinta)\nunidades.\n\n§ 1º - Para efeito de aplicação do disposto no inciso I, considera-se pão francês ou de sal aquele de consumo popular, obtido pela\ncocção (cozimento) de massa preparada com farinha e trigo, fermento biológico, água e sal, não podendo ter ingrediente que venha\na modificar o seu tipo, característica ou classificação, produzido no peso de até 1000 gramas.\n\n§ 2º - Para efeito de aplicação do disposto no inciso III, o contribuinte deve indicar nas Notas Fiscais relativas à comercialização da\nmercadoria:\n\n\n    1 - tratando-se da indústria fabricante do produto, o número da portaria conjunta dos Ministérios da Ciência e Tecnologia e\n    da Fazenda emitida nos termos do artigo 4º da Lei 8.248, de 23-10-91; (Redação dada ao item pelo Decreto 45.644 de 26-\n    01-2001; DOE 27-01-2001; Efeitos a partir de 01-01-2001);\n\n\n\n    1 - tratando-se da indústria fabricante do produto, o número da portaria conjunta dos Ministérios da Ciência e Tecnologia e\n    da Fazenda que concedeu isenção do Imposto sobre Produtos Industrializados - IPI;\n\n    2 - tratando-se dos demais comerciantes, além da indicação referida no item anterior, a identificação do fabricante e o\n    número da Nota Fiscal relativa à aquisição original da indústria, ainda que a operação seja realizada entre comerciantes.\n\n\n§ 3º - Na hipótese do parágrafo anterior, cada estabelecimento adquirente da mercadoria deve exigir do seu fornecedor as\nindicações referidas na nota anterior.\n§ 4º - Revogado pelo Decreto 46.778, de 21-05-2002; DOE 22-05-2002; Efeitos a partir de 01-05-2002.\n\n§ 4º - Em substituição à indicação prevista no item 1 do § 2º, enquanto não publicada a portaria conjunta dos Ministérios da Ciência\ne Tecnologia e da Fazenda, poderá ser informado na Nota Fiscal o número de ofício expedido pelo Ministério da Ciência e Tecnologia,\natestando que o produto fabricado pelo contribuinte atende ao processo produtivo básico. (Parágrafo acrescentado pelo Decreto\n46.295 de 23-11-2001; DOE 24-11-2001; Efeitos a partir de 07-11-2001)\n§ 5º - Revogado pelo Decreto 46.778, de 21-05-2002; DOE 22-05-2002; Efeitos a partir de 01-05-2002.\n\n§ 5º - Na hipótese do parágrafo anterior, se sobrevier decisão federal no sentido de que o produto não atende ao processo\nprodutivo básico, deverá ser recolhida a diferença de imposto mediante guia de recolhimentos especiais, com multa e demais\nacréscimos legais, que serão devidos a partir do vencimento do prazo em que o tributo deveria ter sido pago de acordo com a\nalíquota efetivamente aplicável à operação. (Parágrafo acrescentado pelo Decreto 46.295 de 23-11-2001; DOE 24-11-2001; Efeitos\na partir de 07-11-2001)\nNOTA V. COMUNICADO CAT-04/07, de 07-02-2007 (DOE 08-02-2007). Esclarece sobre efeitos do Decreto 51.520, de 29 de janeiro\nde 2007, que revogou dispositivos do Regulamento do Imposto sobre Operações Relativas à Circulação de Mercadorias e sobre\nPrestações de Serviços de Transporte Interestadual e Intermunicipal e de Comunicação concernentes à cesta básica:\n\n        \"O Coordenador da Administração Tributária, considerando que o Decreto 51.520, de 29 de janeiro de 2007, revogou o\n        artigo 53 do Regulamento do ICMS e tendo em vista o disposto nos itens 3, 11, 14, 16 e 17 do § 1º do artigo 34 da Lei\n        6.374, de 1° março de 1989, esclarece que permanece aplicável a alíquota de 7% às operações de que tratam os referidos\n        dispositivos da Lei 6.374/89.\""
+      ]
+    },
+    {
+      "artigo": "53-A",
+      "versoes_extraidas": [
+        "Artigo 53-A - Aplica-se a alíquota de 7% (sete por cento) nas operações internas com os produtos adiante indicados, ainda que se\ntiverem iniciado no exterior (Lei 6.374/89, art. 34, § 1°, itens 14, 16 e 17, o primeiro acrescentado pela Lei 9.399/96, art. 2°, V, o\nsegundo acrescentado pela Lei 9.794/97, art. 4°, e o último na redação da Lei 10.619/00, art. 1°): (Artigo acrescentado pelo\nDecreto 52.743, de 22-02-2008; DOE 23-02-2008)\n\nI - preservativos classificados no código 4014.10.0000 da Nomenclatura Brasileira de Mercadorias do Sistema Harmonizado -\nNBM/SH vigente em 31 de dezembro de 1996;\n\nII - ovo integral pasteurizado, ovo integral pasteurizado desidratado, clara pasteurizada desidratada ou resfriada e gema\n                                                                                                                                   \npasteurizada desidratada ou resfriada;\n\fIII - embalagens para ovo \"in natura\", do tipo bandeja ou estojo, com capacidade para acondicionamento de até 30 (trinta)\nunidades.\n\nParágrafo único - Revogado pelo Decreto 67.524, de 27-02-2023, DOE 28-02-2023; Efeitos desde 15 de janeiro de 2023.\n\nParágrafo único - A alíquota prevista neste artigo fica sujeita a um complemento de 2,4% (dois inteiros e quatro décimos por\ncento), passando as operações internas indicadas no “caput” a ter uma carga tributária de 9,4% (nove inteiros e quatro décimos por\ncento) (Lei 17.293/20, art. 22). (Parágrafo único acrescentado pelo Decreto 65.253, de 15-10-2020, DOE 16-10-2020; efeitos pelo\nprazo de 24 (vinte e quatro) meses contados a partir de 15 de janeiro de 2021)"
+      ]
+    },
+    {
+      "artigo": "54",
+      "versoes_extraidas": [
+        "Artigo 54 - Aplica-se a alíquota de 12% (doze por cento) nas operações ou prestações internas com os produtos e serviços adiante\nindicados, ainda que se tiverem iniciado no exterior (Lei 6.374/89, art. 34, § 1°, itens 2, 5, 6, 7, 9, 10, 12, 13, 15, 18, 19 e 20 e §\n6º, o terceiro na redação da Lei 9.399/96, art. 1°, VI, o quarto na redação da Lei 9.278/95, art. 1º, I, o quinto ao décimo\nacrescentados, respectivamente, pela Lei 8.198/91, art. 2º, Lei 8.456/93, art. 1º, Lei 8.991/94, art. 2º, I, Lei 9.329/95, art. 2º, I,\nLei 9.794/97, art. 4º, Lei 10.134/98, art. 1º, o décimo primeiro e o décimo segundo acrescentados pela Lei 10.532/00, art. 1º, o\núltimo acrescentado pela Lei 8991/94, art. 2º, II):\n\nI - serviços de transporte;\n\nII - ave, coelho ou gado bovino, suíno, caprino ou ovino em pé e produto comestível resultante do seu abate, em estado natural,\nresfriado ou congelado;\n\nIII - farinha de trigo, bem como mistura pré-preparada de farinha de trigo classificada no código 1901.20.9900 da Nomenclatura\nBrasileira de Mercadorias - Sistema Harmonizado - NBM/SH vigente em 31 de dezembro de 1996, e massas alimentícias não\ncozidas, nem recheadas ou preparadas de outro modo;\n\nIV - pedra e areia, no tocante às saídas;\n\nV - implementos e tratores agrícolas, máquinas, aparelhos e equipamentos industriais e produtos da indústria de processamento\neletrônico de dados, neste último caso desde que não abrangidos pelo inciso III do artigo 53, observadas a relação dos produtos\nalcançados e a disciplina de controle estabelecidas pelo Poder Executivo;\n\nNOTA - V. RESOLUÇÃO SF-31/08, de 30-06-2008 (DOE 02-07-2008). Aprova a relação de produtos da indústria de processamento\neletrônico de dados de que trata o inciso V do artigo 54 do Regulamento do ICMS e dá outras providências.\n\nNOTA - V. RESOLUÇÃO SF-04/98, de 16-01-1998 (DOE 20-01-1998). Aprova a relação de máquinas, aparelhos e equipamentos\nindustrias, implementos e tratores agrícolas e produtos da indústria de processamento eletrônico de dados de que trata o item 7 do\n§ 1° do artigo 54 do Regulamento do ICMS.\n\nNOTA - V. DECISÃO NORMATIVA CAT-03/13, de 17-12-2013 (DOE 18-12-2013). ICMS - Operações com máquinas, aparelhos e\nequipamentos industriais e máquinas e implementos agrícolas.\n\nVI - óleo diesel e etanol hidratado combustível - EHC (Lei n° 6.374/89, art. 34, § 1º, item 10, na redação da Lei 11.593/03, artigo\n1º, I) (Redação dada ao inciso pelo Decreto 59.997, de 20-12-2013, DOE 21-12-2013; em vigor a partir de 01-03-2014)\n\nNOTA - V. INFORMATIVO SFP (DOE 30-06-2023). Alíquota do ICMS nas operações internas com etanol hidratado combustível\n(aplicável a partir de 1º/07/2023).​\n\nNOTA - V. INFORMATIVO SFP (DOE 18-07-2022). Alíquota do ICMS nas operações internas com etanol hidratado combustível\n(aplicável de 15/07/2022 a 30/06/2023). ​\n\nVI - óleo diesel e álcool etílico hidratado carburante (Lei n° 6.374/89, art. 34, § 1º, item 10, na redação da Lei 11.593/03, artigo\n1º, I); (Redação dada ao inciso pelo Decreto 48.379, de 29-12-2003; DOE 30-12-2003; Efeitos a partir de 05-12-2003)\n\nVI -óleo diesel;\nVII - ferros e aços não planos comuns, indicados no § 1º;\n\nVIII - produtos cerâmicos e de fibrocimento, indicados no § 2º;\n\nIX - painéis de madeira industrializada, classificados nos códigos 4410.19.00, 4411.11.00, 4411.19.00, 4411.21.00, 4411.29.00 da\nNomenclatura Brasileira de Mercadorias - Sistema Harmonizado - NBM/SH;\n\nX - veículos automotores, quando tais operações sejam realizadas sob o regime jurídico-tributário da sujeição passiva por\nsubstituição com retenção do imposto relativo às operações subseqüentes, sem prejuízo do disposto no inciso seguinte;\n\nXI - independentemente de sujeição ao regime jurídico- -tributário da sujeição passiva por substituição, os veículos classificados nos\ncódigos 8701.20.0200, 8701.20.9900, 8702.10.0100, 8702.10.0200, 8702.10.9900, 8704.21.0100, 8704.22.0100, 8704.23.0100,\n8704.31.0100, 8704.32.0100, 8704.32.9900, 8706.00.0100 e 8706.00.0200 da Nomenclatura Brasileira de Mercadorias - Sistema\nHarmonizado - NBM/SH vigente em 31 de dezembro de 1996, e no código 8704.90.00 da Nomenclatura Comum do Mercosul - NCM;\n(Redação dada ao inciso pelo Decreto 68.2​24, de 19-12-2023, DOE 20-12-2023)\n\nXI - independentemente de sujeição ao regime jurídico-tributário da sujeição passiva por substituição, os veículos classificados nos\ncódigos 8701.20.0200, 8701.20.9900, 8702.10.0100, 8702.10.0200, 8702.10.9900, 8704.21.0100, 8704.22.0100, 8704.23.0100,\n8704.31.0100, 8704.32.0100, 8704.32.9900, 8706.00.0100 e 8706.00.0200 da Nomenclatura Brasileira de Mercadorias - Sistema           \nHarmonizado - NBM/SH vigente em 31 de dezembro de 1996;\n\fXII - no fornecimento de alimentação aludido no inciso II do artigo 2º, bem como nas saídas de refeições realizadas por empresas\npreparadoras de refeições coletivas, excetuado, em qualquer dessas hipóteses, o fornecimento ou a saída de bebidas;\n\nXIII - segundo a Nomenclatura Brasileira de Mercadorias - Sistema Harmonizado - NBM/SH, no tocante às saídas:\n\n\n   a) assentos - 9401, exceto os classificados no código 9401.20.00 (Lei 6.374/89, art. 34, § 1º, 19, \"a\", na redação da Lei\n   10.708/00, art. 3º); (Redação dada à alinea pelo Decreto 45.644, de 26-01-2001; DOE 27-01-2001; Efeitos a partir de 01-\n   01-2001)\n\n   a) assentos - 9401;\n   b) móveis - 9403;\n\n   c) suportes elásticos para camas - 9404.10;\n\n   d) colchões - 9404.2;\n\nXIV - segundo a Nomenclatura Brasileira de Mercadorias - Sistema Harmonizado - NBM/SH, no tocante às saídas:\n\n\n   a) chapas, folhas, películas, tiras e lâminas de plásticos - 3921.90.1 e 3921.90.90;\n\n   b) papel e cartão revestidos - Impregnados - 4811.31.20.\n\nXV - segundo a Nomenclatura Brasileira de Mercadorias - Sistema Harmonizado - NBM/SH, as operações com os produtos (Lei\n6.374/89, art. 34, § 1º, 21, acrescentado pela Lei 10.708/00, art. 2º, II): (Inciso acrescentado pelo Decreto 45.644, de 26-01-\n2001; DOE 27-01-2001; Efeitos a partir de 01-01-2001)\n\n\n   a) elevadores e monta cargas, 8428.10;\n\n   b) escadas e tapetes rolantes, 84.28.40;\n\n   c) partes de elevadores, 8431.31;\n\n   d) seringas descartáveis, 9018.31.19;\n\n   e) agulhas descartáveis, 9018.32.19;\n\nXVI - pão não abrangido pelo inciso I do artigo 53 e desde que classificado nas subposições 1905.10, 1905.20 ou 1905.90 e pão\ntorrado, torradas ou produtos semelhantes da subposição 1905.40, todas da Nomenclatura Brasileira de Mercadorias - Sistema\nHarmonizado - NBM/SH (Lei 6.374/89, art. 34, § 1º, 6, \"c\", acrescentado pela Lei 10.708/00, art. 2º, I) (Redação dada ao inciso\npelo Decreto 49.709, de 23-06-2005; DOE 24-06-2005; Efeitos a partir de 01-05-2005)\n\nXVI - pão não abrangido pelo inciso I do artigo 53 e desde que classificado nas subposições 1905.10 ou 1905.20, ou no código\n1905.90.90 e pão torrado, torradas ou produtos semelhantes da subposição 1905.40, todos da Nomenclatura Brasileira de\nMercadorias - Sistema Harmonizado - NBM/SH (Lei 6.374/89, art. 34, § 1º, 6, \"c\", acrescentado pela Lei 10.708/00, art. 2º, I;\n(Inciso acrescentado pelo Decreto 45.644, de 26-01-2001; DOE 27-01-2001; Efeitos a partir de 01-01-2001)\nXVII - nas operações com as soluções parenterais abaixo indicadas, todas classificadas no código 3004.90.99 da Nomenclatura\nBrasileira de Mercadorias - Sistema Harmonizado - NBM/SH (Lei 6.374/89, art. 34, § 1º, 6, \"c\", acrescentado pela Lei 10.708/00,\nart. 2º, I): (Redação dada ao \"caput\" do inciso, mantidas as suas alíneas, pelo Decreto 48.739, de 21-06-2004; DOE 22-06-2004;\nEfeitos a partir de 22-06-2004)\n\nXVII - 12% (doze por cento), nas operações com as soluções parenterais abaixo indicadas, todas classificadas no código 3004.90.99\nda Nomenclatura Brasileira de Mercadorias - Sistema Harmonizado - NBM/SH (Lei 6.374/89, art. 34, § 1º, 22, acrescentado pela Lei\n11.266/02, art. 1º): (Inciso acrescentado pelo Decreto 47.452, de 16-12-2002; DOE 17-12-2002; Efeitos a partir de 20-11-2002)\n\n\n\n\n                                                                                                                                  \n\f    a) solução de glicose a 1,5%, 5%, 10%, 25%, 50% ou a 70%;\n\n    b) solução de cloreto de sódio a 0,9%, 10%, 17,7% ou a 20%;\n\n    c) solução glicofisiológica;\n\n    d) solução de ringer, inclusive com lactato de sódio;\n\n    e) manitol a 20%;\n\n    f) diálise peritoneal a 1,5% ou a 7%;\n\n    g) água para injeção;\n\n    h) bicarbonato de sódio a 8,4% ou a 10%;\n\n    i) dextran 40, com glicose ou com fisiológico;\n\n    j) cloreto de potássio a 10%, 15% ou a 19,1%;\n\n    l) fosfato de potássio 2mEq/ml;\n\n    m) sulfato de magnésio 1mEq/ml, a 10% ou a 50%;\n\n    n) fosfato monossódico + dissódico;\n\n    o) glicerina;\n\n    p) sorbitol a 3%;\n\n    q) aminoácido;\n\n    r) dipeptiven;\n\n    s) frutose;\n\n    t) haes-steril;\n\n    u) hisocel;\n\n    v) hisoplex;\n\n    x) lipídeos.;\n\nXVIII - dentifrício, classificado no código 3306.10.00, escovas de dentes e para dentadura, exceto elétricas, classificadas no código\n9603.21.00, todos da Nomenclatura Brasileira de Mercadorias - Sistema Harmonizado - NBM/SH (Lei 6.374/89, art. 34, § 1º, item\n6, alínea \"d\", acrescentada pela Lei 12.221/06, artigo 1º, I) (Inciso acrescentado pelo Decreto 50.473, de 20-01-2006; DOE 21-01-\n2006; Efeitos para os fatos geradores ocorridos a partir de 10 de janeiro de 2006)\n\nXIX - medicamentos genéricos, conforme definido por lei federal (Lei 6.374/89, art. 34, § 1º, item 24, acrescentado pela Lei\n16.005, de 24-11-2015). (Inciso acrescentado pelo Decreto 61.840, de 25-02-2016; DOE 26-02-2016; Efeitos a partir de 23-02-\n2016)\n\nXX - querosene de aviação destinado a empresas de transporte aéreo regular de passageiros ou de carga, observado o disposto no\n§ 6º. (Inciso acrescentado pelo Decreto 65.253, de 15-10-2020, DOE 16-10-2020; efeitos a partir de 15 de janeiro de 2021)\n\nNOTA - V. DECRETO 64.319, de 04-07-2019 (DOE 05-07-2019). Regulamenta a aplicação da alíquota prevista no item 27 do § 1º do\nartigo 34 da Lei 6.374, de 1º de março de 1989 (relativo ao inciso XX do artigo 54 do RICMS/2000).\n\nNOTA - V. DECRETO 61.840, de 25-02-2016 (DOE 26-02-2016). Artigo 2º dispõe sobre procedimentos a serem adotados por\nestabelecimento que possua, no final do dia 22-02-2016, estoque de medicamentos genéricos, conforme definido por lei federal.\n\n§ 1º - Os produtos a que se refere o inciso VII são os adiante indicados, observada a classificação segundo a Nomenclatura\nBrasileira de Mercadorias - NBM/SH:\n\n\n\n\n                                                                                                                                  \n\f   1 - fio-máquina de ferro ou aços não ligados:\n\n\n       a) dentados, com nervuras, sulcos ou relevos, obtidos durante a laminagem, 7213.10.00;\n\n       b) outros, de aços para tornear, 7213.20.00;\n\n   2 - barras de ferro ou aços não ligados, simplesmente forjadas, laminadas, estiradas ou extrudadas, a quente, incluídas as\n   que tenham sido submetidas a torção após laminagem:\n\n\n       a) dentadas, com nervuras, sulcos ou relevos, obtidos durante a laminagem, ou torcidas após a laminagem,\n       7214.20.00;\n\n       b) outras: de seção transversal retangular, 7214.91.00; de seção circular, 7214.99.10; outras, 7214.99.90;\n\n   3 - perfis de ferro ou aços não ligados:\n\n\n       a) perfis em \"U\", \"I\" ou \"H\", simplesmente laminados, estirados ou extrudados, a quente, de altura inferior a 80\n       mm, 7216.10.00;\n\n       b) perfis em \"L\" simplesmente laminados, estirados ou extrudados, a quente, de altura inferior a 80 mm,\n       7216.21.00;\n\n       c) perfis em \"T\" simplesmente laminados, estirados ou extrudados, a quente, de altura inferior a 80 mm,\n       7216.22.00;\n\n       d) perfis em \"U\" simplesmente laminados, estirados ou extrudados, a quente, de altura igual ou superior a 80 mm,\n       7216.31.00;\n\n       e) perfis em \"I\" simplesmente laminados, estirados ou extrudados, a quente, de altura igual ou superior a 80 mm,\n       7216.32.00;\n\n       f) fios de ferro ou aços não ligados: outros, não revestidos, mesmo polidos, 7217.10.90;\n\n   4 - armações de ferro prontas, para estrutura de concreto armado ou argamassa armada, 7308.40.00;\n\n   5 - grades e redes, soldadas nos pontos de interseção, de fios com, pelo menos, 3 mm na maior dimensão do corte\n   transversal e com malhas de 100 cm² ou mais, de superfície de aço, não revestidas, para estruturas ou obras de concreto\n   armado ou argamassa armada, 7314.20.00;\n\n   6 - outras grades e redes, soldadas nos pontos de interseção:\n\n\n       a) galvanizadas, 7314.31.00;\n\n       b) de aço, não revestidas, para estruturas ou obras de concreto armado ou argamassa armada, 7314.39.00;\n\n   7 - outras telas metálicas, grades e redes:\n\n\n       a) galvanizadas, 7314.41.00;\n\n       b) recobertas de plásticos, 7314.42.00;\n\n   8 - arames:\n\n\n       a) galvanizados, 7217.20.90;\n\n       b) plastificados, 7217.90.00;\n\n       c) farpados, 7313.00.00;\n\n   9 - gabião, 7326.20.00.\n\n   10 - grampos de fio curvado, 7317.00.20 (Lei 6.374/89, art. 34, § 7º, 10, acrescentado pela Lei 10.708/00, art. 2º, III);\n   (Item acrescentado pelo Decreto 45.644, de 26-01-2001; DOE 27-01-2001; Efeitos a partir de 01-01-2001)\n\n   11 - pregos, 7317.00.90 (Lei 6.374/89, art. 34, § 7º, 11, acrescentado pela Lei 10.708/00, art. 2º, III); (Item acrescentado\n   pelo Decreto 45.644, de 26-01-2001; DOE 27-01-2001; Efeitos a partir de 01-01-2001);\n\n§ 2º - Os produtos a que se refere o inciso VIII são os adiante indicados, observada a classificação segundo a Nomenclatura\nBrasileira de Mercadorias - Sistema Harmonizado - NBM/SH:\n\n\n                                                                                                                                \n\f    1 - argamassa, 3214.90.00;\n\n    2 - tijolos cerâmicos, não esmaltados nem vitrificados, 6904.10.00;\n\n    3 - tijoleiras (peças ocas para tetos e pavimentos) e tapa-vigas (complementos da tijoleira) de cerâmica não esmaltada nem\n    vitrificada, 6904.90.00;\n\n    4 - telhas cerâmicas, não esmaltadas nem vitrificadas, 6905.10.00;\n\n    5 - telhas e lajes planas pré-fabricadas, 6810.19.00;\n\n    6 - painéis de lajes, 6810.91.00;\n\n    7 - pré-lajes e pré-moldados, 6810.99.00;\n\n    8 - blocos de concreto, 6810.11.00;\n\n    9 - postes, 6810.99.00;\n\n    10 - chapas onduladas de fibrocimento, 6811.10.00;\n\n    11 - outras chapas de fibrocimento, 6811.20.00;\n\n    12 - painéis e pranchas de fibrocimento, 6811.20.00;\n\n    13 - calhas e cumeeiras de fibrocimento, 6811.20.00;\n\n    14 - rufos, espigões e outros de fibrocimento, 6811.20.00;\n\n    15 - abas, cantoneiras e outros de fibrocimento, 6811.20.00;\n\n    16 - tanques e reservatórios de fibrocimento, 6811.90.00;\n\n    17 - tampas de reservatórios de fibrocimento, 6811.90.00;\n\n    18 - armações treliçadas para lajes, 7308.40.00.\n\n    19 - pias, lavatórios, colunas para lavatórios, banheiras, bidês, sanitários e caixas de descarga, mictórios e aparelhos fixos\n    semelhantes para uso sanitário, de porcelana ou cerâmica, 6910.10.00 e 6910.90.00 (Lei 6.374/89, art. 34, § 1º, item 15,\n    alínea \"t\", acrescentada pela Lei 12.220/06); (Item acrescentado pelo Decreto 50.473, de 20-01-2006; DOE 21-01-2006;\n    Efeitos para os fatos geradores ocorridos a partir de 10 de janeiro de 2006)\n\n    20 - ladrilhos e placas de cerâmica, exclusivamente para pavimentação ou revestimento, 6907 e 6908 (Lei 6.374/89, art.\n    34, § 1º, item 15, alínea \"u\", acrescentada pela Lei 12.220/06); (Item acrescentado pelo Decreto 50.473, de 20-01-2006;\n    DOE 21-01-2006; Efeitos para os fatos geradores ocorridos a partir de 10 de janeiro de 2006)\n\n    21 - tubo, calha ou algeroz e acessório para canalização, de cerâmica, 6906.00.00 (Lei 6.374/89, art. 34, § 1 º, item 1 5,\n    alínea \"v\", acrescentada pela Lei 12.221/06, artigo 1º, II); (Item acrescentado pelo Decreto 50.473, de 20-01-2006; DOE\n    21-01-2006; Efeitos para os fatos geradores ocorridos a partir de 10 de janeiro de 2006)\n\n    22 - revestimento de pavimento de polímeros de cloreto de vinila, 3918.10.00 (Lei 6.374/89, art. 34, § 1 º, item 1 5, alínea\n    \"x\", acrescentada pela Lei 12.221/06, artigo 1º, II) (Item acrescentado pelo Decreto 50.473, de 20-01-2006; DOE 21-01-\n    2006; Efeitos para os fatos geradores ocorridos a partir de 10 de janeiro de 2006)\n\n§ 3º - Aplica-se, ainda, a alíquota prevista neste artigo em relação ao inciso X (Lei 6.374/89, art. 34, § 6º, com alteração da Lei\n11.001/01, art.2º, I): (Redação dada ao parágrafo pelo Decreto 46.529, de 04-02-2002; DOE 05-02-2002; Efeitos a partir de 22-\n12-2001)\n\n\n    1 - no recebimento do veículo importado do exterior por sujeito passivo por substituição, para o fim de comercialização ou\n    integração no seu ativo imobilizado;\n\n    2 - na saída realizada pelo fabricante ou importador, sujeito passivo por substituição, que destine o veículo diretamente a\n    consumidor ou usuário final, inclusive quando destinado ao ativo imobilizado;\n\n    3 - em operação posterior àquela abrangida pela retenção do imposto ocorrida no ciclo de comercialização do veículo novo.\n\n§ 3º - Aplica-se, ainda, a alíquota prevista neste artigo em relação aos incisos X e XI:\n\n\n    1 - no recebimento do veículo importado do exterior por sujeito passivo por substituição, para o fim de comercialização ou\n    integração no seu ativo imobilizado;\n    2 - na saída realizada pelo fabricante ou importador, sujeito passivo por substituição, que destine o veículo diretamente a\n    consumidor ou usuário final, inclusive quando destinado ao ativo imobilizado;\n\n                                                                                                                                      \n\f§ 4º - Não altera a carga tributária prevista no inciso VI, desde que nas proporções definidas e autorizadas pelo órgão competente,\na adição de biodiesel ao óleo diesel, para a fabricação da mistura óleo diesel/biodiesel (Convênio ICMS 113/06, cláusula terceira).\n(Parágrafo acrescentado pelo Decreto 53.933, de 31-12-2008; DOE 01-01-2009; Efeitos a partir de 1º de janeiro de 2009)\n\n§ 5º - Na hipótese do inciso XII, a aplicação da alíquota prevista neste artigo no fornecimento de alimentação independe do local\nonde ocorrerá o seu consumo.”; (Parágrafo acrescentado pelo Decreto 65.253, de 15-10-2020, DOE 16-10-2020; efeitos a partir de\n15 de janeiro de 2021)\n\n§ 6º - A alíquota prevista neste artigo aplica-se, na hipótese do inciso XX, somente às operações destinadas a empresas de\ntransporte aéreo regular de passageiros ou de carga que, por meio de operações próprias ou contratos comerciais firmados com\nterceiros, atendam as condições e prazos para sua implementação estabelecidos em ato do Poder Executivo que especifica, entre\noutros requisitos, o número mínimo de voos regionais que devem ser operados por essas empresas.”; (Parágrafo acrescentado pelo\nDecreto 65.253, de 15-10-2020, DOE 16-10-2020; efeitos a partir de 15 de janeiro de 2021)\n\n§ 7º - Revogado pelo Decreto 67.524, de 27-02-2023, DOE 28-02-2023; Efeitos desde 15 de janeiro de 2023.\n\n§ 7º - A alíquota prevista neste artigo, exceto na hipótese dos incisos I e XIX, fica sujeita a um complemento de 1,3% (um inteiro e\ntrês décimos por cento), passando as operações internas indicadas no “caput” a ter uma carga tributária de 13,3% (treze inteiros e\ntrês décimos por cento) (Lei 17.293/20, art. 22). (Redação dada ao parágrafo pelo Decreto 65.470, de 14-01-2021, DOE 15-01-\n2021; efeitos a partir de 15 de janeiro de 2021)\n\n§ 7º - A alíquota prevista neste artigo, exceto na hipótese do inciso I, fica sujeita a um complemento de 1,3% (um inteiro e três\ndécimos por cento), passando as operações internas indicadas no “caput” a ter uma carga tributária de 13,3% (treze inteiros e três\ndécimos por cento) (Lei 17.293/20, art. 22). (Parágrafo acrescentado pelo Decreto 65.253, de 15-10-2020, DOE 16-10-\n2020; efeitos pelo prazo de 24 (vinte e quatro) meses contados a partir de 15 de janeiro de 2021)\n\n§ 8º - Revogado pelo Decreto 67.524, de 27-02-2023, DOE 28-02-2023; Efeitos desde 15 de janeiro de 2023.\n\n§ 8º - Na hipótese do inciso X, a partir de 1º de abril de 2021, o complemento de alíquota previsto no § 7º será de 2,5% (dois\ninteiros e cinco décimos por cento), passando as operações internas indicadas no inciso X do \"caput\" a ter uma carga tributária de\n14,5% (quatorze inteiros e cinco décimos por cento) (Lei 17.293/20, art. 22). (Parágrafo acrescentado pelo Decreto 65.453, de 30-\n12-2020, DOE 31-12-2020; efeitos a partir de 1º de abril de 2021)\n\n\n\n\nNOTA - V. DECISÃO NORMATIVA CAT-02/06, de 10-10-2006 (DOE 11-10-2006). ICMS-Incidência-Venda de veículos novos e usados\npor parte de empresas locadoras de veículos - Considerações."
+      ]
+    },
+    {
+      "artigo": "54-A",
+      "versoes_extraidas": [
+        "Artigo 54-A - Aplica-se a alíquota de 20% (vinte por cento) nas operações internas com bebidas alcoólicas classificadas na posição\n2203 da Nomenclatura Comum do Mercosul - NCM, ainda que se tiverem iniciado no exterior (Lei 6.374/89, art. 34, § 1º, item 25,\nacrescentado pela Lei 16.005, de 24-11-2015). (Artigo acrescentado pelo Decreto 61.838, de 18-02-2016; DOE 19-02-2016; Efeitos\na partir de 23-02-2016)"
+      ]
+    },
+    {
+      "artigo": "55",
+      "versoes_extraidas": [
+        "Artigo 55 - Aplica-se a alíquota de 25% (vinte e cinco por cento) nas operações ou prestações internas com os produtos e serviços\nadiante indicados, ainda que se tiverem iniciado no exterior, observada a classificação segundo a Nomenclatura Brasileira de\nMercadorias - Sistema Harmonizado - NBM/SH vigente em 31 de dezembro de 1996 (Lei 6.374/89, art. 34, § 1º, itens 1 e 8, este\nacrescentado pela Lei 7646/91, art. 4º, I, e § 5º, com alteração da Lei 9.399/96, art. 1º, VII, Lei 6556/89, art. 2º, e Lei 7646/91,\nart. 4º, II):\n\nI - nas prestações onerosas de serviço de comunicação;\n\nNOTA - V. ITEM 5 DO INFORMATIVO SFP (DOE 27-06-2022).​\n\nII - bebidas alcoólicas, classificadas nas posições 2204, 2205 e 2208, exceto os códigos 2208.40.0200 e 2208.40.0300;\n\nIII - Revogado pelo Decreto Decreto 61.838, de 18-02-2016; DOE 19-02-2016; Efeitos a partir de 23-02-2016.\n\nIII - fumo e seus sucedâneos manufaturados, classificados no capítulo 24;\nIV - perfumes e cosméticos, classificados nas posições 3303, 3304, 3305 e 3307, exceto as posições 3305.10 e 3307.20, os códigos\n3307.10.0100 e 3307.90.0500, as preparações anti-solares e os bronzeadores, ambos classificados na posição 3304;\n\nV -peleteria e suas obras e peleteria artificial, classificadas nos códigos 4303.10.9900 e 4303.90.9900;\n\nVI - motocicletas de cilindrada superior a 250 centímetros cúbicos, classificadas nos códigos 8711.30 a 8711.50;\n\nVII - asas-delta, balões e dirigíveis, classificados nos códigos 8801.10.0200 e 8801.90.0100;\n\nVIII - embarcações de esporte e de recreio, classificadas na posição 8903;\n\nIX - armas e munições, suas partes e acessórios, classificados no capítulo 93;\n\nX - fogos de artifício, classificados na posição 3604.10;\n\nXI - trituradores domésticos de lixo, classificados na posição 8509.30;                                                           \nXII - aparelhos de sauna elétricos, classificados no código 8516.79.0800;\n\fXIII - aparelhos transmissores e receptores (do tipo \"walkie-talkie\"), classificados no código 8525.20.0104;\n\nXIV - binóculos, classificados na posição 9005.10;\n\nXV - jogos eletrônicos de vídeo (video-jogo), classificados no código 9504.10.0100;\n\nXVI - bolas e tacos de bilhar, classificados no código 9504.20.0202;\n\nXVII - cartas para jogar, classificadas na posição 9504.40;\n\nXVIII - confetes e serpentinas, classificados no código 9505.90.0100;\n\nXIX - raquetes de tênis, classificadas na posição 9506.51;\n\nXX - bolas de tênis, classificadas na posição 9506.61;\n\nXXI - esquis aquáticos, classificados no código 9506.29.0200;\n\nXXII - tacos para golfe, classificados na posição 9506.31;\n\nXXIII - bolas para golfe, classificadas na posição 9506.32;\n\nXXIV - cachimbos, classificados na posição 9614.20;\n\nXXV - piteiras, classificadas na subposição 9614.90; (Lei 6.374/89, art. 34, §5º, item 24, com alteração da Lei 12.294/06, art. 1º,\nV) ; (Redação dada ao inciso pelo Decreto 50.669 , de 30-03-2006; DOE de 31-03-2006; Efeitos a partir de 31-03-2006)\n\nXXV - piteiras, classificadas na posição 9615.90;\nXXVI - etanol anidro combustível - EAC, classificado no código 2207.10.0100, querosene de aviação classificado no código\n2710.00.0401, exceto na hipótese prevista no inciso XX do artigo 54, e gasolina classificada nos códigos 2710.00.0301,\n2710.00.0302, 2710.00.0303 e 2710.00.0399;(Redação dada ao inciso pelo Decreto 65.253, de 15-10-2020, DOE 16-10-2020;\nefeitos a partir de 15 de janeiro de 2021)\n\nXXVI - etanol anidro combustível - EAC, classificado no código 2207.10.0100, querosene de aviação classificado no código\n2710.00.0401 e gasolina classificada nos códigos 2710.00.0301, 2710.00.0302, 2710.00.0303 e 2710.00.0399 (Lei 6.374/89, art.\n34, § 5º, item 25, na redação da Lei 11.593/03, artigo 1º, II); (Redação dada ao inciso pelo Decreto 59.997, de 20-12-2013, DOE\n21-12-2013; em vigor a partir de 01-03-2014)\n\nXXVI - álcool etílico anidro carburante, classificado no código 2207.10.0100, querosene de aviação classificado no código\n2710.00.0401 e gasolina classificada nos códigos 2710.00.0301, 2710.00.0302, 2710.00.0303 e 2710.00.0399 (Lei 6.374/89, art.\n34, § 5º, item 25, na redação da Lei 11.593/03, artigo 1º, II). (Redação dada ao inciso pelo Decreto 48.379, de 29-12-2003; DOE\n30-12-2003; Efeitos a partir de 05-12-2003)\nXXVI - álcool carburante, classificado nos códigos 2207.10.0100 e 2207.10.9902, gasolina classificada nos códigos 2710.00.0301,\n2710.00.0302, 2710.00.0303 e 2710.00.0399 e querosene de aviação, classificado nos códigos 2710.00.0401.\nXXVII - solvente, assim considerado todo e qualquer hidrocarboneto líquido derivado de frações resultantes do processamento de\npetróleo, frações de refinarias e de indústrias petroquímicas, independente da designação que lhe seja dada, com exceção de\nqualquer tipo de gasolina, de gás liquefeito de petróleo - GLP, de óleo diesel, de nafta destinada à indústria petroquímica, ou de\nquerosene de avião, especificados pelo órgão federal competente (Lei 6.374/89, art. 34, § 5º, item 26, acrescentado pela Lei\n13.918/09, art.12, VIII); (Inciso acrescentado pelo Decreto 55.437, de 17-02-2010; DOE 18-02-2010; Efeitos a partir de 24-03-\n2010)\n\nNOTA - V. DECISÃO NORMATIVA CAT-02, de 31-12-2014 (DOE 01-01-2015; Retificação DOE 06-01-2015). ICMS – Alíquota –\nOperações internas com óleos lubrificantes - Os óleos lubrificantes não são considerados solventes, não estando sujeitos à alíquota\nde 25% prevista no artigo 55, inciso XXVII, do RICMS/00."
+      ]
+    },
+    {
+      "artigo": "55-A",
+      "versoes_extraidas": [
+        "Artigo 55-A - Aplica-se a alíquota de 30% (trinta por cento) nas operações internas com fumo e seus sucedâneos manufaturados,\nclassificados no capítulo 24 da Nomenclatura Comum do Mercosul - NCM, ainda que se tiverem iniciado no exterior (Lei 6.374/89,\nart. 34, § 1º, item 26, acrescentado pela Lei 16.005, de 24-11-2015). (Artigo acrescentado pelo Decreto 61.838, de 18-02-2016;\nDOE 19-02-2016; Efeitos a partir de 23-02-2016)\n\nNOTA - V. DECRETO 61.838, de 18-02-2016 (DOE 19-02-2016). Introduz alterações no RICMS e dá outras providências. Artigos 4º e\n5º dispõem sobre procedimentos a serem adotados por contribuintes que possuam, no final do dia 22-02-2016, estoque de bebidas\nalcoólicas classificadas na posição 2203 da Nomenclatura Comum do Mercosul - NCM ou fumo e seus sucedâneos manufaturados,\nclassificados no capítulo 24 da NCM."
+      ]
+    },
+    {
+      "artigo": "56",
+      "versoes_extraidas": [
+        "Artigo 56 - No cálculo do imposto correspondente à diferença entre a alíquota interna e a alíquota interestadual, de que trata o §\n5º do artigo 2º, nas hipóteses dos incisos XVII e XVIII do artigo 2º, observar-se-á o seguinte: (Redação dada ao artigo pelo Decreto\n61.744, de 23-12-2015, DOE 24-12-2015; produzindo efeitos a partir de 01-01-2016)\n\nI - a alíquota interna a ser utilizada será aquela que corresponda à carga tributária efetiva incidente nas operações e prestações\ninternas destinadas a consumidor final, considerando eventuais isenções e reduções de base de cálculo vigentes;\n\nII - a alíquota interestadual a ser utilizada será aquela fixada pelo Senado Federal, exceto na hipótese do inciso III;              \n\fIII - caso haja, no Estado de origem, incentivo ou benefício fiscal concedido em desacordo com o disposto na alínea \"g\" do inciso XII\ndo § 2º do artigo 155 da Constituição Federal, a alíquota interestadual a ser utilizada será aquela que corresponda à carga tributária\nefetivamente cobrada pelo Estado de origem.\n\nNOTA - V. DECISÃO NORMATIVA CAT-07/16, de 24-11-2016 (DOE 25-11-2016). ICMS - Operações e prestações interestaduais\ndestinadas a contribuinte do ICMS que também desenvolve atividades não sujeitas a esse imposto.",
+        "Artigo 56 - Aplicam-se as alíquotas internas às operações ou às prestações que destinarem mercadorias ou serviços a pessoa não-\ncontribuinte localizada em outro Estado (Lei 6.374/89, art. 34, § 3º, na redação do inciso XVIII do artigo 1º da Lei 10.619/00).\n(Redação dada ao \"caput\" do artigo pelo Decreto 46.295, de 23-11-2001; DOE 24-11-2001; Efeitos a partir de 24-11-2001)",
+        "Artigo 56 - Aplicam-se as alíquotas internas às operações ou às prestações que destinarem mercadorias ou serviços a pessoa não-\ncontribuinte localizada em outro Estado (Lei 9.881/94, art. 1º).\n\nParágrafo único - Para efeito de aplicação das alíquotas internas, conforme o caso:\n\n\n    1 - prevalecerá a alíquota fixada pelo Senado Federal, como segue:\n\n\n        a) a máxima, se inferior à prevista neste artigo;\n\n        b) a mínima, se superior à prevista neste artigo;\n\n\n    2 - prevalecerão as alíquotas estabelecidas em convênio pelos Estados."
+      ]
+    },
+    {
+      "artigo": "56-A",
+      "versoes_extraidas": [
+        "Artigo 56-A - Revogado pelo Decreto 61.744, de 23-12-2015, DOE 24-12-2015; produzindo efeitos a partir de 01-01-2016.",
+        "Artigo 56-A - Na operação que destine mercadorias a empresa de construção civil localizada em outra unidade da Federação,\ndeverá ser aplicada a alíquota interna (Lei 6.374/89, art. 34, § 3º, na redação do inciso XVIII do art. 1º da Lei 10.619/00). (Artigo\nacrescentado pelo Decreto 47.278, de 29-10-2002; DOE 30-10-2002; Efeitos a partir de 30-10-2002)\n§ 1º - Para os fins deste artigo:\n\n\n    1 - aplica-se o conceito de empresa de construção civil constante no artigo 1º do Anexo XI;\n\n    2 - o documento relativo à inscrição no cadastro de contribuintes do ICMS não faz prova da condição de contribuinte.\n\n\n§ 2º - Revogado pelo Decreto 52.921, de 18-04-2008; DOE 19-04-2008; Efeitos a partir de 1º de maio de 2008.\n\n§ 2º - O disposto no \"caput\" não se aplica na hipótese de a empresa de construção civil comprovar a realização de, no mínimo, uma\noperação relativa à circulação de mercadorias, nos 12 (doze) meses anteriores à data da aquisição da mercadoria, excetuadas as\nimportações."
+      ]
+    },
+    {
+      "artigo": "56-B",
+      "versoes_extraidas": [
+        "Artigo 56-B - Tratando-se de operação ou prestação praticada por contribuinte sujeito às normas do Regime Especial Unificado de\nArrecadação de Tributos e Contribuições devidos pelas Microempresas e Empresas de Pequeno Porte - “Simples Nacional”, salvo\ndisposição em contrário, o imposto será calculado segundo as regras do artigo 18 da Lei Complementar n° 123, de 14 de dezembro\nde 2006. (Artigo acrescentado pelo Decreto 52.104, de 29-08-2007; DOE 30-08-2007)"
+      ]
+    },
+    {
+      "artigo": "56-C",
+      "versoes_extraidas": [
+        "Artigo 56-C - Haverá um adicional de 2% (dois por cento) na alíquota aplicável às operações destinadas a consumidor final\nlocalizado neste Estado, ainda que originadas em outra unidade federada, com os seguintes bens e mercadorias: (Lei 16.006/15,\nartigo 2º, I): (Artigo acrescentado pelo Decreto 61.838, de 18-02-2016; DOE 19-02-2016; Efeitos a partir de 23-02-2016)\n\nI - bebidas alcoólicas classificadas na posição 2203 da Nomenclatura Comum do Mercosul - NCM;\n\nII - fumo e seus sucedâneos manufaturados, classificados no capítulo 24 da Nomenclatura Comum do Mercosul - NCM.\n\nNOTA - V. PORTARIA SRE-21/22, de 31-03-2022 (DOE 01-04-2022). Disciplina o recolhimento da diferença entre as alíquotas\ninterna do Estado de São Paulo e interestadual - DIFAL nas operações e prestações destinadas a consumidor final não contribuinte\ndo ICMS localizado neste Estado.\n\nNOTA - V. DECRETO 61.838, de 18-02-2016 (DOE 19-02-2016). Introduz alterações no RICMS e dá outras providências. Artigos 4º e\n5º dispõem sobre procedimentos a serem adotados por contribuintes que possuam, no final do dia 22-02-2016, estoque de bebidas\nalcoólicas classificadas na posição 2203 da Nomenclatura Comum do Mercosul - NCM ou fumo e seus sucedâneos manufaturados,\nclassificados no capítulo 24 da NCM.\n\n§ 1º - A totalidade do imposto correspondente ao adicional previsto no “caput” será destinada ao Fundo Estadual de Combate e\nErradicação da Pobreza - FECOEP;\n\n§ 2º - O adicional de que trata este artigo será devido, também, nas operações:\n\n\n\n\n                                                                                                                                 \n\f          1 - sujeitas ao regime da substituição tributária;\n\n          2 - de importação do exterior de mercadorias ou bens, realizadas por consumidor final;\n\n          3 - de aquisição, em licitação promovida pelo Poder Público, de mercadorias ou bens importados do exterior e apreendidos\n          ou abandonados, realizadas por consumidor final.\n\n      § 3º - O imposto correspondente ao adicional previsto neste artigo deverá ser declarado nos termos dos artigos 253 a 258 e\n      recolhido em separado, por meio de Documento de Arrecadação de Receitas Estaduais - DARE-SP:\n\n\n          1 - pelo contribuinte inscrito no Cadastro de Contribuintes do ICMS do Estado de São Paulo:\n\n\n              a) enquadrado no Regime Periódico de Apuração, até o dia indicado no Anexo IV;\n\n              b) optante pelo Simples Nacional, até o último dia do segundo mês subsequente ao da ocorrência do fato gerador;\n\n          2. pelo contribuinte não inscrito no Cadastro de Contribuintes do ICMS deste Estado, até o dia indicado no parágrafo único\n          do artigo 254-A. (Redação dada ao item pelo Decreto 66.559, de 11-03-2022, DOE 12-03-2022; Em vigor em 14 de março\n          de 2022)\n\n          2 - pelo contribuinte não inscrito no Cadastro de Contribuintes do ICMS deste Estado, até o momento de ocorrência do fato\n          gerador, devendo, neste caso, a guia ou documento de recolhimento mencionar o número do respectivo documento fiscal e\n          acompanhar o trânsito da mercadoria.\n\n      § 4º - Salvo disposição em contrário, o imposto correspondente ao adicional previsto neste artigo não poderá ser compensado com\n      quaisquer créditos.\n\n\n\n\nSecretaria da Fazenda e Planejamento do Estado de São Paulo - Av. Rangel Pestana, 300 - São Paulo / SP - 01017-911 – CNPJ: 46.377.222/0001-29 -\n                              Fale Conosco: 0800-170110 Política de Privacidade Termos de Uso | Versão 1.0.112.0\n\n\n\n\n                                                                                                                                       "
+      ]
+    }
+  ]
+}

@@ -1,0 +1,2663 @@
+{
+  "meta": {
+    "nome": "Catálogo de artigos RICMS/SP - Anexos I e II",
+    "data_referencia": "2026-09-21",
+    "quantidade_anexo_i": 185,
+    "quantidade_anexo_ii": 80,
+    "quantidade_total": 265,
+    "quantidade_validada_fonte_oficial": 13,
+    "observacao": "Todos os 265 artigos foram catalogados a partir dos índices enviados. A extração integral do corpo normativo foi validada apenas nos artigos listados em regras_validadas; os demais permanecem pendentes para não inventar condições ou vigências."
+  },
+  "artigos": [
+    {
+      "anexo": "I",
+      "artigo": 1,
+      "titulo": "ADJUDICAÇÃO EFETUADA PELO ESTADO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art001.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "VALIDADO_FONTE_OFICIAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 2,
+      "titulo": "AIDS - MEDICAMENTOS PARA TRATAMENTO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art002.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 3,
+      "titulo": "AMOSTRA GRÁTIS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art003.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 4,
+      "titulo": "APAE - IMPORTAÇÃO DE MEDICAMENTOS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art004.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 5,
+      "titulo": "ÁREAS DE LIVRE COMÉRCIO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art005.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 6,
+      "titulo": "ARTESANATO REGIONAL (revogado)",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": true,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art006.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 7,
+      "titulo": "ARRENDAMENTO MERCANTIL",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art007.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 8,
+      "titulo": "BAGAGEM DE VIAJANTE",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art008.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 9,
+      "titulo": "BANCO DE ALIMENTOS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art009.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 10,
+      "titulo": "BEFIEX",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art010.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 11,
+      "titulo": "BRITA E CIMENTO - DOAÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art011.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 12,
+      "titulo": "BULBO DE CEBOLA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art012.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 13,
+      "titulo": "BUTANTAN - SOROS E VACINAS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art013.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 14,
+      "titulo": "CIRURGIAS - EQUIPAMENTOS E INSUMOS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art014.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 15,
+      "titulo": "COLETORES DE VOTO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art015.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 16,
+      "titulo": "DEFICIENTES - CADEIRA DE RODAS E PRÓTESES",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art016.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 17,
+      "titulo": "DEFICIENTES - PRODUTOS DIVERSOS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art017.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 18,
+      "titulo": "DEFICIENTES - PRODUTOS PARA INSTITUIÇÃO PÚBLICA OU ENTIDADE ASSISTENCIAL",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art018.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 19,
+      "titulo": "DEFICIENTE FÍSICO - VEÍCULO AUTOMOTOR",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art019.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 20,
+      "titulo": "DIFERENCIAL DE ALÍQUOTA - ATIVO IMOBILIZADO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art020.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 21,
+      "titulo": "DIFUSÃO SONORA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art021.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 22,
+      "titulo": "\"DRAWBACK\"",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art022.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 23,
+      "titulo": "EMBARCAÇÃO NACIONAL",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art023.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 24,
+      "titulo": "EMBARCAÇÃO PESQUEIRA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art024.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 25,
+      "titulo": "EMBARCAÇÕES E AERONAVES - COMBUSTÍVEIS E LUBRIFICANTES (revogado)",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": true,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art025.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 26,
+      "titulo": "EMBRAPA - IMPORTAÇÃO DE PRODUTOS PARA PESQUISA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art026.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 27,
+      "titulo": "EMBRAPA - OPERAÇÕES DIVERSAS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art027.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 28,
+      "titulo": "EMBRIÃO/SÊMEN",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art028.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 29,
+      "titulo": "ENERGIA ELÉTRICA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art029.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 30,
+      "titulo": "ENERGIA SOLAR E EÓLICA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art030.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 31,
+      "titulo": "ENTIDADE ASSISTENCIAL OU DE EDUCAÇÃO - PRODUÇÃO PRÓPRIA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art031.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 32,
+      "titulo": "ENTIDADE ASSISTENCIAL/EDUCACIONAL - IMPORTAÇÃO DE MERCADORIA DOADA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art032.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 33,
+      "titulo": "EXPOSIÇÕES/FEIRAS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art033.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 34,
+      "titulo": "FUNDAÇÃO NACIONAL DE SAÚDE - IMPORTAÇÃO - MEDICAMENTOS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art034.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 35,
+      "titulo": "GASODUTO BRASIL-BOLÍVIA (revogado)",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": true,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art035.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 36,
+      "titulo": "HORTIFRUTIGRANJEIROS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art036.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "VALIDADO_FONTE_OFICIAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 37,
+      "titulo": "IMPORTAÇÃO - HIPÓTESES DIVERSAS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art037.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 38,
+      "titulo": "IMPORTAÇÃO DE PRODUTOS HOSPITALARES",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art038.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 39,
+      "titulo": "IMPORTAÇÃO - RETORNO DE EXPORTAÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art039.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 40,
+      "titulo": "IMPORTAÇÃO - SANEAMENTO BÁSICO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art040.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 41,
+      "titulo": "INSUMOS AGROPECUÁRIOS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art041.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 42,
+      "titulo": "ITAIPU BINACIONAL",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art042.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 43,
+      "titulo": "LEITE PASTEURIZADO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art043.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "VALIDADO_FONTE_OFICIAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 44,
+      "titulo": "LOJA FRANCA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art044.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 45,
+      "titulo": "MÁQUINA DE SELECIONAR FRUTA - IMPORTAÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art045.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 46,
+      "titulo": "METRÔ",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art046.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 47,
+      "titulo": "MICROCOMPUTADOR USADO - DOAÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art047.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 48,
+      "titulo": "MINISTÉRIO DA EDUCAÇÃO E DO DESPORTO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art048.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 49,
+      "titulo": "MOLUSCOS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art049.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 50,
+      "titulo": "MUDA DE PLANTA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art050.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 51,
+      "titulo": "ÓLEO LUBRIFICANTE USADO OU CONTAMINADO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art051.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 52,
+      "titulo": "ÓRGÃOS PÚBLICOS - DOAÇÕES PARA A SECRETARIA DA EDUCAÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art052.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 53,
+      "titulo": "ÓRGÃOS PÚBLICOS - DOAÇÕES PARA VÍTIMAS DA SECA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art053.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 54,
+      "titulo": "ÓRGÃOS PÚBLICOS - DOAÇÕES PARA VÍTIMAS DE CATÁSTROFES",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art054.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 55,
+      "titulo": "ÓRGÃOS PÚBLICOS - AQUISIÇÃO DE BENS, MERCADORIAS OU SERVIÇOS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art055.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 56,
+      "titulo": "ÓRGÃOS PÚBLICOS - IMPORTAÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art056.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 57,
+      "titulo": "ÓRGÃOS PÚBLICOS - IMPORTAÇÃO (revogado)",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": true,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art057.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 58,
+      "titulo": "ÓRGÃOS PÚBLICOS - MERCADORIA PARA INDUSTRIALIZAÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art058.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 59,
+      "titulo": "ÓRGÃOS PÚBLICOS - PRODUTO FARMACÊUTICO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art059.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 60,
+      "titulo": "ÓRGÃOS PÚBLICOS - PRODUTOS E EQUIPAMENTOS MÉDICOS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art060.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 61,
+      "titulo": "ÓRGÃOS PÚBLICOS - PROGRAMA DE MODERNIZAÇÃO FISCAL",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art061.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 62,
+      "titulo": "ÓRGÃOS PÚBLICOS - VEÍCULOS PARA A POLÍCIA FEDERAL, POLÍCIA RODOVIÁRIA FEDERAL E AERONÁUTICA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art062.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 63,
+      "titulo": "ÓRGÃOS PÚBLICOS - VEÍCULOS PARA AS SECRETARIAS DA FAZENDA E DE SEGURANÇA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art063.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 64,
+      "titulo": "PENITENCIÁRIAS - MERCADORIAS PRODUZIDAS POR DETENTOS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art064.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 65,
+      "titulo": "PÓS-LARVA DE CAMARÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art065.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 66,
+      "titulo": "PRESERVATIVOS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art066.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 67,
+      "titulo": "PRODEA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art067.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 68,
+      "titulo": "PRÓ-TAMAR",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art068.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 69,
+      "titulo": "REFEIÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art069.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 70,
+      "titulo": "REPETRO - PLATAFORMAS DE PETRÓLEO E EMBARCAÇÕES (revogado)",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": true,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art070.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 71,
+      "titulo": "REPRESENTAÇÕES DIPLOMÁTICAS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art071.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 72,
+      "titulo": "REPRODUTOR CAPRINO - IMPORTAÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art072.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 73,
+      "titulo": "REPRODUTOR/MATRIZ BOVINO, OVINO OU SUÍNO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art073.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 74,
+      "titulo": "RORAIMA - INSUMOS E IMPLEMENTOS AGRÍCOLAS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art074.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 75,
+      "titulo": "SANGUE - IMPORTAÇÃO DE INSUMOS POR ENTIDADE DE HEMATOLOGIA OU HEMOTERAPIA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art075.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 76,
+      "titulo": "SENAI",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art076.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 77,
+      "titulo": "TÁXI - PRESTAÇÃO DE SERVIÇO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art077.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 78,
+      "titulo": "TRANSPORTE DE PASSAGEIROS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art078.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 79,
+      "titulo": "TRANSPORTE FERROVIÁRIO DE CARGA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art079.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 80,
+      "titulo": "TRENS METROPOLITANOS - IMPORTAÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art080.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 81,
+      "titulo": "USINAS PRODUTORAS DE ENERGIA ELÉTRICA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art081.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "VALIDADO_FONTE_OFICIAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 82,
+      "titulo": "VASILHAME/RECIPIENTE/EMBALAGEM",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art082.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 83,
+      "titulo": "VÍTIMAS DE CALAMIDADES - DOAÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art083.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 84,
+      "titulo": "ZONA FRANCA DE MANAUS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art084.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 85,
+      "titulo": "ÓRGÃOS PÚBLICOS - REEQUIPAMENTO HOSPITALAR",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art085.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 86,
+      "titulo": "ÁGUA NATURAL CANALIZADA (revogado)",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": true,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art086.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 87,
+      "titulo": "LÂMPADA FLUORESCENTE",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art087.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 88,
+      "titulo": "TÁXI - VEÍCULO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art088.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 89,
+      "titulo": "AGROTÓXICO - EMBALAGEM - VAZIA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art089.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 90,
+      "titulo": "OBRAS DE ARTE - IMPORTAÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art090.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 91,
+      "titulo": "FUNDO SOCIAL DE SÃO PAULO - DOAÇÕES",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art091.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 92,
+      "titulo": "MEDICAMENTOS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art092.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 93,
+      "titulo": "PROJETO COURO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art093.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 94,
+      "titulo": "MEDICAMENTOS - ÓRGÃOS PÚBLICOS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art094.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 95,
+      "titulo": "FURNAS - DOAÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art095.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 96,
+      "titulo": "MEDICAMENTOS NÃO REGISTRADOS PELA ANVISA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art096.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 97,
+      "titulo": "PROGRAMA DE SEGURANÇA ALIMENTAR E NUTRICIONAL",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art097.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 98,
+      "titulo": "ALGODÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art098.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 99,
+      "titulo": "BORRACHA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art099.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 100,
+      "titulo": "CANA-DE-AÇÚCAR/ PRODUTOS RESULTANTES DA INDUSTRIALIZAÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art100.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 101,
+      "titulo": "COELHO E AVE",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art101.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 102,
+      "titulo": "GADO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art102.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 103,
+      "titulo": "LEITE",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art103.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 104,
+      "titulo": "HORTIFRUTIGRANJEIROS PARA INDUSTRIALIZAÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art104.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 105,
+      "titulo": "PARTES E PEÇAS PARA FABRICAÇÃO DE TRATOR, CAMINHÃO E ÔNIBUS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art105.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 106,
+      "titulo": "INSUMOS E PRODUTOS ACABADOS DA INDÚSTRIA DE ELETRÔNICOS (revogado)",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": true,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art106.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 107,
+      "titulo": "INDÚSTRIA NAVAL/INFRA-ESTRUTURA PORTUÁRIA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art107.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 108,
+      "titulo": "REPETRO/INDÚSTRIA PAULISTA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art108.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 109,
+      "titulo": "AERONAVES - INSUMOS PARA A FABRICAÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art109.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 110,
+      "titulo": "INSTITUTO LUDWIG - DESEMBARAÇO ADUANEIRO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art110.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 111,
+      "titulo": "PIANO - IMPORTAÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art111.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 112,
+      "titulo": "FUNDAÇÃO ZERBINI",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art112.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 113,
+      "titulo": "AMIGOS DO BEM - DOAÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art113.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 114,
+      "titulo": "INSTITUTO CRIAR DE TV E CINEMA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art114.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 115,
+      "titulo": "FARMÁCIA POPULAR DO BRASIL",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art115.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 116,
+      "titulo": "REPORTO - MODERNIZAÇÃO DE ZONAS PORTUÁRIAS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art116.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 117,
+      "titulo": "DEPÓSITO AFIANÇADO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art117.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 118,
+      "titulo": "TRATORES AGRÍCOLAS E COLHEITADEIRAS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art118.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 119,
+      "titulo": "PILHAS E BATERIAS USADAS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art119.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 120,
+      "titulo": "ÓRGÃOS PÚBLICOS - PROGRAMAS DE FORTALECIMENTO E MODERNIZAÇÃO ESTADUAL",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art120.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 121,
+      "titulo": "TRIGO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art121.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 122,
+      "titulo": "AVIÕES",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art122.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 123,
+      "titulo": "FARINHA DE MANDIOCA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art123.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "VALIDADO_FONTE_OFICIAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 124,
+      "titulo": "GASODUTO BRASIL-BOLÍVIA - MANUTENÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art124.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 125,
+      "titulo": "LOCOMOTIVA E TRILHO - IMPORTAÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art125.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 126,
+      "titulo": "SISTEMAS DE MEDIÇÃO DE VAZÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art126.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 127,
+      "titulo": "PEÇA DE VEÍCULO AUTOMOTOR SUBSTITUÍDA EM GARANTIA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art127.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 128,
+      "titulo": "OBRAS DE ARTE",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art128.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 129,
+      "titulo": "REAGENTE PARA DIAGNÓSTICO DA DOENÇA DE CHAGAS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art129.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 130,
+      "titulo": "MEDICAMENTOS E EQUIPAMENTOS DESTINADOS À PESQUISA COM SERES HUMANOS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art130.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 131,
+      "titulo": "MÁQUINAS E EQUIPAMENTOS DE RADIODIFUSÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art131.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 132,
+      "titulo": "PEÇA SUBSTITUÍDA EM VIRTUDE DE GARANTIA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art132.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 133,
+      "titulo": "METRÔ - IMPLANTAÇÃO DA LINHA 4",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art133.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 134,
+      "titulo": "PROGRAMA CAMINHO DA ESCOLA - MINISTÉRIO DA EDUCAÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art134.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 135,
+      "titulo": "FARINHA DE TRIGO E PRODUTOS RESULTANTES DE SUA INDUSTRIALIZAÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art135.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 136,
+      "titulo": "GESAC - GOVERNO FEDERAL",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art136.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 137,
+      "titulo": "ÓLEO COMESTÍVEL",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art137.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 138,
+      "titulo": "PROINFO - MINISTÉRIO DA EDUCAÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art138.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 139,
+      "titulo": "TRANSPORTE INTERMUNICIPAL DE CARGAS (revogado)",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": true,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art139.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 140,
+      "titulo": "OPERAÇÕES INTERNAS COM MAÇÃ E PÊRA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art140.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "VALIDADO_FONTE_OFICIAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 141,
+      "titulo": "TRATADO BINACIONAL BRASILUCRÂNIA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art141.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 142,
+      "titulo": "AACD",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art142.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 143,
+      "titulo": "PEÇA DE AERONAVE SUBSTITUÍDA EM VIRTUDE DE GARANTIA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art143.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 144,
+      "titulo": "CARNE",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art144.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 145,
+      "titulo": "PROGRAMA BANDA LARGA POPULAR",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art145.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 146,
+      "titulo": "IMPORTAÇÃO - EQUIPAMENTO MÉDICO-HOSPITALAR",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art146.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 147,
+      "titulo": "ÓRGÃOS PÚBLICOS - EQUIPAMENTOS DE SEGURANÇA ELETRÔNICA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art147.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 148,
+      "titulo": "IMPORTAÇÃO - FORÇAS ARMADAS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art148.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 149,
+      "titulo": "SERVIÇO DE TRANSPORTE - EXPORTAÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art149.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 150,
+      "titulo": "GRIPE A - MEDICAMENTO PARA TRATAMENTO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art150.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 151,
+      "titulo": "LOCOMOTIVA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art151.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 152,
+      "titulo": "UNIÃO DOS ESCOTEIROS DO BRASIL",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art152.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 153,
+      "titulo": "FUNDAÇÃO FACULDADE DE MEDICINA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art153.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 154,
+      "titulo": "TRATAMENTO DE CÂNCER",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art154.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 155,
+      "titulo": "TRANSPORTE DE PASSAGEIROS - CPTM",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art155.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 156,
+      "titulo": "OBRA SOCIAL NOSSA SENHORA DA GLÓRIA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art156.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 157,
+      "titulo": "HEMOBRÁS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art157.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 158,
+      "titulo": "TREM, LOCOMOTIVA OU VAGÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art158.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 159,
+      "titulo": "MATÉRIA-PRIMA, MATERIAL SECUNDÁRIO, EMBALAGENS, PARTES, PEÇAS, MÁQUINAS E EQUIPAMENTOS -",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art159.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 160,
+      "titulo": "METRÔ - IMPLANTAÇÃO DA LINHA 6",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art160.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 161,
+      "titulo": "METRÔ - IMPLANTAÇÃO DA LINHA 18",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art161.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 162,
+      "titulo": "PARCERIA PÚBLICO-PRIVADA - HOSPITAIS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art162.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 163,
+      "titulo": "BOLA DE AÇO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art163.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 164,
+      "titulo": "FUNDAÇÃO MUSEU DA IMAGEM E DO SOM – MIS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art164.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 165,
+      "titulo": "MUDAS DE SERINGUEIRA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art165.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 166,
+      "titulo": "ENERGIA ELÉTRICA - MICROGERADORES E MINIGERADORES",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art166.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 167,
+      "titulo": "ALIMENTOS (revogado)",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": true,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art167.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 168,
+      "titulo": "ARROZ",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art168.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 169,
+      "titulo": "FEIJÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art169.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 170,
+      "titulo": "ENERGIA SOLAR - PRÉDIOS PÚBLICOS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art170.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 171,
+      "titulo": "IPT – MATERIAIS DE REFERÊNCIA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art171.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 172,
+      "titulo": "BENS E MERCADORIAS DIGITAIS",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an1art172.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 173,
+      "titulo": "AME – MEDICAMENTO PARA TRATAMENTO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": null,
+      "resolver_url_por_titulo_no_portal": true,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 174,
+      "titulo": "AUTOMATED PEOPLE MOVER",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": null,
+      "resolver_url_por_titulo_no_portal": true,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 175,
+      "titulo": null,
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": null,
+      "resolver_url_por_titulo_no_portal": true,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 176,
+      "titulo": "ABSORVENTES",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": null,
+      "resolver_url_por_titulo_no_portal": true,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 177,
+      "titulo": "ACELERADORES LINEARES",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": null,
+      "resolver_url_por_titulo_no_portal": true,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 178,
+      "titulo": "METRÔ - EXPANSÃO DA LINHA 2",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": null,
+      "resolver_url_por_titulo_no_portal": true,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 179,
+      "titulo": "FIBROSE CÍSTICA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": null,
+      "resolver_url_por_titulo_no_portal": true,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 180,
+      "titulo": "DMD - MEDICAMENTO PARA TRATAMENTO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": null,
+      "resolver_url_por_titulo_no_portal": true,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 181,
+      "titulo": "EQUIPAMENTOS RECREATIVOS PARA USO EM PARQUE DE DIVERSÃO - IMPORTAÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": null,
+      "resolver_url_por_titulo_no_portal": true,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 182,
+      "titulo": "REFEIÇÃO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": null,
+      "resolver_url_por_titulo_no_portal": true,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 183,
+      "titulo": "LEVEDURA",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": null,
+      "resolver_url_por_titulo_no_portal": true,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 184,
+      "titulo": "TREM INTERCIDADES - TIC EIXO NORTE",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": null,
+      "resolver_url_por_titulo_no_portal": true,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "I",
+      "artigo": 185,
+      "titulo": "ÁREAS DE LIVRE COMÉRCIO",
+      "tipo_beneficio": "ISENCAO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": null,
+      "resolver_url_por_titulo_no_portal": true,
+      "status_coleta_texto": "VALIDADO_FONTE_OFICIAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 1,
+      "titulo": "AERONAVES, PARTES E PEÇAS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art001.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 2,
+      "titulo": "BEFIEX",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art002.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 3,
+      "titulo": "CESTA BÁSICA",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art003.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "VALIDADO_FONTE_OFICIAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 4,
+      "titulo": "DIAMANTES E ESMERALDAS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art004.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 5,
+      "titulo": "EMPRESA JORNALÍSTICA/EDITORA DE LIVROS/EMPRESA DE RADIODIFUSÃO - IMPORTAÇÃO",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art005.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 6,
+      "titulo": "EQÜINO PURO-SANGUE",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art006.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 7,
+      "titulo": "FLOTIGAM EDA-B",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art007.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 8,
+      "titulo": "GÁS NATURAL",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art008.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 9,
+      "titulo": "INSUMOS AGROPECUÁRIOS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art009.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 10,
+      "titulo": "INSUMOS AGROPECUÁRIOS - RAÇÕES E ADUBOS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art010.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 11,
+      "titulo": "MÁQUINAS, APARELHOS E VEÍCULOS USADOS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art011.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 12,
+      "titulo": "MÁQUINAS INDUSTRIAIS E IMPLEMENTOS AGRÍCOLAS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art012.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "VALIDADO_FONTE_OFICIAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 13,
+      "titulo": "OBRA DE ARTE (revogado)",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": true,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art013.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 14,
+      "titulo": "PEDRA BRITADA E PEDRA-DE-MÃO",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art014.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 15,
+      "titulo": "PÓ DE ALUMÍNIO",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art015.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 16,
+      "titulo": "RADIOCHAMADA",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art016.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 17,
+      "titulo": "REFEIÇÃO",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art017.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 18,
+      "titulo": "TELEVISÃO POR ASSINATURA",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art018.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 19,
+      "titulo": "TRANSPORTE DE LEITE",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art019.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 20,
+      "titulo": "USINAS PRODUTORAS DE ENERGIA ELÉTRICA",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art020.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 21,
+      "titulo": "ZONA FRANCA DE MANAUS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art021.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 22,
+      "titulo": "MEDICAMENTOS E COSMÉTICOS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art022.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 23,
+      "titulo": "INTERNET - PROVEDOR DE ACESSO (revogado)",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": true,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art023.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 24,
+      "titulo": "PNEUS - CÂMARAS-DE-AR",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art024.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 25,
+      "titulo": "VEÍCULOS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art025.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 26,
+      "titulo": "DESENVOLVIMENTOAGROPECUÁRIO",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art026.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 27,
+      "titulo": "DESENVOLVIMENTO INDUSTRIAL E AGROPECUÁRIO, PROGRAMA HABITACIONAL E OUTROS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art027.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 28,
+      "titulo": "DESENVOLVIMENTO INDUSTRIAL/CONSTRUÇÃO CIVIL",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art028.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 29,
+      "titulo": "CARROÇARIA DE ÔNIBUS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art029.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 30,
+      "titulo": "PRODUTOS DE COURO, SAPATOS, BOLSAS, CINTOS, CARTEIRAS E OUTROS ACESSÓRIOS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art030.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 31,
+      "titulo": "ALGODÃO EM PLUMA",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art031.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 32,
+      "titulo": "ATACADISTA DE COURO",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art032.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 33,
+      "titulo": "VINHO",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art033.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 34,
+      "titulo": "PERFUMES, COSMETICOS E PRODUTOS DE HIGIENE PESSOAL",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art034.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 35,
+      "titulo": "INSTRUMENTOS MUSICAIS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art035.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 36,
+      "titulo": "AUTOPEÇAS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art036.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 37,
+      "titulo": "BRINQUEDOS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art037.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 38,
+      "titulo": "REGIME DE ADMISSÃO TEMPORÁRIA",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art038.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 39,
+      "titulo": "PRODUTOS ALIMENTÍCIOS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art039.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "VALIDADO_FONTE_OFICIAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 40,
+      "titulo": "CRISTAL E PORCELANA",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art040.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 41,
+      "titulo": "NOVILHO PRECOCE",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art041.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 42,
+      "titulo": "ALHO",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art042.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 43,
+      "titulo": "MANDIOCA",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art043.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 44,
+      "titulo": "TELECOMUNICAÇÕES - \"CALL CENTER\")",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art044.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 45,
+      "titulo": "CARNE",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art045.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "VALIDADO_FONTE_OFICIAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 46,
+      "titulo": "BIODIESEL - B-100",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art046.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 47,
+      "titulo": "RASTREAMENTO DE VEÍCULO E CARGA",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art047.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 48,
+      "titulo": "PRODUTOS QUÍMICOS E PETROQUÍMICOS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art048.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 49,
+      "titulo": "PARTES DE ELEVADORES, ESCADAS E TAPETES ROLANTES",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art049.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 50,
+      "titulo": "VEICULAÇÃO DE MENSAGENS DE PUBLICIDADE E PROPAGANDA NA TELEVISÃO POR ASSINATURA",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art050.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 51,
+      "titulo": "QUEIJOS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art051.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "VALIDADO_FONTE_OFICIAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 52,
+      "titulo": "PRODUTOS TÊXTEIS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art052.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 53,
+      "titulo": "HIDROCARBONETOS LÍQUIDOS - SOLVENTES",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art053.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 54,
+      "titulo": "ELETRODOMÉSTICOS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art054.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 55,
+      "titulo": "LÂMPADAS LED, LUMINÁRIAS LED, REFLETORES LED, FITAS LED E PAINÉIS LED",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art055.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 56,
+      "titulo": "MDP, MDF e CHAPAS DE FIBRAS DE MADEIRA",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art056.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 57,
+      "titulo": "CÉLULAS FOTOVOLTAICAS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art057.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 58,
+      "titulo": "BARRAS DE AÇO",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art058.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 59,
+      "titulo": "TRATAMENTO DE EFLUENTES DOMÉSTICOS E INDUSTRIAIS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art059.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 60,
+      "titulo": "PAPEL CUTSIZE",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art060.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 61,
+      "titulo": "SUCO DE LARANJA",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art061.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 62,
+      "titulo": "SOLUÇÃO PARENTERAL",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art062.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 63,
+      "titulo": "REGIME DE TRIBUTAÇÃO UNIFICADA - RTU",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art063.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 64,
+      "titulo": "VEÍCULOS MILITARES",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art064.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 65,
+      "titulo": "CARROCERIAS SOBRE CHASSI, VAGÕES FERROVIÁRIOS DE CARGA, CARROCERIAS PARA VEÍCULOS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art065.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 66,
+      "titulo": "MERCADORIAS DE COBRE",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art066.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 67,
+      "titulo": "VEICULAÇÃO DE MENSAGENS DE PUBLICIDADE E PROPAGANDA EM MÍDIA EXTERIOR",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art067.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 68,
+      "titulo": "COMPONENTES DE SISTEMAS ESPACIAIS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art068.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 69,
+      "titulo": "BIOGÁS E BIOMETANO",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art069.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 70,
+      "titulo": "AREIA",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art070.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 71,
+      "titulo": "ORIUNDOS DO MILHO, AMIDO MODIFICADO E DEXTRINA DE MILHO, COLAS À BASE DE AMIDOS DE MILHO,",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art071.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 72,
+      "titulo": "ÔNIBUS MOVIDO A ENERGIA ELÉTRICA",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art072.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 73,
+      "titulo": "SOFTWARES",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art073.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 74,
+      "titulo": "CARNE",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art074.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 75,
+      "titulo": "PNEUS E CÂMARAS DE AR – SAÍDA INTERNA",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art075.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 76,
+      "titulo": "FLUORDEOXIGLICOSE-FDG",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": "https://legislacao.fazenda.sp.gov.br/Paginas/an2art076.aspx",
+      "resolver_url_por_titulo_no_portal": false,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 77,
+      "titulo": "INSUMOS AGROPECUÁRIOS - ADUBOS",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": null,
+      "resolver_url_por_titulo_no_portal": true,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 78,
+      "titulo": null,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": null,
+      "resolver_url_por_titulo_no_portal": true,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 79,
+      "titulo": "LEITE VEGETAL DE AVEIA",
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": null,
+      "resolver_url_por_titulo_no_portal": true,
+      "status_coleta_texto": "PENDENTE_EXTRAÇÃO_INTEGRAL"
+    },
+    {
+      "anexo": "II",
+      "artigo": 80,
+      "titulo": null,
+      "tipo_beneficio": "REDUCAO_BASE_CALCULO",
+      "revogado_no_indice": false,
+      "url_oficial_direta": null,
+      "resolver_url_por_titulo_no_portal": true,
+      "status_coleta_texto": "VALIDADO_FONTE_OFICIAL"
+    }
+  ]
+}

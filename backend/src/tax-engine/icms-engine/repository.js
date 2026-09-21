@@ -1,16 +1,15 @@
-// Loader ES module para a base de regras de ICMS/CFOP/CST (sistema atual,
-// pré-Reforma) — ver README.md deste diretório pro schema esperado de cada
-// arquivo. Igual em espírito a legal-rules/repository.js: não contém
-// nenhuma regra tributária, só lê e faz cache dos JSONs. Diferente daquela
-// pasta (cujo conteúdo já veio pronto do "RTC Motor Modular v4.34"), os
-// arquivos aqui começam vazios (`[]`) até serem preenchidos.
+// Loader ES module para as bases de ICMS/CFOP/CST/PIS-COFINS de São Paulo,
+// todas fornecidas pelo usuário (fontes-sp/, cada arquivo rastreável até a
+// fonte oficial declarada no seu próprio `meta`). Não contém nenhuma regra
+// tributária: só lê, valida e faz cache dos JSONs — igual em espírito a
+// legal-rules/repository.js (Reforma Tributária).
 
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DATA_DIR = path.join(__dirname, 'data');
+const DATA_DIR = path.join(__dirname, 'fontes-sp');
 
 const cache = new Map();
 
@@ -22,10 +21,46 @@ function carregar(caminhoRelativo) {
   return valor;
 }
 
-export function getIcmsRules() {
-  return {
-    cfopRules: carregar('cfop_rules.json'),
-    cstRules: carregar('cst_icms_rules.json'),
-    aliquotaRules: carregar('icms_aliquota_por_ncm.json'),
-  };
+export function getCbenefSp() {
+  return carregar('cbenef_sp_v20260626.json');
+}
+
+export function getTipiNcmIpi() {
+  return carregar('tipi_ncm_ipi_2026.json');
+}
+
+export function getCfop() {
+  return carregar('cfop_it_2023_002_v2_10.json');
+}
+
+export function getIcmsSegmentosSt() {
+  return carregar('icms_st_sp_cat68_segmentos_v20260706.json');
+}
+
+export function getIcmsAliquotaGeral() {
+  return carregar('icms_sp_art52_56c.json');
+}
+
+export function getIcmsAnexosCatalogo() {
+  return carregar('icms_sp_anexos_catalogo_265_v20260921.json');
+}
+
+export function getIcmsAnexosValidados() {
+  return carregar('icms_sp_anexos_regras_validadas_v20260921.json');
+}
+
+export function getPisCofins4310() {
+  return carregar('pis_cofins_tabela_4_3_10_v1_25.json');
+}
+
+export function getPisCofins4313() {
+  return carregar('pis_cofins_tabela_4_3_13_v1_36.json');
+}
+
+export function getMvaIvaSt() {
+  return carregar('mva_iva_sp_por_segmento_v20260921.json');
+}
+
+export function getNbs() {
+  return carregar('nbs_2_0.json');
 }

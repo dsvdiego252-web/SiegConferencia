@@ -1,152 +1,93 @@
-// Motor de ICMS/CFOP/CST — compara o que o XML informou (CFOP, CST/CSOSN,
-// alíquota de ICMS) com o que a base de regras (data/, ver README.md deste
-// diretório) diz que deveria ser, dado o contexto da operação. Mesmo
-// princípio do goods-engine: "primeiro descobrir como deveria estar
-// tributado, depois comparar com o que veio no documento" — e nunca
-// confirmar uma divergência sem ter uma regra carregada que sustente isso.
-//
-// Enquanto data/*.json estiverem vazios (`[]`, o estado inicial deste
-// motor), toda conferência devolve SEM_BASE_CARREGADA — nunca um CFOP/CST/
-// alíquota "provável" inventado.
+// Motor de conferência de ICMS/CFOP/CST/PIS-COFINS/cBenef — pipeline
+// sequencial (ordem definida junto com o usuário: NCM/TIPI → CFOP →
+// PIS/COFINS → alíquota de ICMS → cBenef×CST → ICMS-ST → benefícios dos
+// Anexos I/II), cada estágio isolado em pipeline/*.js e protegido contra
+// exceção (um estágio quebrando não pode derrubar os outros). Mesmo
+// princípio de todo o motor tributário deste projeto: "primeiro descobrir
+// como deveria estar tributado, depois comparar com o documento" — e nunca
+// confirmar uma divergência sem uma base de dados real por trás (ver
+// README.md e fontes-sp/ pra rastrear cada regra até a fonte oficial).
 
-import { getIcmsRules } from './repository.js';
+import { validarNcmItem } from './pipeline/validarNcm.js';
+import { validarCfopItem } from './pipeline/validarCfop.js';
+import { validarPisCofinsItem } from './pipeline/validarPisCofins.js';
+import { validarAliquotaIcmsItem } from './pipeline/validarAliquotaIcms.js';
+import { validarCbenefItem } from './pipeline/validarCbenef.js';
+import { verificarStItem } from './pipeline/verificarSt.js';
+import { verificarBeneficiosAnexosItem } from './pipeline/verificarBeneficiosAnexos.js';
 
-function apenasDigitos(valor) {
-  return String(valor ?? '').replace(/\D/g, '');
-}
-
-function canonicalizarNcm(valor) {
-  return apenasDigitos(valor);
-}
-
-function condicoesBatem(condicoes, valores) {
-  return Object.entries(condicoes || {}).every(([chave, esperado]) => {
-    if (esperado === undefined || esperado === null) return true;
-    return valores[chave] === esperado;
-  });
-}
-
-function encontrarRegra(regras, valores) {
-  return regras.find((regra) => condicoesBatem(regra.condicoes, valores)) || null;
-}
-
-function encontrarRegraAliquota(regras, ncmCanonico, ufOrigem, ufDestino) {
-  return (
-    regras.find((regra) => {
-      const prefixo = canonicalizarNcm(regra.ncmPrefixo);
-      if (!prefixo || !ncmCanonico.startsWith(prefixo)) return false;
-      if (regra.ufOrigem && regra.ufOrigem !== ufOrigem) return false;
-      if (regra.ufDestino && regra.ufDestino !== ufDestino) return false;
-      return true;
-    }) || null
-  );
-}
-
-function montarResultadoSemBase() {
-  return {
-    status: 'SEM_BASE_CARREGADA',
-    cfopEsperado: null,
-    cstEsperado: null,
-    aliquotaEsperada: null,
-    divergencias: [],
-    pendencias: [],
-    notas: ['Base de regras de ICMS/CFOP/CST ainda não foi cadastrada — ver tax-engine/icms-engine/README.md.'],
-  };
+function comProtecao(rotulo, fn) {
+  try {
+    return fn();
+  } catch (err) {
+    console.error(`Falha no estágio "${rotulo}" da conferência de ICMS/CFOP/CST — item ignorado nesse estágio:`, err.message, err.stack);
+    return null;
+  }
 }
 
 /**
- * Confere CFOP, CST/CSOSN e alíquota de ICMS de um item contra a base de
- * regras carregada. `contexto`: { tipoOperacao: 'venda'|'compra',
- * regimeTributario, mesmoEstado: true|false|null, consumidorFinal:
- * true|false|null, ufEmitente, ufDestinatario } — qualquer campo do
- * contexto que seja `null`/`undefined` simplesmente não participa do
- * casamento de regras (a regra correspondente cai em pendência, nunca em
- * divergência arriscada).
- */
-export function conferirIcmsItem(item, contexto = {}) {
-  const { cfopRules, cstRules, aliquotaRules } = getIcmsRules();
-  if (!cfopRules.length && !cstRules.length && !aliquotaRules.length) {
-    return montarResultadoSemBase();
-  }
-
-  const valoresContexto = {
-    tipoOperacao: contexto.tipoOperacao ?? null,
-    mesmoEstado: contexto.mesmoEstado ?? null,
-    consumidorFinal: contexto.consumidorFinal ?? null,
-    regimeTributario: contexto.regimeTributario ?? null,
-  };
-
-  const divergencias = [];
-  const pendencias = [];
-
-  let cfopEsperado = null;
-  if (cfopRules.length) {
-    const regra = encontrarRegra(cfopRules, valoresContexto);
-    if (regra) {
-      cfopEsperado = regra.cfopEsperado;
-      if (item.cfop && item.cfop !== cfopEsperado) {
-        divergencias.push(`CFOP informado (${item.cfop}) diverge do esperado (${cfopEsperado}${regra.descricao ? ` — ${regra.descricao}` : ''}).`);
-      }
-    } else {
-      pendencias.push('Nenhuma regra de CFOP cadastrada bate com o contexto desta operação — revisar manualmente.');
-    }
-  }
-
-  let cstEsperado = null;
-  if (cstRules.length) {
-    const regra = encontrarRegra(cstRules, valoresContexto);
-    if (regra) {
-      cstEsperado = regra.cstEsperado;
-      const cstInformado = item.icms?.cst !== null && item.icms?.cst !== undefined ? String(item.icms.cst) : null;
-      if (cstInformado && cstInformado !== String(cstEsperado)) {
-        divergencias.push(`CST/CSOSN informado (${cstInformado}) diverge do esperado (${cstEsperado}${regra.descricao ? ` — ${regra.descricao}` : ''}).`);
-      }
-    } else {
-      pendencias.push('Nenhuma regra de CST/CSOSN cadastrada bate com o regime/situação desta operação — revisar manualmente.');
-    }
-  }
-
-  let aliquotaEsperada = null;
-  if (aliquotaRules.length) {
-    const ncmCanonico = canonicalizarNcm(item.ncm);
-    if (!ncmCanonico) {
-      pendencias.push('NCM ausente ou inválida no item — não é possível conferir a alíquota de ICMS.');
-    } else {
-      const regra = encontrarRegraAliquota(aliquotaRules, ncmCanonico, contexto.ufEmitente, contexto.ufDestinatario);
-      if (regra) {
-        const usarInterestadual = valoresContexto.mesmoEstado === false && Number.isFinite(regra.aliquotaInterestadual);
-        aliquotaEsperada = usarInterestadual ? regra.aliquotaInterestadual : regra.aliquotaInterna;
-        if (valoresContexto.mesmoEstado === null && Number.isFinite(regra.aliquotaInterestadual) && regra.aliquotaInterestadual !== regra.aliquotaInterna) {
-          pendencias.push('UF de emitente/destinatário não disponível — não dá pra saber se a operação é interna ou interestadual pra conferir a alíquota.');
-          aliquotaEsperada = null;
-        } else if (Number.isFinite(item.icms?.aliquota) && item.icms.aliquota > 0 && Math.abs(item.icms.aliquota - aliquotaEsperada) > 0.01) {
-          divergencias.push(`Alíquota de ICMS informada (${item.icms.aliquota}%) diverge da esperada (${aliquotaEsperada}%${regra.observacao ? ` — ${regra.observacao}` : ''}).`);
-        }
-      } else {
-        pendencias.push(`NCM ${item.ncm} não encontrado na tabela de alíquotas de ICMS carregada — revisar manualmente.`);
-      }
-    }
-  }
-
-  const status = divergencias.length ? 'DIVERGENTE' : pendencias.length ? 'REVISAO_MANUAL' : 'CORRETO';
-  return { status, cfopEsperado, cstEsperado, aliquotaEsperada, divergencias, pendencias, notas: [] };
-}
-
-/**
- * Monta o contexto de uma operação a partir do documento já classificado
- * (entrada/saída) e do regime tributário do cliente — usado antes de
- * chamar conferirIcmsItem pra cada item do documento. `mesmoEstado`/
- * `ufEmitente`/`ufDestinatario` ficam `null` até o parser/cache passarem a
- * guardar a UF de emitente/destinatário (ver "Limitação atual" no README).
+ * Monta o contexto da operação a partir do documento já classificado
+ * (entrada/saída) e do regime tributário do cliente — usado antes de rodar
+ * o pipeline em cada item do documento.
  */
 export function contextoIcmsDocumento(doc, operacao, regimeTributario) {
+  const ufEmitente = doc.emitente?.uf || null;
+  const ufDestinatario = doc.destinatario?.uf || null;
   return {
+    operacao,
     tipoOperacao: operacao === 'saida' ? 'venda' : operacao === 'entrada' ? 'compra' : null,
     regimeTributario: regimeTributario ?? null,
     consumidorFinal: doc.tipoDocumento === 'NFCe' ? true : null,
-    mesmoEstado: null,
-    ufEmitente: null,
-    ufDestinatario: null,
+    mesmoEstado: ufEmitente && ufDestinatario ? ufEmitente === ufDestinatario : null,
+    ufEmitente,
+    ufDestinatario,
+    dataEmissao: String(doc.dataEmissao || '').slice(0, 10) || null,
+  };
+}
+
+const ESTAGIOS = [
+  { nome: 'ncmTipi', motor: 'ncm', fn: (item) => validarNcmItem(item) },
+  { nome: 'cfop', motor: 'cfop', fn: (item, contexto) => validarCfopItem(item, contexto) },
+  { nome: 'pisCofins', motor: 'pis_cofins', fn: (item, contexto) => validarPisCofinsItem(item, contexto) },
+  { nome: 'aliquotaIcms', motor: 'icms_aliquota', fn: (item, contexto) => validarAliquotaIcmsItem(item, contexto) },
+  { nome: 'cbenef', motor: 'icms_cbenef', fn: (item, contexto) => validarCbenefItem(item, contexto) },
+  { nome: 'icmsSt', motor: 'icms_st', fn: (item) => verificarStItem(item) },
+  { nome: 'beneficiosAnexos', motor: 'icms_anexos', fn: (item) => verificarBeneficiosAnexosItem(item) },
+];
+
+function statusMaisGrave(statusList) {
+  if (statusList.includes('DIVERGENTE')) return 'DIVERGENTE';
+  if (statusList.includes('REVISAO_MANUAL')) return 'REVISAO_MANUAL';
+  if (statusList.length === 0) return 'SEM_BASE_CARREGADA';
+  return 'CORRETO';
+}
+
+/**
+ * Roda o pipeline completo de conferência fiscal de SP num único item,
+ * combinando os resultados de todos os estágios num só veredito. Cada
+ * mensagem de divergência/pendência já cita a fonte (fundamento legal,
+ * tabela, artigo) que a gerou — nunca uma afirmação solta.
+ */
+export function conferirIcmsItem(item, contexto = {}) {
+  const divergencias = [];
+  const pendencias = [];
+  const porEstagio = {};
+  const statusPorEstagio = [];
+
+  for (const estagio of ESTAGIOS) {
+    const resultado = comProtecao(estagio.nome, () => estagio.fn(item, contexto));
+    if (!resultado) continue;
+    porEstagio[estagio.nome] = resultado;
+    statusPorEstagio.push(resultado.status);
+    for (const d of resultado.divergencias || []) divergencias.push(`[${estagio.nome}] ${d}`);
+    for (const p of resultado.pendencias || []) pendencias.push(`[${estagio.nome}] ${p}`);
+  }
+
+  return {
+    status: statusMaisGrave(statusPorEstagio),
+    estagios: porEstagio,
+    divergencias,
+    pendencias,
   };
 }
 
@@ -165,5 +106,5 @@ export function conferirIcmsDocumento(doc, operacao, regimeTributario) {
         ? 'SEM_BASE_CARREGADA'
         : 'CORRETO';
 
-  return { itens, status };
+  return { itens, status, contexto };
 }
