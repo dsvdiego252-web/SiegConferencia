@@ -108,7 +108,7 @@ export async function auditarMotorTributario() {
       else reforma.revisaoManual += 1;
 
       const operacao = classificarOperacao(doc, cliente.cnpj);
-      const icmsDoc = conferirIcmsDocumento(doc, operacao, cliente.regimeTributario);
+      const icmsDoc = conferirIcmsDocumento(doc, operacao, cliente.regimeTributario, cliente.atividade);
       if (icmsDoc.status === 'SEM_BASE_CARREGADA') icms.semBase += 1;
       else if (icmsDoc.status === 'CORRETO') icms.correto += 1;
       else if (icmsDoc.status === 'DIVERGENTE') icms.divergente += 1;

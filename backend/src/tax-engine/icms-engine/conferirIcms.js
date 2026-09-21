@@ -30,7 +30,7 @@ function comProtecao(rotulo, fn) {
  * (entrada/saída) e do regime tributário do cliente — usado antes de rodar
  * o pipeline em cada item do documento.
  */
-export function contextoIcmsDocumento(doc, operacao, regimeTributario) {
+export function contextoIcmsDocumento(doc, operacao, regimeTributario, atividade) {
   const ufEmitente = doc.emitente?.uf || null;
   const ufDestinatario = doc.destinatario?.uf || null;
   // NFCe (modelo 65) é, por definição do próprio modelo fiscal, restrita a
@@ -47,6 +47,7 @@ export function contextoIcmsDocumento(doc, operacao, regimeTributario) {
     operacao,
     tipoOperacao: operacao === 'saida' ? 'venda' : operacao === 'entrada' ? 'compra' : null,
     regimeTributario: regimeTributario ?? null,
+    atividade: atividade ?? null,
     consumidorFinal: doc.tipoDocumento === 'NFCe' ? true : null,
     mesmoEstado,
     ufEmitente,
@@ -62,7 +63,7 @@ const ESTAGIOS = [
   { nome: 'aliquotaIcms', motor: 'icms_aliquota', fn: (item, contexto) => validarAliquotaIcmsItem(item, contexto) },
   { nome: 'cbenef', motor: 'icms_cbenef', fn: (item, contexto) => validarCbenefItem(item, contexto) },
   { nome: 'icmsSt', motor: 'icms_st', fn: (item, contexto) => verificarStItem(item, contexto) },
-  { nome: 'beneficiosAnexos', motor: 'icms_anexos', fn: (item) => verificarBeneficiosAnexosItem(item) },
+  { nome: 'beneficiosAnexos', motor: 'icms_anexos', fn: (item, contexto) => verificarBeneficiosAnexosItem(item, contexto) },
 ];
 
 function statusMaisGrave(statusList) {
@@ -105,8 +106,8 @@ export function conferirIcmsItem(item, contexto = {}) {
   };
 }
 
-export function conferirIcmsDocumento(doc, operacao, regimeTributario) {
-  const contexto = contextoIcmsDocumento(doc, operacao, regimeTributario);
+export function conferirIcmsDocumento(doc, operacao, regimeTributario, atividade) {
+  const contexto = contextoIcmsDocumento(doc, operacao, regimeTributario, atividade);
   const itens = doc.itens.map((item, indice) => ({
     numeroItem: item.numeroItem ?? indice + 1,
     conferencia: conferirIcmsItem(item, contexto),

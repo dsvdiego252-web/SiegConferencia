@@ -40,10 +40,11 @@ function situacaoDocumento(doc, situacaoReforma) {
  * lista de documentos já classificados (entrada/saída/desconhecida) e monta
  * a mesma estrutura que /api/painel devolve — usada tanto pela busca ao
  * vivo quanto pelo painel consolidado (que só lê do cache permanente, nunca
- * busca na SIEG). `regimeTributario` (opcional) é o regime do cliente,
- * repassado à conferência de ICMS/CFOP/CST (ver tax-engine/icms-engine).
+ * busca na SIEG). `regimeTributario` e `atividade` (opcionais) são do
+ * cadastro do cliente, repassados à conferência de ICMS/CFOP/CST (ver
+ * tax-engine/icms-engine).
  */
-export function montarPainelDeClassificados(classificados, dataCorteReforma, regimeTributario = null) {
+export function montarPainelDeClassificados(classificados, dataCorteReforma, regimeTributario = null, atividade = null) {
   const reforma = analisarConformidadeReforma(classificados, dataCorteReforma);
   const situacaoReformaPorChave = new Map(reforma.porDocumento.map((d) => [d.chave, d.situacao]));
 
@@ -69,7 +70,7 @@ export function montarPainelDeClassificados(classificados, dataCorteReforma, reg
       validacaoMatematica: doc.cancelada ? null : comProtecao('validacaoMatematica', () => validarDocumento(doc)),
       validacaoReforma: doc.cancelada ? null : comProtecao('validacaoReforma', () => validarReformaDocumento(doc, dataCorteReforma)),
       classificacaoMercadorias: doc.cancelada ? null : comProtecao('classificacaoMercadorias', () => classificarMercadoriasDocumento(doc)),
-      conferenciaIcms: doc.cancelada ? null : comProtecao('conferenciaIcms', () => conferirIcmsDocumento(doc, operacao, regimeTributario)),
+      conferenciaIcms: doc.cancelada ? null : comProtecao('conferenciaIcms', () => conferirIcmsDocumento(doc, operacao, regimeTributario, atividade)),
     };
   });
 

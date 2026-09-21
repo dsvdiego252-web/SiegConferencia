@@ -170,6 +170,6 @@ export async function buscarDocumentosConsolidado(cnpj, dia) {
     status: 'concluido',
     periodo: { dataInicio: dia, dataFim: dia },
     cliente,
-    ...montarPainelDeClassificados(classificados, dataCorteReforma, cliente?.regimeTributario),
+    ...montarPainelDeClassificados(classificados, dataCorteReforma, cliente?.regimeTributario, cliente?.atividade),
   };
 }
