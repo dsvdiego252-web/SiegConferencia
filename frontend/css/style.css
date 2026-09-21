@@ -1,12 +1,14 @@
 :root {
-  --bg: #f7f8fb;
+  --bg: #f4f5f7;
   --panel: #ffffff;
-  --border: #e5e7ec;
-  --text: #14171f;
-  --text-muted: #6b7280;
-  --primary: #3b5bfd;
-  --primary-dark: #2c46d9;
-  --primary-tint: #eef1ff;
+  --border: #e4e5ea;
+  --text: #16171b;
+  --text-muted: #6b6d76;
+  --primary: #14161a;
+  --primary-dark: #000000;
+  --primary-tint: #f0efe9;
+  --accent: #1d2f43;
+  --accent-tint: #eef1f4;
   --danger: #d64545;
   --danger-bg: #fdecec;
   --ok: #1f9d55;
@@ -19,6 +21,7 @@
   --radius-sm: 8px;
   --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.04);
   --shadow-md: 0 4px 16px rgba(16, 24, 40, 0.07), 0 1px 3px rgba(16, 24, 40, 0.06);
+  --sidebar-width: 250px;
 }
 
 * { box-sizing: border-box; }
@@ -37,24 +40,92 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-.topbar {
-  padding: 28px 32px 20px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 8px;
-  background: var(--panel);
-}
-
-.topbar-flex {
+.app-shell {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
+  min-height: 100vh;
+  align-items: stretch;
 }
 
-.topbar-actions {
+.sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.sidebar-brand {
+  padding: 24px 20px 18px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+
+.brand-logo {
+  max-width: 150px;
+  height: auto;
+  display: block;
+  margin: 0 auto 8px;
+}
+
+.brand-caption {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 16px 12px;
+}
+
+.nav-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  padding: 11px 14px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.nav-item:hover {
+  background: var(--bg);
+}
+
+.nav-item-ativo {
+  background: var(--accent-tint);
+  border-left-color: var(--accent);
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.nav-icon {
+  font-size: 1rem;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.sidebar-logout {
+  margin: 12px;
 }
 
 .logout-link {
@@ -62,9 +133,11 @@ body {
   font-size: 0.85rem;
   text-decoration: none;
   white-space: nowrap;
-  padding: 6px 12px;
+  padding: 8px 12px;
   border: 1px solid var(--border);
   border-radius: 6px;
+  display: block;
+  text-align: center;
 }
 
 .logout-link:hover {
@@ -72,9 +145,22 @@ body {
   border-color: var(--primary);
 }
 
-.topbar h1 {
+.app-main {
+  flex: 1;
+  min-width: 0;
+  padding: 24px 32px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.app-topbar {
+  padding-bottom: 4px;
+}
+
+.app-topbar h1 {
   margin: 0 0 4px;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
@@ -85,13 +171,10 @@ body {
   font-size: 0.92rem;
 }
 
-main {
-  padding: 24px 32px 48px;
+.page-panel {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  width: 100%;
-  box-sizing: border-box;
+  gap: 20px;
 }
 
 .panel {
@@ -188,19 +271,6 @@ main {
   border-color: var(--primary);
 }
 
-/* Link estilizado igual aos botões da mesma linha (ex.: âncora pra rolar até
-   a seção de Conferência Domínio x SIEG) — herda cor de .btn-secondary,
-   só falta o "formato de botão" que .field-button button só dá pra <button>. */
-.link-as-button {
-  display: inline-block;
-  padding: 10px 20px;
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  font-size: 0.9rem;
-  text-decoration: none;
-  cursor: pointer;
-}
-
 .field-full {
   flex-basis: 100%;
   margin: 0;
@@ -239,8 +309,8 @@ main {
 }
 
 .empty-state {
-  background: var(--primary-tint);
-  border: 1px solid var(--primary);
+  background: var(--accent-tint);
+  border: 1px solid var(--accent);
   border-radius: var(--radius-sm);
   padding: 14px 18px;
   margin: 4px 0 16px;
@@ -248,7 +318,7 @@ main {
 }
 
 .empty-state strong {
-  color: var(--primary-dark);
+  color: var(--accent);
 }
 
 .empty-state p {
@@ -352,7 +422,7 @@ button:disabled {
   background: none;
   border: none;
   padding: 0;
-  color: var(--primary);
+  color: var(--accent);
   text-decoration: underline;
   font-size: inherit;
   cursor: pointer;
@@ -428,6 +498,12 @@ th, td {
   padding: 12px 14px;
   border-bottom: 1px solid var(--border);
   white-space: nowrap;
+}
+
+.chave-col {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.78rem;
+  color: var(--text-muted);
 }
 
 th {

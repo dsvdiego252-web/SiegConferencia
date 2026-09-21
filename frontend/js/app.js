@@ -6,7 +6,7 @@ const els = {
   btnAtualizar: document.getElementById('btnAtualizar'),
   btnForcarAtualizacao: document.getElementById('btnForcarAtualizacao'),
   btnAbrirCadastroCliente: document.getElementById('btnAbrirCadastroCliente'),
-  btnEditarCliente: document.getElementById('btnEditarCliente'),
+  clientsTableBody: document.getElementById('clientsTableBody'),
   btnExportarAvisos: document.getElementById('btnExportarAvisos'),
   btnExportarExcel: document.getElementById('btnExportarExcel'),
   btnAuditoriaDados: document.getElementById('btnAuditoriaDados'),
@@ -87,10 +87,13 @@ const els = {
   docModalTitulo: document.getElementById('docModalTitulo'),
   docModalCorpo: document.getElementById('docModalCorpo'),
   btnFecharModal: document.getElementById('btnFecharModal'),
-  btnPainelConsolidado: document.getElementById('btnPainelConsolidado'),
-  consolidadoModalOverlay: document.getElementById('consolidadoModalOverlay'),
-  consolidadoModalCorpo: document.getElementById('consolidadoModalCorpo'),
-  btnFecharModalConsolidado: document.getElementById('btnFecharModalConsolidado'),
+  btnAtualizarConsolidado: document.getElementById('btnAtualizarConsolidado'),
+  consolidadoResultado: document.getElementById('consolidadoResultado'),
+  auditoriaResultado: document.getElementById('auditoriaResultado'),
+  ncmResultado: document.getElementById('ncmResultado'),
+  pageTitle: document.getElementById('pageTitle'),
+  pageSubtitle: document.getElementById('pageSubtitle'),
+  sharedToolbar: document.getElementById('sharedToolbar'),
 };
 
 // O front-end é servido pelo mesmo backend (mesma origem), tanto em dev
@@ -178,6 +181,33 @@ async function carregarClientes(selecionarCnpj) {
     els.clienteSelect.appendChild(opt);
   }
   if (selecionarCnpj) els.clienteSelect.value = selecionarCnpj;
+  renderClientsTable();
+}
+
+function renderClientsTable() {
+  if (!clientesCarregados.length) {
+    els.clientsTableBody.innerHTML = '<tr class="empty-row"><td colspan="6">Nenhum cliente cadastrado ainda.</td></tr>';
+    return;
+  }
+  els.clientsTableBody.innerHTML = clientesCarregados
+    .map((c) => {
+      const regime = ROTULO_REGIME[c.regimeTributario] || '—';
+      const atividade = (c.atividade || []).map((a) => ROTULO_ATIVIDADE[a] || a).join(', ') || '—';
+      return `
+        <tr>
+          <td>${c.nome}</td>
+          <td>${c.cnpj}</td>
+          <td>${regime}</td>
+          <td>${atividade}</td>
+          <td>${c.segmento || '—'}</td>
+          <td><button type="button" class="link-button" data-editar-cnpj="${c.cnpj}">✎ Editar</button></td>
+        </tr>
+      `;
+    })
+    .join('');
+  els.clientsTableBody.querySelectorAll('[data-editar-cnpj]').forEach((botao) => {
+    botao.addEventListener('click', () => abrirModalEdicaoCliente(botao.dataset.editarCnpj));
+  });
 }
 
 function renderResumo({ totalDocumentos, totalEntrada, totalSaida, totalInconsistentes, totalDivergenciaCalculo }, totalFaltando) {
@@ -803,70 +833,67 @@ function fecharModal() {
   els.docModalOverlay.hidden = true;
 }
 
-function fecharModalConsolidado() {
-  els.consolidadoModalOverlay.hidden = true;
-}
-
-const ROTULO_COBERTURA = {
-  completa: '',
-  parcial: '<span class="hint">cobertura parcial (nem todo combo sincronizado)</span>',
-  nenhuma: '<span class="hint">ainda não sincronizado nessa janela</span>',
-};
+let consolidadoCarregado = false;
 
 // Só lê o que já está cacheado (nunca busca ao vivo na SIEG) — cruza todos
-// os clientes cadastrados de uma vez pra achar quem tem quebra de
-// sequência, documento inconsistente ou divergência de cálculo nos
-// últimos 7 dias, sem precisar abrir CNPJ por CNPJ.
-async function abrirPainelConsolidado() {
-  els.consolidadoModalOverlay.hidden = false;
-  els.consolidadoModalCorpo.innerHTML = '<p class="hint">Carregando...</p>';
+// os clientes cadastrados de uma vez, mostrando cada dia que já tem
+// documento encontrado (não exige a janela inteira sincronizada: um único
+// dia já buscado manualmente já aparece aqui, sem esperar cobertura total).
+async function carregarConsolidado() {
+  consolidadoCarregado = true;
+  els.consolidadoResultado.innerHTML = '<p class="hint">Carregando...</p>';
   try {
     const resultado = await apiGet('/api/cron/painel-consolidado');
     if (resultado.status === 'ignorado') {
-      els.consolidadoModalCorpo.innerHTML = `<p class="hint">${resultado.motivo}</p>`;
+      els.consolidadoResultado.innerHTML = `<p class="hint">${resultado.motivo}</p>`;
       return;
     }
-    const linhas = resultado.clientes
-      .map((c) => {
-        if (c.temPendencia === null) {
-          return `<tr><td>${c.nome}</td><td colspan="4">${ROTULO_COBERTURA.nenhuma}</td></tr>`;
-        }
-        const classeLinha = c.temPendencia ? 'row-inconsistente' : 'row-ok';
-        return `
-          <tr class="${classeLinha} row-clickable" data-cnpj="${c.cnpj}">
-            <td>${c.nome} ${ROTULO_COBERTURA[c.cobertura] || ''}</td>
-            <td>${c.quebrasDeSequencia} quebra(s)</td>
-            <td>${c.documentosInconsistentes} inconsistente(s)</td>
-            <td>${c.divergenciasCalculo} divergência(s)</td>
-            <td>${c.totalDocumentos} doc(s)</td>
-          </tr>
-        `;
-      })
+    const comDados = resultado.clientes.filter((c) => c.temDados);
+    if (!comDados.length) {
+      els.consolidadoResultado.innerHTML =
+        '<p class="hint">Nenhum cliente com documento cacheado nos últimos 30 dias ainda. Busque algum cliente na aba "Conferência Fiscal" primeiro.</p>';
+      return;
+    }
+    const linhas = comDados
+      .flatMap((c) =>
+        c.dias.map((d) => {
+          const pendente = d.semAdequacao > 0 || d.parciais > 0;
+          return `
+            <tr class="${pendente ? 'row-inconsistente' : 'row-ok'} row-clickable" data-cnpj="${c.cnpj}" data-dia="${d.dia}">
+              <td>${c.nome}</td>
+              <td>${formatDate(d.dia)}</td>
+              <td>${d.totalDocumentos}</td>
+              <td>${d.conformes}</td>
+              <td>${d.parciais}</td>
+              <td>${d.semAdequacao}</td>
+            </tr>
+          `;
+        })
+      )
       .join('');
-    els.consolidadoModalCorpo.innerHTML = `
+    els.consolidadoResultado.innerHTML = `
       <p class="hint">
-        Período verificado: ${formatDate(resultado.periodo.dataInicio)} a ${formatDate(resultado.periodo.dataFim)} (últimos 7 dias já sincronizados) —
-        ${resultado.clientesComPendencia} de ${resultado.totalClientes} cliente(s) com pendência,
-        ${resultado.clientesSemCobertura} ainda sem cobertura nessa janela. Clique num cliente pra abrir.
+        Janela verificada: ${formatDate(resultado.periodo.dataInicio)} a ${formatDate(resultado.periodo.dataFim)} —
+        ${resultado.clientesComDados} de ${resultado.totalClientes} cliente(s) com algum documento já cacheado,
+        ${resultado.clientesComPendencia} com pendência de adequação à Reforma. Clique numa linha pra ver o detalhe.
       </p>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Cliente</th><th>Sequência</th><th>Reforma</th><th>Cálculo</th><th>Volume</th></tr></thead>
-          <tbody>${linhas || '<tr class="empty-row"><td colspan="5">Nenhum cliente cadastrado.</td></tr>'}</tbody>
+          <thead><tr><th>Cliente</th><th>Dia</th><th>Documentos</th><th>Conformes</th><th>Parciais</th><th>Sem campos</th></tr></thead>
+          <tbody>${linhas}</tbody>
         </table>
       </div>
     `;
-    els.consolidadoModalCorpo.querySelectorAll('tr[data-cnpj]').forEach((tr) => {
+    els.consolidadoResultado.querySelectorAll('tr[data-cnpj]').forEach((tr) => {
       tr.addEventListener('click', () => {
         els.clienteSelect.value = tr.dataset.cnpj;
-        els.dataInicioInput.value = resultado.periodo.dataInicio;
-        els.dataFimInput.value = resultado.periodo.dataFim;
-        fecharModalConsolidado();
+        els.dataInicioInput.value = tr.dataset.dia;
+        els.dataFimInput.value = tr.dataset.dia;
         atualizar(false);
       });
     });
   } catch (err) {
-    els.consolidadoModalCorpo.innerHTML = `<p class="status error">${err.message}</p>`;
+    els.consolidadoResultado.innerHTML = `<p class="status error">${err.message}</p>`;
   }
 }
 
@@ -974,6 +1001,13 @@ const ROTULO_REGIME = {
   mei: 'MEI',
   lucro_presumido: 'Lucro Presumido',
   lucro_real: 'Lucro Real',
+};
+
+const ROTULO_ATIVIDADE = {
+  comercio_varejo: 'Comércio/Varejo',
+  atacado: 'Atacado',
+  industria: 'Indústria',
+  servico: 'Serviço',
 };
 
 function renderReforma(reforma, cliente) {
@@ -1179,24 +1213,44 @@ function exportarExcelCompleto() {
 // demanda, sem precisar esperar a próxima madrugada pra saber se está limpo.
 async function rodarAuditoriaDados() {
   els.btnAuditoriaDados.disabled = true;
-  setStatus('Rodando auditoria de dados...', false, true);
+  els.auditoriaResultado.innerHTML = '<p class="hint">Rodando auditoria...</p>';
   try {
     const resultado = await apiGet('/api/cron/auditoria-dados');
     if (resultado.status === 'ignorado') {
-      setStatus(`Auditoria não disponível: ${resultado.motivo}`, true);
+      els.auditoriaResultado.innerHTML = `<p class="hint">${resultado.motivo}</p>`;
       return;
     }
     if (resultado.limpo) {
-      setStatus(`Auditoria de dados OK — ${resultado.totalDocumentosVerificados} documento(s) verificado(s), nenhuma corrupção de CNPJ/NCM encontrada.`);
+      els.auditoriaResultado.innerHTML = `<p class="hint">✓ ${resultado.totalDocumentosVerificados} documento(s) verificado(s) — nenhuma corrupção de CNPJ/NCM encontrada.</p>`;
       return;
     }
-    const problemas = resultado.achados
+    const linhas = resultado.achados
       .filter((a) => a.totalCorrompidos > 0)
-      .map((a) => `${a.coluna}: ${a.totalCorrompidos} registro(s)`)
-      .join(', ');
-    setStatus(`Auditoria encontrou corrupção de dado — ${problemas}. Veja os logs do servidor para as chaves afetadas.`, true);
+      .flatMap((a) =>
+        a.exemplos.map(
+          (ex) => `
+            <tr class="row-inconsistente">
+              <td>${a.coluna}</td>
+              <td>${a.tamanhoEsperado} dígitos esperados</td>
+              <td>${ex.valor}</td>
+              <td class="chave-col">${ex.chave || '—'}</td>
+            </tr>
+          `
+        )
+      )
+      .join('');
+    const totalCorrompidos = resultado.achados.reduce((soma, a) => soma + a.totalCorrompidos, 0);
+    els.auditoriaResultado.innerHTML = `
+      <p class="status error">${totalCorrompidos} registro(s) corrompido(s) — exemplos abaixo (até 5 por coluna, veja os logs do servidor para a lista completa).</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Coluna</th><th>Tamanho esperado</th><th>Valor encontrado</th><th>Chave do documento</th></tr></thead>
+          <tbody>${linhas}</tbody>
+        </table>
+      </div>
+    `;
   } catch (err) {
-    setStatus(`Falha ao rodar auditoria de dados: ${err.message}`, true);
+    els.auditoriaResultado.innerHTML = `<p class="status error">Falha ao rodar auditoria de dados: ${err.message}</p>`;
   } finally {
     els.btnAuditoriaDados.disabled = false;
   }
@@ -1207,26 +1261,41 @@ async function rodarAuditoriaDados() {
 // específica mapeada), em vez de tentar cobrir a tabela NCM inteira às cegas.
 async function rodarRelatorioNcm() {
   els.btnRelatorioNcm.disabled = true;
-  setStatus('Levantando NCMs sem regra mapeada...', false, true);
+  els.ncmResultado.innerHTML = '<p class="hint">Levantando NCMs sem regra mapeada...</p>';
   try {
     const resultado = await apiGet('/api/cron/relatorio-ncm-sem-regra');
     if (resultado.status === 'ignorado') {
-      setStatus(`Relatório não disponível: ${resultado.motivo}`, true);
+      els.ncmResultado.innerHTML = `<p class="hint">${resultado.motivo}</p>`;
       return;
     }
     if (!resultado.totalNcmsSemRegra) {
-      setStatus(`Nenhum NCM sem regra mapeada entre os ${resultado.totalNcmsDistintos} NCM(s) distintos já cacheados.`);
+      els.ncmResultado.innerHTML = `<p class="hint">Nenhum NCM sem regra mapeada entre os ${resultado.totalNcmsDistintos} NCM(s) distintos já cacheados.</p>`;
       return;
     }
-    const top5 = resultado.top
-      .slice(0, 5)
-      .map((n) => `${n.ncm} (${n.ocorrencias}x)`)
-      .join(', ');
-    setStatus(
-      `${resultado.totalNcmsSemRegra} de ${resultado.totalNcmsDistintos} NCM(s) distintos sem regra mapeada. Mais frequentes: ${top5}.`
-    );
+    const linhas = resultado.top
+      .map(
+        (n) => `
+          <tr>
+            <td>${n.ncm}</td>
+            <td>${n.ocorrencias}x</td>
+            <td>${n.descricaoExemplo}</td>
+            <td>${n.status}</td>
+            <td>${n.origem || '—'}</td>
+          </tr>
+        `
+      )
+      .join('');
+    els.ncmResultado.innerHTML = `
+      <p class="hint">${resultado.totalNcmsSemRegra} de ${resultado.totalNcmsDistintos} NCM(s) distintos sem regra mapeada, ordenados por frequência real de uso.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>NCM</th><th>Ocorrências</th><th>Descrição exemplo</th><th>Status</th><th>Origem</th></tr></thead>
+          <tbody>${linhas}</tbody>
+        </table>
+      </div>
+    `;
   } catch (err) {
-    setStatus(`Falha ao levantar relatório de NCM: ${err.message}`, true);
+    els.ncmResultado.innerHTML = `<p class="status error">Falha ao levantar relatório de NCM: ${err.message}</p>`;
   } finally {
     els.btnRelatorioNcm.disabled = false;
   }
@@ -1378,12 +1447,8 @@ function abrirModalCliente() {
   els.clienteModalOverlay.hidden = false;
 }
 
-function abrirModalEdicaoCliente() {
-  const cnpj = els.clienteSelect.value;
-  if (!cnpj) {
-    setStatus('Selecione um cliente pra editar primeiro.', true);
-    return;
-  }
+function abrirModalEdicaoCliente(cnpj) {
+  if (!cnpj) return;
   const cliente = clientesCarregados.find((c) => c.cnpj === cnpj);
   if (!cliente) return;
 
@@ -1565,6 +1630,42 @@ async function conferirDominio() {
   }
 }
 
+const PAGINAS = {
+  cadastros: { titulo: 'Cadastros', subtitulo: 'Clientes cadastrados no sistema', toolbar: false },
+  conformidade: { titulo: 'Conformidade com a Reforma Tributária', subtitulo: 'Visão de todos os clientes e detalhe do cliente selecionado', toolbar: true },
+  conferencia: { titulo: 'Conferência Fiscal', subtitulo: 'Documentos integrados, quebras de sequência e cruzamento tributário', toolbar: true },
+  auditoria: { titulo: 'Auditoria Fiscal', subtitulo: 'Saúde dos dados cacheados e cobertura da base de regras da Reforma', toolbar: false },
+  dominio: { titulo: 'Domínio x SIEG', subtitulo: 'Cruzamento entre a planilha do Domínio e os documentos da SIEG', toolbar: true },
+};
+
+function ativarPagina(nome) {
+  const config = PAGINAS[nome] || PAGINAS.cadastros;
+  document.querySelectorAll('.nav-item').forEach((botao) => botao.classList.toggle('nav-item-ativo', botao.dataset.page === nome));
+  document.querySelectorAll('.page-panel').forEach((painel) => {
+    painel.hidden = painel.dataset.page !== nome;
+  });
+  els.pageTitle.textContent = config.titulo;
+  els.pageSubtitle.textContent = config.subtitulo;
+  els.sharedToolbar.hidden = !config.toolbar;
+  els.statusBox.hidden = !config.toolbar;
+  // "Tipo de documento" e os botões de exportação só fazem sentido na
+  // Conferência Fiscal (a busca de Domínio/Conformidade usa os mesmos
+  // dados, mas não filtra por tipo nem exporta a partir daqui).
+  const ehConferencia = nome === 'conferencia';
+  document.getElementById('tipoDocField').hidden = !ehConferencia;
+  document.getElementById('exportButtonsField').hidden = !ehConferencia;
+  document.getElementById('exportExcelField').hidden = !ehConferencia;
+
+  if (nome === 'conformidade' && !consolidadoCarregado) carregarConsolidado();
+
+  try {
+    localStorage.setItem('vitalConferenciaPaginaAtiva', nome);
+  } catch {
+    // localStorage indisponível (aba privada, storage bloqueado) — sem
+    // problema, só perde a lembrança da última aba entre sessões.
+  }
+}
+
 async function init() {
   els.dataInicioInput.value = primeiroDiaMesAtual();
   els.dataFimInput.value = ultimoDiaMesAtual();
@@ -1575,13 +1676,11 @@ async function init() {
   els.btnAtualizar.addEventListener('click', () => atualizar(false));
   els.btnForcarAtualizacao.addEventListener('click', () => atualizar(true));
   els.btnAbrirCadastroCliente.addEventListener('click', abrirModalCliente);
-  els.btnEditarCliente.addEventListener('click', abrirModalEdicaoCliente);
   els.btnExportarAvisos.addEventListener('click', exportarAvisos);
   els.btnExportarExcel.addEventListener('click', exportarExcelCompleto);
   els.btnAuditoriaDados.addEventListener('click', rodarAuditoriaDados);
   els.btnRelatorioNcm.addEventListener('click', rodarRelatorioNcm);
-  els.btnPainelConsolidado.addEventListener('click', abrirPainelConsolidado);
-  els.btnFecharModalConsolidado.addEventListener('click', fecharModalConsolidado);
+  els.btnAtualizarConsolidado.addEventListener('click', carregarConsolidado);
   els.btnAdicionarCliente.addEventListener('click', adicionarCliente);
   els.btnFecharModalCliente.addEventListener('click', fecharModalCliente);
   els.clienteModalOverlay.addEventListener('click', (evento) => {
@@ -1614,6 +1713,17 @@ async function init() {
       fecharModalCliente();
     }
   });
+
+  document.querySelectorAll('.nav-item').forEach((botao) => {
+    botao.addEventListener('click', () => ativarPagina(botao.dataset.page));
+  });
+  let paginaInicial = 'cadastros';
+  try {
+    paginaInicial = localStorage.getItem('vitalConferenciaPaginaAtiva') || 'cadastros';
+  } catch {
+    // segue com o padrão
+  }
+  ativarPagina(PAGINAS[paginaInicial] ? paginaInicial : 'cadastros');
 
   try {
     await carregarClientes();

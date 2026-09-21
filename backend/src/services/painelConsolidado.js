@@ -1,139 +1,125 @@
+import { createClient } from '@supabase/supabase-js';
 import { listarClientes } from './clientsStore.js';
-import { periodoTotalmenteCacheado, buscarDocumentosCacheados, cacheDocumentosDisponivel } from './documentCache.js';
-import { XmlType } from './siegClient.js';
+import { linhaParaDocumento, cacheDocumentosDisponivel } from './documentCache.js';
 import { classificarOperacao } from './xmlParser.js';
-import { detectarQuebrasDeSequencia } from './sequenceAnalyzer.js';
 import { analisarConformidadeReforma, resolverDataCorteReforma } from './reformaTributariaAnalyzer.js';
-import { validarDocumento } from '../tax-engine/math-validation/mathValidator.js';
 
-// Últimos 7 dias já sincronizados (nightly sync mantém "ontem"/"anteontem"
-// sempre em dia — dias mais velhos ficam permanentemente cacheados por
-// qualquer uso anterior do painel). Uma janela maior que 1 dia é necessária
-// pra detecção de quebra de sequência fazer sentido: comparar só o dia de
-// ontem contra ele mesmo nunca detecta uma quebra que atravessa dias.
-const JANELA_DIAS = 7;
+const supabase = cacheDocumentosDisponivel ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY) : null;
 
-const TIPO_DOCUMENTO_POR_XMLTYPE = { [XmlType.NFE]: 'NFe', [XmlType.NFCE]: 'NFCe' };
+// Não é "os últimos 7 dias têm que estar 100% sincronizados" (like a
+// primeira versão deste relatório tentava) — isso quase nunca acontece na
+// prática (a sincronização noturna só garante ontem/anteontem; qualquer
+// outro dia só está no cache se alguém já buscou aquele cliente naquele
+// dia manualmente). Em vez de exigir cobertura completa da janela inteira
+// antes de mostrar qualquer coisa, este relatório só mostra os dias que
+// realmente já têm documento cacheado, o que for — um único dia buscado já
+// aparece, sem esperar a janela toda ficar "completa".
+const JANELA_DIAS = 30;
 
-const COMBOS = [
-  { xmlType: XmlType.NFE, direcao: 'emit' },
-  { xmlType: XmlType.NFE, direcao: 'dest' },
-  { xmlType: XmlType.NFCE, direcao: 'emit' },
-  { xmlType: XmlType.NFCE, direcao: 'dest' },
-];
+const TAMANHO_PAGINA = 1000;
 
-function listarDiasJanela() {
-  const dias = [];
-  for (let offset = 1; offset <= JANELA_DIAS; offset += 1) {
-    const data = new Date();
-    data.setUTCDate(data.getUTCDate() - offset);
-    dias.push(data.toISOString().slice(0, 10));
-  }
-  return dias;
+function hojeStr() {
+  return new Date().toISOString().slice(0, 10);
 }
 
-// Roda uma etapa protegida contra exceção — um bug num módulo não pode
-// derrubar o relatório inteiro de todos os clientes por causa de um só.
-function comProtecao(rotulo, cnpj, fn) {
-  try {
-    return fn();
-  } catch (err) {
-    console.error(`Painel consolidado: falha em "${rotulo}" para ${cnpj}:`, err.message);
-    return null;
-  }
+function diasAtras(quantidade) {
+  const data = new Date();
+  data.setUTCDate(data.getUTCDate() - quantidade);
+  return data.toISOString().slice(0, 10);
 }
 
-// Só lê o que já está no cache permanente — nunca dispara busca ao vivo na
-// SIEG. Um relatório que cruza 150+ clientes numa chamada só não pode
-// competir pelo limite de 2 requisições/minuto da SIEG (compartilhado por
-// todo mundo); combos ainda não sincronizados nesse período ficam de fora,
-// marcados como cobertura parcial/nenhuma em vez de travar a resposta.
+// Busca só o que já está cacheado (nunca dispara busca ao vivo na SIEG) —
+// filtra por emit_cnpj OU dest_cnpj porque um documento do cliente pode
+// estar de qualquer um dos dois lados (saída emitida por ele, entrada
+// recebida por ele).
 async function docsCacheadosDoCliente(cnpj, dataInicio, dataFim) {
-  const docs = [];
-  let combosComCache = 0;
-  for (const combo of COMBOS) {
-    const cacheado = await periodoTotalmenteCacheado(cnpj, combo.xmlType, combo.direcao, dataInicio, dataFim);
-    if (!cacheado) continue;
-    combosComCache += 1;
-    // buscarDocumentosCacheados não filtra por tipo (só por CNPJ/direção/
-    // período) — sem esse filtro aqui, um combo marcado como "cacheado"
-    // (ex.: NFCe/emit) traria de carona qualquer NFe já cacheada pro mesmo
-    // CNPJ/direção/período, mesmo que o combo NFe/emit não tenha sido
-    // confirmado como totalmente sincronizado nessa janela.
-    const tipoEsperado = TIPO_DOCUMENTO_POR_XMLTYPE[combo.xmlType];
-    const docsCombo = await buscarDocumentosCacheados(cnpj, combo.direcao, dataInicio, dataFim);
-    docs.push(...docsCombo.filter((d) => d.tipoDocumento === tipoEsperado));
+  const todos = [];
+  let offset = 0;
+  for (;;) {
+    const { data, error } = await supabase
+      .from('documentos_fiscais')
+      .select('*')
+      .or(`emit_cnpj.eq.${cnpj},dest_cnpj.eq.${cnpj}`)
+      .gte('data_emissao_dia', dataInicio)
+      .lte('data_emissao_dia', dataFim)
+      .range(offset, offset + TAMANHO_PAGINA - 1);
+    if (error) throw new Error(`Falha ao ler documentos cacheados no painel consolidado: ${error.message}`);
+    todos.push(...(data || []));
+    if (!data || data.length < TAMANHO_PAGINA) break;
+    offset += TAMANHO_PAGINA;
   }
-  const porChave = new Map(docs.map((d) => [d.chave || `${d.emitente.cnpj}-${d.serie}-${d.numero}`, d]));
-  const cobertura = combosComCache === COMBOS.length ? 'completa' : combosComCache > 0 ? 'parcial' : 'nenhuma';
-  return { docs: [...porChave.values()], cobertura };
+  const porChave = new Map(todos.map((linha) => [linha.chave, linha]));
+  return [...porChave.values()].map(linhaParaDocumento);
 }
 
 /**
- * Cruza todos os clientes cadastrados de uma vez, procurando quem tem
- * pendência (quebra de sequência, documento inconsistente com a Reforma
- * Tributária, ou divergência de cálculo) nos últimos 7 dias já
- * sincronizados — pra não precisar abrir cliente por cliente pra descobrir
- * quem precisa de atenção.
+ * Cruza todos os clientes cadastrados de uma vez, mostrando — pra cada um
+ * que já tem algum documento cacheado nos últimos 30 dias — quantos
+ * documentos foram encontrados por dia, e quantos desses estão conformes,
+ * parcialmente adequados ou sem nenhum campo da Reforma Tributária. Só lê
+ * o cache permanente (nunca busca ao vivo na SIEG): 150+ clientes numa
+ * chamada só não cabem no limite de 2 requisições/minuto da SIEG,
+ * compartilhado por todo mundo.
  */
 export async function gerarPainelConsolidado() {
   if (!cacheDocumentosDisponivel) {
     return { status: 'ignorado', motivo: 'Supabase não configurado — painel consolidado desligado.' };
   }
 
-  const dias = listarDiasJanela();
-  const dataInicio = dias[dias.length - 1];
-  const dataFim = dias[0];
+  const dataFim = hojeStr();
+  const dataInicio = diasAtras(JANELA_DIAS);
   const clientes = await listarClientes();
 
-  const linhas = [];
+  const linhasClientes = [];
   for (const cliente of clientes) {
-    const { docs, cobertura } = await docsCacheadosDoCliente(cliente.cnpj, dataInicio, dataFim);
-    if (cobertura === 'nenhuma') {
-      linhas.push({ cnpj: cliente.cnpj, nome: cliente.nome, cobertura, temPendencia: null });
+    const docs = await docsCacheadosDoCliente(cliente.cnpj, dataInicio, dataFim);
+    if (!docs.length) {
+      linhasClientes.push({ cnpj: cliente.cnpj, nome: cliente.nome, temDados: false, dias: [] });
       continue;
     }
 
-    const classificados = docs.map((doc) => ({ doc, operacao: classificarOperacao(doc, cliente.cnpj) }));
-    const docsSaida = classificados.filter((c) => c.operacao === 'saida').map((c) => c.doc);
-    const quebras = (comProtecao('sequencia', cliente.cnpj, () => detectarQuebrasDeSequencia(docsSaida)) || []).filter((g) => g.temQuebra);
-
-    const dataCorteReforma = resolverDataCorteReforma(cliente.regimeTributario);
-    const reforma = comProtecao('reforma', cliente.cnpj, () => analisarConformidadeReforma(classificados, dataCorteReforma));
-    const inconsistentes = reforma ? reforma.porDocumento.filter((d) => d.situacao === 'parcial' || d.situacao === 'sem_adequacao').length : 0;
-
-    let divergenciasCalculo = 0;
+    const porDia = new Map();
     for (const doc of docs) {
-      if (doc.cancelada) continue;
-      const validacao = comProtecao('validacaoMatematica', cliente.cnpj, () => validarDocumento(doc));
-      if (validacao && validacao.status !== 'CORRETO') divergenciasCalculo += 1;
+      const dia = String(doc.dataEmissao || '').slice(0, 10);
+      if (!dia) continue;
+      if (!porDia.has(dia)) porDia.set(dia, { dia, totalDocumentos: 0, conformes: 0, parciais: 0, semAdequacao: 0 });
+      porDia.get(dia).totalDocumentos += 1;
     }
 
-    const temPendencia = quebras.length > 0 || inconsistentes > 0 || divergenciasCalculo > 0;
-    linhas.push({
+    const classificados = docs.map((doc) => ({ doc, operacao: classificarOperacao(doc, cliente.cnpj) }));
+    const dataCorteReforma = resolverDataCorteReforma(cliente.regimeTributario);
+    const reforma = analisarConformidadeReforma(classificados, dataCorteReforma);
+    for (const d of reforma.porDocumento) {
+      const dia = String(d.dataEmissao || '').slice(0, 10);
+      const linha = porDia.get(dia);
+      if (!linha) continue;
+      if (d.situacao === 'conforme') linha.conformes += 1;
+      else if (d.situacao === 'parcial') linha.parciais += 1;
+      else linha.semAdequacao += 1;
+    }
+
+    const dias = [...porDia.values()].sort((a, b) => b.dia.localeCompare(a.dia));
+    const temPendencia = dias.some((d) => d.semAdequacao > 0 || d.parciais > 0);
+    linhasClientes.push({
       cnpj: cliente.cnpj,
       nome: cliente.nome,
-      cobertura,
+      temDados: true,
       totalDocumentos: docs.length,
-      quebrasDeSequencia: quebras.length,
-      documentosInconsistentes: inconsistentes,
-      divergenciasCalculo,
+      dataCorteReforma,
       temPendencia,
+      dias,
     });
   }
 
-  // Quem tem pendência primeiro, depois quem não tem cobertura nenhuma
-  // ainda (precisa ser buscado pelo menos uma vez), por último quem já foi
-  // conferido e está limpo.
-  linhas.sort((a, b) => Number(b.temPendencia === true) - Number(a.temPendencia === true) || Number(a.temPendencia === null) - Number(b.temPendencia === null));
+  linhasClientes.sort((a, b) => Number(b.temPendencia === true) - Number(a.temPendencia === true) || Number(b.temDados) - Number(a.temDados));
 
   return {
     status: 'concluido',
     periodo: { dataInicio, dataFim },
     executadoEm: new Date().toISOString(),
     totalClientes: clientes.length,
-    clientesComPendencia: linhas.filter((l) => l.temPendencia === true).length,
-    clientesSemCobertura: linhas.filter((l) => l.cobertura === 'nenhuma').length,
-    clientes: linhas,
+    clientesComDados: linhasClientes.filter((l) => l.temDados).length,
+    clientesComPendencia: linhasClientes.filter((l) => l.temPendencia).length,
+    clientes: linhasClientes,
   };
 }

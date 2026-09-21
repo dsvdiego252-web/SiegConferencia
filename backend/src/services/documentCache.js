@@ -82,7 +82,7 @@ export async function periodoTotalmenteCacheado(cnpjCliente, xmlType, direcao, d
   });
 }
 
-function linhaParaDocumento(linha) {
+export function linhaParaDocumento(linha) {
   return {
     tipoDocumento: linha.tipo_documento,
     chave: linha.chave,

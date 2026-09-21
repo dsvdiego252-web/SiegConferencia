@@ -3,341 +3,412 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SIEG Conferência Fiscal</title>
+  <title>Vital Conferência Fiscal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <header class="topbar topbar-flex">
-    <div>
-      <h1>SIEG Conferência Fiscal</h1>
-      <p class="subtitle">Documentos integrados, quebras de sequência e cruzamento tributário por cliente</p>
-    </div>
-    <div class="topbar-actions">
-      <button id="btnPainelConsolidado" class="btn-secondary" type="button" title="Cruza todos os clientes cadastrados de uma vez, sem precisar abrir CNPJ por CNPJ, usando só o que já está cacheado (últimos 7 dias).">📊 Quem tem pendência hoje</button>
-      <a class="logout-link" href="/logout">Sair</a>
-    </div>
-  </header>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <img src="img/logo-vital.png" alt="Vital Contabilidade" class="brand-logo" />
+        <p class="brand-caption">Conferência Fiscal</p>
+      </div>
+      <nav class="sidebar-nav">
+        <button type="button" class="nav-item" data-page="cadastros">
+          <span class="nav-icon">🗂</span> Cadastros
+        </button>
+        <button type="button" class="nav-item" data-page="conformidade">
+          <span class="nav-icon">📐</span> Conformidade Reforma Tributária
+        </button>
+        <button type="button" class="nav-item" data-page="conferencia">
+          <span class="nav-icon">📄</span> Conferência Fiscal
+        </button>
+        <button type="button" class="nav-item" data-page="auditoria">
+          <span class="nav-icon">🛡</span> Auditoria Fiscal
+        </button>
+        <button type="button" class="nav-item" data-page="dominio">
+          <span class="nav-icon">🔁</span> Domínio x SIEG
+        </button>
+      </nav>
+      <a class="logout-link sidebar-logout" href="/logout">Sair</a>
+    </aside>
 
-  <main>
-    <section class="panel filters">
-      <div class="field">
-        <label for="clienteSelect">Cliente</label>
-        <select id="clienteSelect"></select>
-      </div>
-      <div class="field">
-        <label for="dataInicioInput">De</label>
-        <input id="dataInicioInput" type="date" />
-      </div>
-      <div class="field">
-        <label for="dataFimInput">Até</label>
-        <input id="dataFimInput" type="date" />
-      </div>
-      <div class="field">
-        <label for="tipoDocSelect">Tipo de documento</label>
-        <select id="tipoDocSelect">
-          <option value="todos">Todos (NFe + NFCe)</option>
-          <option value="nfe">Somente NFe</option>
-          <option value="nfce">Somente NFCe</option>
-        </select>
-      </div>
-      <div class="field field-button">
-        <button id="btnAtualizar">Buscar</button>
-      </div>
-      <div class="field field-button">
-        <button id="btnForcarAtualizacao" class="btn-secondary" type="button" title="Ignora o cache de 10 minutos e busca/reclassifica tudo de novo — use depois de uma correção no sistema.">↻ Forçar atualização</button>
-      </div>
-      <div class="field field-button">
-        <button id="btnAbrirCadastroCliente" class="btn-secondary" type="button">+ Cadastrar cliente</button>
-      </div>
-      <div class="field field-button">
-        <button id="btnEditarCliente" class="btn-secondary" type="button">✎ Editar cliente</button>
-      </div>
-      <div class="field field-button">
-        <button id="btnExportarAvisos" class="btn-secondary" type="button">⬇ Exportar avisos</button>
-      </div>
-      <div class="field field-button">
-        <button id="btnExportarExcel" class="btn-secondary" type="button" title="Lista completa de documentos e divergências do período, não só os avisos.">⬇ Exportar Excel completo</button>
-      </div>
-      <div class="field field-button">
-        <button id="btnAuditoriaDados" class="btn-secondary" type="button" title="Verifica se algum CNPJ ou NCM ficou gravado com dígitos a menos no banco (sinal de corrupção de dado).">🛡 Auditoria de dados</button>
-      </div>
-      <div class="field field-button">
-        <button id="btnRelatorioNcm" class="btn-secondary" type="button" title="Lista os NCMs mais frequentes nos documentos já cacheados que caem em classificação de baixa confiança — prioriza onde expandir a base de regras da Reforma Tributária.">📋 NCMs sem regra</button>
-      </div>
-      <div class="field field-button">
-        <a href="#reconciliationSection" class="btn-secondary link-as-button" id="linkConferenciaDominio">↓ Conferência Domínio x SIEG</a>
-      </div>
-    </section>
+    <div class="app-main">
+      <header class="app-topbar">
+        <div>
+          <h1 id="pageTitle">Cadastros</h1>
+          <p class="subtitle" id="pageSubtitle">Clientes cadastrados no sistema</p>
+        </div>
+      </header>
 
-    <section id="statusBox" class="status">
-      <span id="statusSpinner" class="spinner" hidden></span>
-      <span id="statusText"></span>
-      <progress id="statusProgress" class="status-progress" max="100" value="0" hidden></progress>
-    </section>
-
-    <section id="emptyStateBanner" class="empty-state" hidden>
-      <strong>Nenhum documento encontrado neste período.</strong>
-      <p id="emptyStateDetalhe"></p>
-    </section>
-
-    <section class="panel summary" id="summaryPanel" hidden>
-      <div class="summary-card">
-        <span class="summary-value" id="summaryTotal">0</span>
-        <span class="summary-label">Documentos integrados</span>
-      </div>
-      <div class="summary-card">
-        <span class="summary-value" id="summaryEntrada">0</span>
-        <span class="summary-label">Entradas</span>
-      </div>
-      <div class="summary-card">
-        <span class="summary-value" id="summarySaida">0</span>
-        <span class="summary-label">Saídas</span>
-      </div>
-      <div class="summary-card summary-card-clickable" id="summaryGapsCard" title="Clique para ver quais documentos têm quebra de sequência">
-        <span class="summary-value" id="summaryGaps">0</span>
-        <span class="summary-label">Quebra de Sequência</span>
-      </div>
-      <div class="summary-card" id="summaryInconsistentesCard">
-        <span class="summary-value" id="summaryInconsistentes">0</span>
-        <span class="summary-label">Notas inconsistentes</span>
-      </div>
-      <div class="summary-card summary-card-clickable" id="summaryDivergenciaCalculoCard" title="Clique para ver esses documentos na tabela abaixo">
-        <span class="summary-value" id="summaryDivergenciaCalculo">0</span>
-        <span class="summary-label">Divergências de cálculo</span>
-      </div>
-    </section>
-
-    <section class="panel summary" id="reformaSummaryPanel" hidden>
-      <div class="summary-header">
-        <h2>Conformidade com a Reforma Tributária (IBS/CBS)</h2>
-        <p class="hint">
-          Verifica se os documentos emitidos desde <span id="reformaDataCorte">01/01/2026</span> trazem os campos da
-          Nota Técnica 2025.002 preenchidos (CST do IBS/CBS, Classificação Tributária, e opcionalmente cBenef).
-          Não valida o cálculo dos valores — só se o emissor do cliente já está adequado e enviando essa informação.
-        </p>
-        <p class="hint" id="reformaRegimeInfo"></p>
-      </div>
-      <div class="summary-card summary-card-clickable" id="reformaTotalAnalisadosCard" title="Clique para ver esses documentos na tabela abaixo">
-        <span class="summary-value" id="reformaTotalAnalisados">0</span>
-        <span class="summary-label">Documentos desde a vigência</span>
-      </div>
-      <div class="summary-card summary-card-clickable" id="reformaConformesCard" title="Clique para ver esses documentos na tabela abaixo">
-        <span class="summary-value" id="reformaConformes">0</span>
-        <span class="summary-label">Conformes (IBS/CBS ok)</span>
-      </div>
-      <div class="summary-card summary-card-clickable" id="reformaParciaisCard" title="Clique para ver esses documentos na tabela abaixo">
-        <span class="summary-value" id="reformaParciais">0</span>
-        <span class="summary-label">Parcialmente adequados</span>
-      </div>
-      <div class="summary-card summary-card-clickable" id="reformaSemAdequacaoCard" title="Clique para ver esses documentos na tabela abaixo">
-        <span class="summary-value" id="reformaSemAdequacao">0</span>
-        <span class="summary-label">Sem campos da reforma</span>
-      </div>
-    </section>
-
-    <section class="panel summary" id="valuesPanel" hidden>
-      <div class="summary-card">
-        <span class="summary-value" id="valorEntrada">R$ 0,00</span>
-        <span class="summary-label">Valor total entrada</span>
-      </div>
-      <div class="summary-card">
-        <span class="summary-value" id="valorSaida">R$ 0,00</span>
-        <span class="summary-label">Valor total saída</span>
-      </div>
-      <div class="summary-card" id="valorSaldoCard">
-        <span class="summary-value" id="valorSaldo">R$ 0,00</span>
-        <span class="summary-label">Saldo (saída − entrada)</span>
-      </div>
-      <div class="summary-card">
-        <span class="summary-value" id="valorIcmsEntrada">R$ 0,00</span>
-        <span class="summary-label">ICMS entrada</span>
-      </div>
-      <div class="summary-card">
-        <span class="summary-value" id="valorIcmsSaida">R$ 0,00</span>
-        <span class="summary-label">ICMS saída</span>
-      </div>
-      <div class="summary-card">
-        <span class="summary-value" id="valorPisCofinsEntrada">R$ 0,00</span>
-        <span class="summary-label">PIS+COFINS entrada</span>
-      </div>
-      <div class="summary-card">
-        <span class="summary-value" id="valorPisCofinsSaida">R$ 0,00</span>
-        <span class="summary-label">PIS+COFINS saída</span>
-      </div>
-    </section>
-
-    <section class="panel" id="sequencePanel" hidden>
-      <h2>Quebras de sequência (documentos de saída)</h2>
-      <p class="hint">Agrupado por emitente + tipo de documento + série. Números faltantes dentro do intervalo emitido no período.</p>
-      <div class="table-wrap">
-        <table id="sequenceTable">
-          <thead>
-            <tr>
-              <th>Emitente</th>
-              <th>Tipo</th>
-              <th>Série</th>
-              <th>Faixa emitida</th>
-              <th>Encontradas</th>
-              <th>Canceladas</th>
-              <th>Faltando</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="panel" id="documentsPanel" hidden>
-      <div class="panel-header">
-        <h2>Documentos integrados no período</h2>
+      <section class="panel filters" id="sharedToolbar" hidden>
         <div class="field">
-          <label for="situacaoFiltroSelect">Situação</label>
-          <select id="situacaoFiltroSelect">
-            <option value="todos">Todos</option>
-            <option value="ok">OK</option>
-            <option value="inconsistente">Inconsistentes</option>
-            <option value="cancelada">Canceladas</option>
+          <label for="clienteSelect">Cliente</label>
+          <select id="clienteSelect"></select>
+        </div>
+        <div class="field">
+          <label for="dataInicioInput">De</label>
+          <input id="dataInicioInput" type="date" />
+        </div>
+        <div class="field">
+          <label for="dataFimInput">Até</label>
+          <input id="dataFimInput" type="date" />
+        </div>
+        <div class="field" id="tipoDocField">
+          <label for="tipoDocSelect">Tipo de documento</label>
+          <select id="tipoDocSelect">
+            <option value="todos">Todos (NFe + NFCe)</option>
+            <option value="nfe">Somente NFe</option>
+            <option value="nfce">Somente NFCe</option>
           </select>
         </div>
-      </div>
-      <p class="hint">Clique numa linha pra ver os itens e impostos do documento.</p>
-      <p class="hint filtro-ativo-hint" id="filtroReformaIndicador" hidden>
-        <span id="filtroReformaIndicadorTexto"></span>
-        <button type="button" id="btnLimparFiltroReforma" class="link-button">limpar</button>
-      </p>
-      <div class="table-wrap">
-        <table id="documentsTable">
-          <thead>
-            <tr>
-              <th>Situação</th>
-              <th>Operação</th>
-              <th>Tipo</th>
-              <th>Nº</th>
-              <th>Série</th>
-              <th>Emissão</th>
-              <th>Emitente</th>
-              <th>Destinatário</th>
-              <th>Valor</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <div class="pagination" id="documentsPagination"></div>
-    </section>
-
-    <section class="panel" id="taxPanel" hidden>
-      <h2>Cruzamento tributário — entrada x saída por produto</h2>
-      <div class="table-wrap">
-        <table id="taxTable">
-          <thead>
-            <tr>
-              <th>Produto (NCM)</th>
-              <th>Qtd. entrada</th>
-              <th>Qtd. saída</th>
-              <th>Saldo qtd.</th>
-              <th>ICMS entrada</th>
-              <th>ICMS saída</th>
-              <th>PIS+COFINS entrada</th>
-              <th>PIS+COFINS saída</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <div class="pagination" id="taxPagination"></div>
-    </section>
-
-    <section class="panel" id="reconciliationSection">
-      <h2>Conferência Domínio x SIEG</h2>
-      <p class="hint">
-        Envie a planilha exportada do Domínio (XLSX ou CSV) com as notas do período selecionado acima. O sistema
-        cruza com os documentos da SIEG e aponta o que está pendente de lançamento, o que só existe no Domínio, e
-        onde os valores não batem — sem precisar de acesso liberado à API da SIEG para esse cruzamento específico.
-      </p>
-      <div class="filters" style="padding: 0;">
-        <div class="field">
-          <label for="dominioFileInput">Planilha do Domínio</label>
-          <input id="dominioFileInput" type="file" accept=".csv,.xlsx,.xls" />
+        <div class="field field-button">
+          <button id="btnAtualizar">Buscar</button>
         </div>
         <div class="field field-button">
-          <button id="btnConferirDominio">Conferir</button>
+          <button id="btnForcarAtualizacao" class="btn-secondary" type="button" title="Ignora o cache de 10 minutos e busca/reclassifica tudo de novo — use depois de uma correção no sistema.">↻ Forçar atualização</button>
         </div>
-      </div>
-      <div id="reconciliationStatus" class="status"></div>
-    </section>
+        <div class="field field-button" id="exportButtonsField">
+          <button id="btnExportarAvisos" class="btn-secondary" type="button">⬇ Exportar avisos</button>
+        </div>
+        <div class="field field-button" id="exportExcelField">
+          <button id="btnExportarExcel" class="btn-secondary" type="button" title="Lista completa de documentos e divergências do período, não só os avisos.">⬇ Exportar Excel completo</button>
+        </div>
+      </section>
 
-    <section class="panel summary" id="reconciliationSummaryPanel" hidden>
-      <div class="summary-card">
-        <span class="summary-value" id="reconTotalPareados">0</span>
-        <span class="summary-label">Casadas OK</span>
-      </div>
-      <div class="summary-card" id="reconDivergentesCard">
-        <span class="summary-value" id="reconTotalDivergentes">0</span>
-        <span class="summary-label">Valor divergente</span>
-      </div>
-      <div class="summary-card" id="reconSomenteSiegCard">
-        <span class="summary-value" id="reconTotalSomenteSieg">0</span>
-        <span class="summary-label">Pendente no Domínio</span>
-      </div>
-      <div class="summary-card" id="reconSomenteDominioCard">
-        <span class="summary-value" id="reconTotalSomenteDominio">0</span>
-        <span class="summary-label">Sem XML na SIEG</span>
-      </div>
-    </section>
+      <section id="statusBox" class="status">
+        <span id="statusSpinner" class="spinner" hidden></span>
+        <span id="statusText"></span>
+        <progress id="statusProgress" class="status-progress" max="100" value="0" hidden></progress>
+      </section>
 
-    <section class="panel" id="reconciliationResumoPanel" hidden>
-      <h2>Receita por mês — SIEG x Domínio</h2>
-      <div class="table-wrap">
-        <table id="reconResumoTable">
-          <thead>
-            <tr>
-              <th>Mês</th>
-              <th>Entrada SIEG</th>
-              <th>Entrada Domínio</th>
-              <th>Diferença entrada</th>
-              <th>Saída SIEG</th>
-              <th>Saída Domínio</th>
-              <th>Diferença saída</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
+      <section id="emptyStateBanner" class="empty-state" hidden>
+        <strong>Nenhum documento encontrado neste período.</strong>
+        <p id="emptyStateDetalhe"></p>
+      </section>
 
-    <section class="panel" id="reconciliationDetailPanel" hidden>
-      <h2>Divergências e pendências</h2>
-      <div class="table-wrap">
-        <table id="reconDetailTable">
-          <thead>
-            <tr>
-              <th>Situação</th>
-              <th>Nº</th>
-              <th>Série</th>
-              <th>Operação</th>
-              <th>Emissão</th>
-              <th>Valor SIEG</th>
-              <th>Valor Domínio</th>
-              <th>Diferença</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+      <!-- ===================== CADASTROS ===================== -->
+      <div class="page-panel" data-page="cadastros">
+        <section class="panel">
+          <div class="panel-header">
+            <h2>Clientes cadastrados</h2>
+            <button id="btnAbrirCadastroCliente" type="button">+ Novo cliente</button>
+          </div>
+          <div class="table-wrap">
+            <table id="clientsTable">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>CNPJ</th>
+                  <th>Regime tributário</th>
+                  <th>Atividade</th>
+                  <th>Segmento</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="clientsTableBody"></tbody>
+            </table>
+          </div>
+        </section>
       </div>
-    </section>
-  </main>
 
-  <div id="consolidadoModalOverlay" class="modal-overlay" hidden>
-    <div class="modal">
-      <div class="modal-header">
-        <h2>Quem tem pendência</h2>
-        <button id="btnFecharModalConsolidado" class="modal-close" type="button" aria-label="Fechar">&times;</button>
+      <!-- ============ CONFORMIDADE REFORMA TRIBUTÁRIA ============ -->
+      <div class="page-panel" data-page="conformidade" hidden>
+        <section class="panel" id="consolidadoSection">
+          <div class="panel-header">
+            <h2>Quem tem pendência — todos os clientes</h2>
+            <button id="btnAtualizarConsolidado" class="btn-secondary" type="button">↻ Atualizar</button>
+          </div>
+          <p class="hint">
+            Cruza todos os clientes cadastrados usando só o que já está cacheado (últimos 30 dias) — nunca busca ao
+            vivo na SIEG. Clique numa linha pra ver o detalhe completo daquele cliente/dia abaixo.
+          </p>
+          <div id="consolidadoResultado"><p class="hint">Carregando...</p></div>
+        </section>
+
+        <section class="panel summary" id="reformaSummaryPanel" hidden>
+          <div class="summary-header">
+            <h2>Detalhe do cliente selecionado</h2>
+            <p class="hint">
+              Verifica se os documentos emitidos desde <span id="reformaDataCorte">01/01/2026</span> trazem os campos da
+              Nota Técnica 2025.002 preenchidos (CST do IBS/CBS, Classificação Tributária, e opcionalmente cBenef).
+              Não valida o cálculo dos valores — só se o emissor do cliente já está adequado e enviando essa informação.
+            </p>
+            <p class="hint" id="reformaRegimeInfo"></p>
+          </div>
+          <div class="summary-card summary-card-clickable" id="reformaTotalAnalisadosCard" title="Clique para ver esses documentos na tabela abaixo">
+            <span class="summary-value" id="reformaTotalAnalisados">0</span>
+            <span class="summary-label">Documentos desde a vigência</span>
+          </div>
+          <div class="summary-card summary-card-clickable" id="reformaConformesCard" title="Clique para ver esses documentos na tabela abaixo">
+            <span class="summary-value" id="reformaConformes">0</span>
+            <span class="summary-label">Conformes (IBS/CBS ok)</span>
+          </div>
+          <div class="summary-card summary-card-clickable" id="reformaParciaisCard" title="Clique para ver esses documentos na tabela abaixo">
+            <span class="summary-value" id="reformaParciais">0</span>
+            <span class="summary-label">Parcialmente adequados</span>
+          </div>
+          <div class="summary-card summary-card-clickable" id="reformaSemAdequacaoCard" title="Clique para ver esses documentos na tabela abaixo">
+            <span class="summary-value" id="reformaSemAdequacao">0</span>
+            <span class="summary-label">Sem campos da reforma</span>
+          </div>
+        </section>
       </div>
-      <div class="modal-body" id="consolidadoModalCorpo"></div>
+
+      <!-- ===================== CONFERÊNCIA FISCAL ===================== -->
+      <div class="page-panel" data-page="conferencia" hidden>
+        <section class="panel summary" id="summaryPanel" hidden>
+          <div class="summary-card">
+            <span class="summary-value" id="summaryTotal">0</span>
+            <span class="summary-label">Documentos integrados</span>
+          </div>
+          <div class="summary-card">
+            <span class="summary-value" id="summaryEntrada">0</span>
+            <span class="summary-label">Entradas</span>
+          </div>
+          <div class="summary-card">
+            <span class="summary-value" id="summarySaida">0</span>
+            <span class="summary-label">Saídas</span>
+          </div>
+          <div class="summary-card summary-card-clickable" id="summaryGapsCard" title="Clique para ver quais documentos têm quebra de sequência">
+            <span class="summary-value" id="summaryGaps">0</span>
+            <span class="summary-label">Quebra de Sequência</span>
+          </div>
+          <div class="summary-card" id="summaryInconsistentesCard">
+            <span class="summary-value" id="summaryInconsistentes">0</span>
+            <span class="summary-label">Notas inconsistentes</span>
+          </div>
+          <div class="summary-card summary-card-clickable" id="summaryDivergenciaCalculoCard" title="Clique para ver esses documentos na tabela abaixo">
+            <span class="summary-value" id="summaryDivergenciaCalculo">0</span>
+            <span class="summary-label">Divergências de cálculo</span>
+          </div>
+        </section>
+
+        <section class="panel summary" id="valuesPanel" hidden>
+          <div class="summary-card">
+            <span class="summary-value" id="valorEntrada">R$ 0,00</span>
+            <span class="summary-label">Valor total entrada</span>
+          </div>
+          <div class="summary-card">
+            <span class="summary-value" id="valorSaida">R$ 0,00</span>
+            <span class="summary-label">Valor total saída</span>
+          </div>
+          <div class="summary-card" id="valorSaldoCard">
+            <span class="summary-value" id="valorSaldo">R$ 0,00</span>
+            <span class="summary-label">Saldo (saída − entrada)</span>
+          </div>
+          <div class="summary-card">
+            <span class="summary-value" id="valorIcmsEntrada">R$ 0,00</span>
+            <span class="summary-label">ICMS entrada</span>
+          </div>
+          <div class="summary-card">
+            <span class="summary-value" id="valorIcmsSaida">R$ 0,00</span>
+            <span class="summary-label">ICMS saída</span>
+          </div>
+          <div class="summary-card">
+            <span class="summary-value" id="valorPisCofinsEntrada">R$ 0,00</span>
+            <span class="summary-label">PIS+COFINS entrada</span>
+          </div>
+          <div class="summary-card">
+            <span class="summary-value" id="valorPisCofinsSaida">R$ 0,00</span>
+            <span class="summary-label">PIS+COFINS saída</span>
+          </div>
+        </section>
+
+        <section class="panel" id="sequencePanel" hidden>
+          <h2>Quebras de sequência (documentos de saída)</h2>
+          <p class="hint">Agrupado por emitente + tipo de documento + série. Números faltantes dentro do intervalo emitido no período.</p>
+          <div class="table-wrap">
+            <table id="sequenceTable">
+              <thead>
+                <tr>
+                  <th>Emitente</th>
+                  <th>Tipo</th>
+                  <th>Série</th>
+                  <th>Faixa emitida</th>
+                  <th>Encontradas</th>
+                  <th>Canceladas</th>
+                  <th>Faltando</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel" id="documentsPanel" hidden>
+          <div class="panel-header">
+            <h2>Documentos integrados no período</h2>
+            <div class="field">
+              <label for="situacaoFiltroSelect">Situação</label>
+              <select id="situacaoFiltroSelect">
+                <option value="todos">Todos</option>
+                <option value="ok">OK</option>
+                <option value="inconsistente">Inconsistentes</option>
+                <option value="cancelada">Canceladas</option>
+              </select>
+            </div>
+          </div>
+          <p class="hint">Clique numa linha pra ver os itens e impostos do documento.</p>
+          <p class="hint filtro-ativo-hint" id="filtroReformaIndicador" hidden>
+            <span id="filtroReformaIndicadorTexto"></span>
+            <button type="button" id="btnLimparFiltroReforma" class="link-button">limpar</button>
+          </p>
+          <div class="table-wrap">
+            <table id="documentsTable">
+              <thead>
+                <tr>
+                  <th>Situação</th>
+                  <th>Operação</th>
+                  <th>Tipo</th>
+                  <th>Nº</th>
+                  <th>Série</th>
+                  <th>Emissão</th>
+                  <th>Emitente</th>
+                  <th>Destinatário</th>
+                  <th>Valor</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="pagination" id="documentsPagination"></div>
+        </section>
+
+        <section class="panel" id="taxPanel" hidden>
+          <h2>Cruzamento tributário — entrada x saída por produto</h2>
+          <div class="table-wrap">
+            <table id="taxTable">
+              <thead>
+                <tr>
+                  <th>Produto (NCM)</th>
+                  <th>Qtd. entrada</th>
+                  <th>Qtd. saída</th>
+                  <th>Saldo qtd.</th>
+                  <th>ICMS entrada</th>
+                  <th>ICMS saída</th>
+                  <th>PIS+COFINS entrada</th>
+                  <th>PIS+COFINS saída</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="pagination" id="taxPagination"></div>
+        </section>
+      </div>
+
+      <!-- ===================== AUDITORIA FISCAL ===================== -->
+      <div class="page-panel" data-page="auditoria" hidden>
+        <section class="panel">
+          <div class="panel-header">
+            <h2>Auditoria de dados</h2>
+            <button id="btnAuditoriaDados" type="button">Rodar auditoria</button>
+          </div>
+          <p class="hint">
+            Verifica se algum CNPJ ou NCM ficou gravado com dígitos a menos no banco (sinal de corrupção de dado —
+            já aconteceu antes por um bug no leitor de XML).
+          </p>
+          <div id="auditoriaResultado"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <h2>NCMs sem regra mapeada</h2>
+            <button id="btnRelatorioNcm" type="button">Rodar relatório</button>
+          </div>
+          <p class="hint">
+            Lista os NCMs mais frequentes nos documentos já cacheados que caem em classificação de baixa confiança —
+            prioriza onde expandir a base de regras da Reforma Tributária pelo uso real dos clientes.
+          </p>
+          <div id="ncmResultado"></div>
+        </section>
+      </div>
+
+      <!-- ===================== DOMÍNIO x SIEG ===================== -->
+      <div class="page-panel" data-page="dominio" hidden>
+        <section class="panel">
+          <h2>Conferência Domínio x SIEG</h2>
+          <p class="hint">
+            Envie a planilha exportada do Domínio (XLSX ou CSV) com as notas do período selecionado acima. O sistema
+            cruza com os documentos da SIEG e aponta o que está pendente de lançamento, o que só existe no Domínio, e
+            onde os valores não batem — sem precisar de acesso liberado à API da SIEG para esse cruzamento específico.
+          </p>
+          <div class="filters" style="padding: 0;">
+            <div class="field">
+              <label for="dominioFileInput">Planilha do Domínio</label>
+              <input id="dominioFileInput" type="file" accept=".csv,.xlsx,.xls" />
+            </div>
+            <div class="field field-button">
+              <button id="btnConferirDominio">Conferir</button>
+            </div>
+          </div>
+          <div id="reconciliationStatus" class="status"></div>
+        </section>
+
+        <section class="panel summary" id="reconciliationSummaryPanel" hidden>
+          <div class="summary-card">
+            <span class="summary-value" id="reconTotalPareados">0</span>
+            <span class="summary-label">Casadas OK</span>
+          </div>
+          <div class="summary-card" id="reconDivergentesCard">
+            <span class="summary-value" id="reconTotalDivergentes">0</span>
+            <span class="summary-label">Valor divergente</span>
+          </div>
+          <div class="summary-card" id="reconSomenteSiegCard">
+            <span class="summary-value" id="reconTotalSomenteSieg">0</span>
+            <span class="summary-label">Pendente no Domínio</span>
+          </div>
+          <div class="summary-card" id="reconSomenteDominioCard">
+            <span class="summary-value" id="reconTotalSomenteDominio">0</span>
+            <span class="summary-label">Sem XML na SIEG</span>
+          </div>
+        </section>
+
+        <section class="panel" id="reconciliationResumoPanel" hidden>
+          <h2>Receita por mês — SIEG x Domínio</h2>
+          <div class="table-wrap">
+            <table id="reconResumoTable">
+              <thead>
+                <tr>
+                  <th>Mês</th>
+                  <th>Entrada SIEG</th>
+                  <th>Entrada Domínio</th>
+                  <th>Diferença entrada</th>
+                  <th>Saída SIEG</th>
+                  <th>Saída Domínio</th>
+                  <th>Diferença saída</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel" id="reconciliationDetailPanel" hidden>
+          <h2>Divergências e pendências</h2>
+          <div class="table-wrap">
+            <table id="reconDetailTable">
+              <thead>
+                <tr>
+                  <th>Situação</th>
+                  <th>Nº</th>
+                  <th>Série</th>
+                  <th>Operação</th>
+                  <th>Emissão</th>
+                  <th>Valor SIEG</th>
+                  <th>Valor Domínio</th>
+                  <th>Diferença</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
     </div>
   </div>
 
