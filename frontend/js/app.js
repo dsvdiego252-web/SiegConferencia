@@ -1068,11 +1068,15 @@ function telefoneParaWaMe(telefone) {
   return digitos.startsWith('55') ? digitos : `55${digitos}`;
 }
 
-function montarMensagemNotificacao(cliente) {
+function montarMensagemNotificacao(cliente, pendSaida, pendEntrada) {
+  const direcoes = [];
+  if (pendSaida > 0) direcoes.push('saídas');
+  if (pendEntrada > 0) direcoes.push('entradas');
+  const rotuloDirecao = direcoes.length ? ` de ${direcoes.join(' e ')}` : '';
   return (
-    `Olá! Aqui é da Vital Contabilidade. Identificamos documentos fiscais nos últimos 30 dias sem os campos ` +
-    `da Reforma Tributária (IBS/CBS) preenchidos — sinal de que o sistema emissor da ${cliente.nome} pode estar ` +
-    `desatualizado. Poderia verificar com o suporte do seu sistema a atualização pra emissão com os novos campos?`
+    `Olá! Aqui é da Vital Contabilidade. Identificamos documentos fiscais${rotuloDirecao} nos últimos 30 dias sem os ` +
+    `campos da Reforma Tributária (IBS/CBS) preenchidos — sinal de que o sistema emissor da ${cliente.nome} pode ` +
+    `estar desatualizado. Poderia verificar com o suporte do seu sistema a atualização pra emissão com os novos campos?`
   );
 }
 
@@ -1097,7 +1101,7 @@ function renderNotificacoes() {
       const cadastro = clientesCarregados.find((cc) => cc.cnpj === c.cnpj);
       const telefoneWa = telefoneParaWaMe(cadastro?.telefone);
       const email = cadastro?.email || null;
-      const mensagem = montarMensagemNotificacao(c);
+      const mensagem = montarMensagemNotificacao(c, totalSaida, totalEntrada);
 
       const botaoWhats = telefoneWa
         ? `<a class="btn-secondary" target="_blank" rel="noopener" href="https://wa.me/${telefoneWa}?text=${encodeURIComponent(mensagem)}">WhatsApp</a>`
