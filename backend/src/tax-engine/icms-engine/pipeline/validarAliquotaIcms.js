@@ -19,13 +19,35 @@
 //   tabela de alíquota "cheia" — este estágio não roda pra esses clientes.
 // - FECOP (art. 56-C, +2% pra NCM 2203/capítulo 24 a consumidor final SP)
 //   não é conferido: o parser não extrai vFCP/pFCP do grupo ICMS ainda.
+//
+// Regime especial de carnes (cliente.regimesEspeciais,
+// "icms_carne_4_5_sem_credito"): Decreto 62.647/2017, art. 2º-A (redação
+// Decreto 67.524/2023) — confirmado pela RC 16.711/2017 — permite destacar
+// 4,5% de ICMS ("Imposto Debitado") em toda saída de carne (NCM capítulo
+// 02), sem tomar crédito, pra estabelecimento no lucro real. Só se aplica
+// dentro do estado (a fonte fornecida não menciona operação interestadual);
+// fora desse escopo, a regra geral do artigo 52 continua valendo normal.
 
 import { canonicalizarNcm, regiaoDaUf } from './util.js';
 
-const ALIQUOTAS_VALIDAS_INTERNA = new Set([18, 20, 25, 30, 7, 12]);
+const ALIQUOTAS_VALIDAS_INTERNA = new Set([18, 20, 25, 30, 7, 12, 4.5]);
 const ALIQUOTAS_VALIDAS_INTERESTADUAL = new Set([4, 7, 12]);
 
-function aliquotaEsperadaInterna(ncmCanonico) {
+function regimeCarneAplicavel(contexto, ncmCanonico) {
+  return (
+    contexto.regimeTributario === 'lucro_real' &&
+    (contexto.regimesEspeciais || []).includes('icms_carne_4_5_sem_credito') &&
+    ncmCanonico.startsWith('02')
+  );
+}
+
+function aliquotaEsperadaInterna(ncmCanonico, contexto) {
+  if (regimeCarneAplicavel(contexto, ncmCanonico)) {
+    return {
+      aliquota: 4.5,
+      fundamento: 'Decreto 62.647/2017, art. 2º-A (redação Decreto 67.524/2023) — RC 16.711/2017 (regime especial de carnes, sem crédito)',
+    };
+  }
   if (ncmCanonico.startsWith('2203')) return { aliquota: 20, fundamento: 'RICMS/SP art. 54-A (NCM 2203)' };
   if (ncmCanonico.startsWith('24')) return { aliquota: 30, fundamento: 'RICMS/SP art. 55-A (capítulo 24)' };
   return { aliquota: 18, fundamento: 'RICMS/SP art. 52, I (alíquota interna geral)' };
@@ -47,7 +69,7 @@ export function validarAliquotaIcmsItem(item, contexto) {
   const ncmCanonico = canonicalizarNcm(item.ncm);
 
   if (contexto.mesmoEstado === true) {
-    const { aliquota: esperada, fundamento } = aliquotaEsperadaInterna(ncmCanonico);
+    const { aliquota: esperada, fundamento } = aliquotaEsperadaInterna(ncmCanonico, contexto);
     if (Math.abs(aliquotaXml - esperada) < 0.01) {
       return { status: 'CORRETO', aliquotaEsperada: esperada, fundamento, divergencias, pendencias };
     }

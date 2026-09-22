@@ -25,6 +25,16 @@ export const REGIMES_TRIBUTARIOS = ['simples_nacional', 'mei', 'lucro_presumido'
 // representa isso, sem duplicar dado.
 export const ATIVIDADES = ['comercio_varejo', 'atacado', 'industria', 'servico'];
 
+// Regimes especiais de ICMS aderidos pelo cliente, além do regime tributário
+// geral — cada um com condição própria de elegibilidade conferida no ponto
+// de uso (ver tax-engine/icms-engine/pipeline/validarAliquotaIcms.js), não
+// aqui (aqui só valida que o código existe na lista).
+// - icms_carne_4_5_sem_credito: alíquota de 4,5% destacada como "Imposto
+//   Debitado" em toda saída de carne (NCM capítulo 02), sem tomar crédito —
+//   Decreto 62.647/2017, art. 2º-A (redação Decreto 67.524/2023), RC
+//   16.711/2017. Só faz sentido pra cliente no lucro_real.
+export const REGIMES_ESPECIAIS = ['icms_carne_4_5_sem_credito'];
+
 function normalizarClienteSupabase(row) {
   if (!row) return null;
   return {
@@ -33,6 +43,7 @@ function normalizarClienteSupabase(row) {
     regimeTributario: row.regime_tributario || null,
     atividade: row.atividade || [],
     segmento: row.segmento || null,
+    regimesEspeciais: row.regimes_especiais || [],
   };
 }
 
@@ -40,7 +51,7 @@ export async function listarClientes() {
   if (usarSupabase) {
     const { data, error } = await supabase
       .from('clientes')
-      .select('cnpj, nome, regime_tributario, atividade, segmento')
+      .select('cnpj, nome, regime_tributario, atividade, segmento, regimes_especiais')
       .order('nome');
     if (error) throw new Error(`Falha ao listar clientes no Supabase: ${error.message}`);
     return data.map(normalizarClienteSupabase);
@@ -55,7 +66,7 @@ export async function obterCliente(cnpj) {
   if (usarSupabase) {
     const { data, error } = await supabase
       .from('clientes')
-      .select('cnpj, nome, regime_tributario, atividade, segmento')
+      .select('cnpj, nome, regime_tributario, atividade, segmento, regimes_especiais')
       .eq('cnpj', cnpjLimpo)
       .maybeSingle();
     if (error) throw new Error(`Falha ao buscar cliente no Supabase: ${error.message}`);
@@ -91,7 +102,15 @@ function validarAtividade(atividade) {
   return [...new Set(lista)];
 }
 
-export async function adicionarCliente({ cnpj, nome, regimeTributario, atividade, segmento }) {
+function validarRegimesEspeciais(regimesEspeciais) {
+  if (regimesEspeciais === undefined || regimesEspeciais === null) return [];
+  const lista = Array.isArray(regimesEspeciais) ? regimesEspeciais : [regimesEspeciais];
+  const invalido = lista.find((r) => !REGIMES_ESPECIAIS.includes(r));
+  if (invalido) throw new Error(`Regime especial inválido: ${invalido}`);
+  return [...new Set(lista)];
+}
+
+export async function adicionarCliente({ cnpj, nome, regimeTributario, atividade, segmento, regimesEspeciais }) {
   const cnpjLimpo = String(cnpj || '').replace(/\D/g, '');
   if (!cnpjLimpo || cnpjLimpo.length !== 14) {
     throw new Error('CNPJ inválido: informe os 14 dígitos.');
@@ -99,6 +118,7 @@ export async function adicionarCliente({ cnpj, nome, regimeTributario, atividade
   const regime = validarRegime(regimeTributario);
   const atividadeValidada = validarAtividade(atividade);
   const segmentoValidado = validarSegmento(segmento);
+  const regimesEspeciaisValidados = validarRegimesEspeciais(regimesEspeciais);
 
   if (usarSupabase) {
     if (await obterCliente(cnpjLimpo)) {
@@ -110,6 +130,7 @@ export async function adicionarCliente({ cnpj, nome, regimeTributario, atividade
       regime_tributario: regime,
       atividade: atividadeValidada,
       segmento: segmentoValidado,
+      regimes_especiais: regimesEspeciaisValidados,
     });
     if (error) throw new Error(`Falha ao cadastrar cliente no Supabase: ${error.message}`);
     return listarClientes();
@@ -125,12 +146,13 @@ export async function adicionarCliente({ cnpj, nome, regimeTributario, atividade
     regimeTributario: regime,
     atividade: atividadeValidada,
     segmento: segmentoValidado,
+    regimesEspeciais: regimesEspeciaisValidados,
   });
   await writeFile(CLIENTS_FILE, JSON.stringify(clientes, null, 2));
   return clientes;
 }
 
-export async function atualizarCliente(cnpj, { nome, regimeTributario, atividade, segmento }) {
+export async function atualizarCliente(cnpj, { nome, regimeTributario, atividade, segmento, regimesEspeciais }) {
   const cnpjLimpo = String(cnpj || '').replace(/\D/g, '');
   const atual = await obterCliente(cnpjLimpo);
   if (!atual) throw new Error('Cliente não encontrado.');
@@ -138,11 +160,12 @@ export async function atualizarCliente(cnpj, { nome, regimeTributario, atividade
   const novoNome = nome === undefined || nome === '' ? atual.nome : nome;
   const novaAtividade = atividade === undefined ? atual.atividade : validarAtividade(atividade);
   const novoSegmento = segmento === undefined ? atual.segmento : validarSegmento(segmento);
+  const novosRegimesEspeciais = regimesEspeciais === undefined ? atual.regimesEspeciais : validarRegimesEspeciais(regimesEspeciais);
 
   if (usarSupabase) {
     const { error } = await supabase
       .from('clientes')
-      .update({ nome: novoNome, regime_tributario: regime, atividade: novaAtividade, segmento: novoSegmento })
+      .update({ nome: novoNome, regime_tributario: regime, atividade: novaAtividade, segmento: novoSegmento, regimes_especiais: novosRegimesEspeciais })
       .eq('cnpj', cnpjLimpo);
     if (error) throw new Error(`Falha ao atualizar cliente no Supabase: ${error.message}`);
     return listarClientes();
@@ -150,7 +173,7 @@ export async function atualizarCliente(cnpj, { nome, regimeTributario, atividade
 
   const clientes = await listarClientes();
   const indice = clientes.findIndex((c) => c.cnpj === cnpjLimpo);
-  clientes[indice] = { ...clientes[indice], nome: novoNome, regimeTributario: regime, atividade: novaAtividade, segmento: novoSegmento };
+  clientes[indice] = { ...clientes[indice], nome: novoNome, regimeTributario: regime, atividade: novaAtividade, segmento: novoSegmento, regimesEspeciais: novosRegimesEspeciais };
   await writeFile(CLIENTS_FILE, JSON.stringify(clientes, null, 2));
   return clientes;
 }

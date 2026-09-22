@@ -44,7 +44,7 @@ function situacaoDocumento(doc, situacaoReforma) {
  * cadastro do cliente, repassados à conferência de ICMS/CFOP/CST (ver
  * tax-engine/icms-engine).
  */
-export function montarPainelDeClassificados(classificados, dataCorteReforma, regimeTributario = null, atividade = null) {
+export function montarPainelDeClassificados(classificados, dataCorteReforma, regimeTributario = null, atividade = null, regimesEspeciais = null) {
   const reforma = analisarConformidadeReforma(classificados, dataCorteReforma);
   const situacaoReformaPorChave = new Map(reforma.porDocumento.map((d) => [d.chave, d.situacao]));
 
@@ -78,7 +78,7 @@ export function montarPainelDeClassificados(classificados, dataCorteReforma, reg
       validacaoMatematica: doc.cancelada || ehNfse ? null : comProtecao('validacaoMatematica', () => validarDocumento(doc)),
       validacaoReforma: doc.cancelada || ehNfse ? null : comProtecao('validacaoReforma', () => validarReformaDocumento(doc, dataCorteReforma)),
       classificacaoMercadorias: doc.cancelada || ehNfse ? null : comProtecao('classificacaoMercadorias', () => classificarMercadoriasDocumento(doc)),
-      conferenciaIcms: doc.cancelada || ehNfse ? null : comProtecao('conferenciaIcms', () => conferirIcmsDocumento(doc, operacao, regimeTributario, atividade)),
+      conferenciaIcms: doc.cancelada || ehNfse ? null : comProtecao('conferenciaIcms', () => conferirIcmsDocumento(doc, operacao, regimeTributario, atividade, regimesEspeciais)),
       // Conferência de código de serviço (NBS) ainda não ligada aqui de
       // propósito — ver tax-engine/nbs-engine/README.md: o campo que o XML
       // de NFS-e realmente carrega é o código da lista de serviços da

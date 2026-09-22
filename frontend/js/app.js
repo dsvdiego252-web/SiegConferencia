@@ -209,7 +209,8 @@ function renderClientsTable() {
   els.clientsTableBody.innerHTML = clientesCarregados
     .map((c) => {
       const regime = ROTULO_REGIME[c.regimeTributario] || '—';
-      const atividade = (c.atividade || []).map((a) => ROTULO_ATIVIDADE[a] || a).join(', ') || '—';
+      const regimesEspeciais = (c.regimesEspeciais || []).map((r) => ROTULO_REGIME_ESPECIAL[r] || r);
+      const atividade = [...(c.atividade || []).map((a) => ROTULO_ATIVIDADE[a] || a), ...regimesEspeciais].join(', ') || '—';
       return `
         <tr>
           <td>${c.nome}</td>
@@ -1311,6 +1312,10 @@ const ROTULO_ATIVIDADE = {
   servico: 'Serviço',
 };
 
+const ROTULO_REGIME_ESPECIAL = {
+  icms_carne_4_5_sem_credito: 'Carnes 4,5% s/ crédito',
+};
+
 function renderReforma(reforma, cliente) {
   els.reformaSummaryPanel.hidden = false;
   els.reformaDataCorte.textContent = formatDate(reforma.dataCorte);
@@ -1879,6 +1884,21 @@ function marcarAtividade(atividade) {
   for (const cb of checkboxesAtividade()) cb.checked = selecionadas.has(cb.value);
 }
 
+function checkboxesRegimeEspecial() {
+  return [...document.querySelectorAll('.novo-cliente-regime-especial')];
+}
+
+function lerRegimesEspeciaisSelecionados() {
+  return checkboxesRegimeEspecial()
+    .filter((cb) => cb.checked)
+    .map((cb) => cb.value);
+}
+
+function marcarRegimesEspeciais(regimesEspeciais) {
+  const selecionados = new Set(regimesEspeciais || []);
+  for (const cb of checkboxesRegimeEspecial()) cb.checked = selecionados.has(cb.value);
+}
+
 function abrirModalCliente() {
   modoModalCliente = 'adicionar';
   els.clienteModalTitulo.textContent = 'Cadastrar cliente';
@@ -1889,6 +1909,7 @@ function abrirModalCliente() {
   els.novoClienteNome.value = '';
   els.novoClienteRegime.value = '';
   marcarAtividade([]);
+  marcarRegimesEspeciais([]);
   els.novoClienteSegmento.value = '';
   els.clienteModalOverlay.hidden = false;
 }
@@ -1907,6 +1928,7 @@ function abrirModalEdicaoCliente(cnpj) {
   els.novoClienteNome.value = cliente.nome || '';
   els.novoClienteRegime.value = cliente.regimeTributario || '';
   marcarAtividade(cliente.atividade);
+  marcarRegimesEspeciais(cliente.regimesEspeciais);
   els.novoClienteSegmento.value = cliente.segmento || '';
   els.clienteModalOverlay.hidden = false;
 }
@@ -1921,6 +1943,7 @@ async function adicionarCliente() {
   const nome = els.novoClienteNome.value.trim();
   const regimeTributario = els.novoClienteRegime.value || null;
   const atividade = lerAtividadeSelecionada();
+  const regimesEspeciais = lerRegimesEspeciaisSelecionados();
   const segmento = els.novoClienteSegmento.value.trim() || null;
   els.clienteModalErro.hidden = true;
   if (cnpj.length !== 14) {
@@ -1930,12 +1953,12 @@ async function adicionarCliente() {
   }
   try {
     if (modoModalCliente === 'editar') {
-      await apiPatch(`/api/clients/${cnpj}`, { nome, regimeTributario, atividade, segmento });
+      await apiPatch(`/api/clients/${cnpj}`, { nome, regimeTributario, atividade, segmento, regimesEspeciais });
       await carregarClientes(cnpj);
       fecharModalCliente();
       setStatus('Cliente atualizado.');
     } else {
-      await apiPost('/api/clients', { cnpj, nome, regimeTributario, atividade, segmento });
+      await apiPost('/api/clients', { cnpj, nome, regimeTributario, atividade, segmento, regimesEspeciais });
       await carregarClientes(cnpj);
       fecharModalCliente();
       setStatus('Cliente adicionado.');

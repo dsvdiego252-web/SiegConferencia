@@ -72,7 +72,7 @@ painelRouter.get('/', async (req, res) => {
         status: 'pronto',
         periodo: { dataInicio, dataFim },
         cliente,
-        ...montarPainelDeClassificados(classificados, dataCorteReforma, cliente?.regimeTributario, cliente?.atividade),
+        ...montarPainelDeClassificados(classificados, dataCorteReforma, cliente?.regimeTributario, cliente?.atividade, cliente?.regimesEspeciais),
       });
     }
 
@@ -169,7 +169,7 @@ painelRouter.get('/', async (req, res) => {
 
     if (combosConcluidos.size === combos.length) {
       const classificados = classificarDocumentos(docsAcumulados, cnpj, dataInicio, dataFim, tipos);
-      const dados = montarPainelDeClassificados(classificados, dataCorteReforma, cliente?.regimeTributario, cliente?.atividade);
+      const dados = montarPainelDeClassificados(classificados, dataCorteReforma, cliente?.regimeTributario, cliente?.atividade, cliente?.regimesEspeciais);
       await salvarResultado(cnpj, dataInicio, dataFim, tipo, dados);
       return res.json({ status: 'pronto', periodo: { dataInicio, dataFim }, desatualizado: false, cliente, ...dados });
     }

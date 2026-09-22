@@ -30,7 +30,7 @@ function comProtecao(rotulo, fn) {
  * (entrada/saída) e do regime tributário do cliente — usado antes de rodar
  * o pipeline em cada item do documento.
  */
-export function contextoIcmsDocumento(doc, operacao, regimeTributario, atividade) {
+export function contextoIcmsDocumento(doc, operacao, regimeTributario, atividade, regimesEspeciais) {
   const ufEmitente = doc.emitente?.uf || null;
   const ufDestinatario = doc.destinatario?.uf || null;
   // NFCe (modelo 65) é, por definição do próprio modelo fiscal, restrita a
@@ -48,6 +48,7 @@ export function contextoIcmsDocumento(doc, operacao, regimeTributario, atividade
     tipoOperacao: operacao === 'saida' ? 'venda' : operacao === 'entrada' ? 'compra' : null,
     regimeTributario: regimeTributario ?? null,
     atividade: atividade ?? null,
+    regimesEspeciais: regimesEspeciais ?? [],
     consumidorFinal: doc.tipoDocumento === 'NFCe' ? true : null,
     mesmoEstado,
     ufEmitente,
@@ -109,8 +110,8 @@ export function conferirIcmsItem(item, contexto = {}) {
   };
 }
 
-export function conferirIcmsDocumento(doc, operacao, regimeTributario, atividade) {
-  const contexto = contextoIcmsDocumento(doc, operacao, regimeTributario, atividade);
+export function conferirIcmsDocumento(doc, operacao, regimeTributario, atividade, regimesEspeciais) {
+  const contexto = contextoIcmsDocumento(doc, operacao, regimeTributario, atividade, regimesEspeciais);
   const itens = doc.itens.map((item, indice) => ({
     numeroItem: item.numeroItem ?? indice + 1,
     conferencia: conferirIcmsItem(item, contexto),
