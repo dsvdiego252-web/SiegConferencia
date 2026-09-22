@@ -1068,12 +1068,9 @@ function telefoneParaWaMe(telefone) {
   return digitos.startsWith('55') ? digitos : `55${digitos}`;
 }
 
-function montarMensagemNotificacao(cliente, pendSaida, pendEntrada) {
-  const partes = [];
-  if (pendSaida > 0) partes.push(`${pendSaida} documento(s) emitido(s)`);
-  if (pendEntrada > 0) partes.push(`${pendEntrada} documento(s) recebido(s)`);
+function montarMensagemNotificacao(cliente) {
   return (
-    `Olá! Aqui é da Vital Contabilidade. Identificamos ${partes.join(' e ')} nos últimos 30 dias sem os campos ` +
+    `Olá! Aqui é da Vital Contabilidade. Identificamos documentos fiscais nos últimos 30 dias sem os campos ` +
     `da Reforma Tributária (IBS/CBS) preenchidos — sinal de que o sistema emissor da ${cliente.nome} pode estar ` +
     `desatualizado. Poderia verificar com o suporte do seu sistema a atualização pra emissão com os novos campos?`
   );
@@ -1100,7 +1097,7 @@ function renderNotificacoes() {
       const cadastro = clientesCarregados.find((cc) => cc.cnpj === c.cnpj);
       const telefoneWa = telefoneParaWaMe(cadastro?.telefone);
       const email = cadastro?.email || null;
-      const mensagem = montarMensagemNotificacao(c, totalSaida, totalEntrada);
+      const mensagem = montarMensagemNotificacao(c);
 
       const botaoWhats = telefoneWa
         ? `<a class="btn-secondary" target="_blank" rel="noopener" href="https://wa.me/${telefoneWa}?text=${encodeURIComponent(mensagem)}">WhatsApp</a>`
