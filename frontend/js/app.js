@@ -276,7 +276,16 @@ function renderValores(valores) {
   els.valorPisCofinsSaida.textContent = formatMoney(valores.saida.pisCofins);
 }
 
-const ROTULO_SITUACAO = { ok: 'OK', inconsistente: 'Inconsistente', cancelada: 'Cancelada' };
+const ROTULO_SITUACAO = { ok: 'OK', inconsistente: 'Inconsistente', cancelada: 'Cancelada', parcial: 'Parcial' };
+
+// 'inconsistente' junta dois casos bem diferentes de gravidade
+// (situacaoReforma 'parcial' = alguns itens já adequados à reforma, 'sem_
+// adequacao' = nenhum) — sem distinguir, os dois pareciam igualmente
+// graves na lista de documentos. Só troca a classe quando é parcial;
+// cancelada/ok não são afetados.
+function classeSituacaoLinha(doc) {
+  return doc.situacaoReforma === 'parcial' && doc.situacao === 'inconsistente' ? 'parcial' : doc.situacao;
+}
 const DOCUMENTS_PAGE_SIZE = 20;
 
 let documentosCarregados = [];
@@ -385,10 +394,11 @@ function renderPaginaDocumentos() {
   const pagina = filtrados.slice(inicio, inicio + DOCUMENTS_PAGE_SIZE);
 
   for (const d of pagina) {
+    const classeSituacao = classeSituacaoLinha(d);
     const tr = document.createElement('tr');
-    tr.className = `row-clickable row-${d.situacao}`;
+    tr.className = `row-clickable row-${classeSituacao}`;
     tr.innerHTML = `
-      <td><span class="badge badge-situacao-${d.situacao}">${ROTULO_SITUACAO[d.situacao]}</span></td>
+      <td><span class="badge badge-situacao-${classeSituacao}">${ROTULO_SITUACAO[classeSituacao] || classeSituacao}</span></td>
       <td><span class="badge badge-${d.operacao}">${d.operacao}</span></td>
       <td>${d.tipoDocumento}</td>
       <td>${d.numero}</td>
@@ -1160,24 +1170,30 @@ async function abrirConsolidadoDocumentos(cnpj, dia, nomeCliente) {
       els.consolidadoDocsModalCorpo.innerHTML = `<p class="hint">${painel.motivo}</p>`;
       return;
     }
-    const documentos = painel.xmls.documentos;
+    // O painel-consolidado devolve todos os documentos do dia (entrada +
+    // saída juntos) — sem filtrar pela direção da aba ativa, um drill-down
+    // aberto a partir da aba Saídas mostrava entradas misturadas (e
+    // vice-versa), incoerente com o resto do painel (que já separa por
+    // direção desde o nível 1 do drill-down).
+    const documentos = painel.xmls.documentos.filter((d) => d.operacao === consolidadoDirecaoAtiva);
     if (!documentos.length) {
       els.consolidadoDocsModalCorpo.innerHTML = '<p class="hint">Nenhum documento encontrado.</p>';
       return;
     }
     const linhas = documentos
-      .map(
-        (d, indice) => `
-          <tr class="row-${d.situacao} row-clickable" data-indice="${indice}">
-            <td><span class="badge badge-situacao-${d.situacao}">${ROTULO_SITUACAO[d.situacao]}</span></td>
+      .map((d, indice) => {
+        const classeSituacao = classeSituacaoLinha(d);
+        return `
+          <tr class="row-${classeSituacao} row-clickable" data-indice="${indice}">
+            <td><span class="badge badge-situacao-${classeSituacao}">${ROTULO_SITUACAO[classeSituacao] || classeSituacao}</span></td>
             <td><span class="badge badge-${d.operacao}">${d.operacao}</span></td>
             <td>${d.tipoDocumento}</td>
             <td>${d.numero}</td>
             <td>${formatDate(d.dataEmissao)}</td>
             <td>${formatMoney(d.valorTotal)}</td>
           </tr>
-        `
-      )
+        `;
+      })
       .join('');
     els.consolidadoDocsModalCorpo.innerHTML = `
       <p class="hint">${documentos.length} documento(s). Clique numa linha pra ver o detalhe completo.</p>
