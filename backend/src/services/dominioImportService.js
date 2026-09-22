@@ -4,16 +4,26 @@ import * as XLSX from 'xlsx';
 // só letras/números/espaço). O relatório exportado do Domínio varia de
 // escritório para escritório, então cobrimos as variações mais comuns em
 // vez de exigir um layout fixo.
+// Ordem dentro de cada lista importa: quando mais de um cabeçalho da
+// planilha bate com sinônimos do mesmo campo, vence o sinônimo que aparece
+// primeiro aqui (não o que aparece primeiro na planilha) — necessário pra
+// preferir "valor líquido" a "valor do produto" quando os dois existem
+// (relatório do Domínio por item, ver comentário em parseDominioFile).
 const SINONIMOS = {
   chave: ['chave', 'chave de acesso', 'chave nfe', 'chave acesso', 'chave do documento'],
-  numero: ['numero', 'numero nota', 'nº nota', 'num nota', 'numero documento', 'nro nota', 'nf', 'numero nf', 'numero da nota'],
+  numero: ['numero', 'numero nota', 'nº nota', 'num nota', 'numero documento', 'nro nota', 'nf', 'numero nf', 'numero da nota', 'documento', 'nro documento', 'n documento'],
   serie: ['serie', 'serie nota', 'serie da nota'],
   cnpjEmit: ['cnpj emitente', 'cnpj do emitente', 'cnpj emit', 'cnpj fornecedor', 'cnpj remetente'],
   cnpjDest: ['cnpj destinatario', 'cnpj do destinatario', 'cnpj dest', 'cnpj cliente', 'cnpj tomador'],
-  dataEmissao: ['data emissao', 'dt emissao', 'data de emissao', 'emissao', 'data'],
+  dataEmissao: ['data emissao', 'dt emissao', 'data de emissao', 'emissao', 'data ent', 'data entrada', 'data'],
   cfop: ['cfop'],
-  operacao: ['operacao', 'tipo', 'tipo operacao', 'tipo de operacao', 'entrada saida', 'e s', 'natureza', 'natureza da operacao'],
-  valorTotal: ['valor total', 'valor nota', 'valor da nota', 'vl total', 'valor produtos', 'valor mercadoria', 'valor'],
+  operacao: ['operacao', 'tipo', 'tipo operacao', 'tipo de operacao', 'entrada saida', 'e s', 'natureza', 'natureza da operacao', 'descricao tipo'],
+  // "valor liq"/"valor produto" vêm de relatórios do Domínio por ITEM (uma
+  // linha por produto, não por nota) — parseDominioFile soma essas linhas
+  // por documento depois. "valor liq" (valor líquido) é preferido a "valor
+  // produto" (bruto, sem descontos) por ser mais próximo do total real da
+  // nota; ajustar a ordem aqui se algum cliente mostrar o contrário.
+  valorTotal: ['valor total', 'valor nota', 'valor da nota', 'vl total', 'valor liquido', 'valor liq', 'valor produtos', 'valor produto', 'valor mercadoria', 'valor'],
   valorIcms: ['valor icms', 'vl icms', 'icms'],
   valorPis: ['valor pis', 'vl pis', 'pis'],
   valorCofins: ['valor cofins', 'vl cofins', 'cofins'],
@@ -34,8 +44,13 @@ function construirMapaDeColunas(headers) {
   const normalizados = headers.map((h) => ({ original: h, normalizado: normalizarCabecalho(h) }));
   const mapa = {};
   for (const [campo, sinonimos] of Object.entries(SINONIMOS)) {
-    const encontrado = normalizados.find((h) => sinonimos.includes(h.normalizado));
-    if (encontrado) mapa[campo] = encontrado.original;
+    for (const sinonimo of sinonimos) {
+      const encontrado = normalizados.find((h) => h.normalizado === sinonimo);
+      if (encontrado) {
+        mapa[campo] = encontrado.original;
+        break;
+      }
+    }
   }
   return mapa;
 }
@@ -184,5 +199,33 @@ export function parseDominioFile(buffer) {
     };
   });
 
-  return { docs, colunasMapeadas: mapa, colunasEncontradas: headers };
+  return { docs: agruparPorDocumento(docs), colunasMapeadas: mapa, colunasEncontradas: headers };
+}
+
+/**
+ * Alguns relatórios do Domínio exportam uma linha POR ITEM (colunas de
+ * produto/NCM/CFOP repetindo o mesmo número de documento várias vezes,
+ * como no relatório de conferência de estoque), não uma linha por nota —
+ * reconciliationService.js espera um total por documento, então precisa
+ * agrupar antes de cruzar com a SIEG. Some por chave (ou, na ausência dela,
+ * pelo mesmo par número/série/operação que reconciliationService usa pra
+ * casar os dois lados) — quando a planilha já é uma linha por nota, somar
+ * um grupo de tamanho 1 não muda nada, então isso funciona igual pros dois
+ * formatos sem precisar adivinhar qual é qual.
+ */
+function agruparPorDocumento(linhas) {
+  const grupos = new Map();
+  for (const linha of linhas) {
+    const chaveGrupo = linha.chave || `${linha.numero}|${linha.serie}|${linha.operacao}`;
+    if (!grupos.has(chaveGrupo)) {
+      grupos.set(chaveGrupo, { ...linha });
+    } else {
+      const grupo = grupos.get(chaveGrupo);
+      grupo.valorTotal += linha.valorTotal;
+      grupo.valorIcms += linha.valorIcms;
+      grupo.valorPis += linha.valorPis;
+      grupo.valorCofins += linha.valorCofins;
+    }
+  }
+  return [...grupos.values()];
 }
