@@ -591,6 +591,29 @@ function badgeConferenciaIcms(conferenciaIcms) {
   return `<span class="badge ${classe}">${ROTULO_STATUS_ICMS_DOCUMENTO[conferenciaIcms.status] || conferenciaIcms.status}</span>`;
 }
 
+const ROTULO_STATUS_NBS_DOCUMENTO = {
+  CORRETO: 'código de serviço confirmado na NBS',
+  REVISAO_MANUAL: 'revisão manual',
+  DIVERGENTE: 'divergências encontradas',
+};
+
+// Mesmo padrão de badgeConferenciaIcms, mas pro motor de NFS-e/NBS
+// (tax-engine/nbs-engine). Ainda não ligado no backend de propósito — o
+// campo que o XML de NFS-e carrega (lista de serviços da LC 116/2003) não é
+// o mesmo sistema de código da NBS, então "conferenciaNbs" nunca vem
+// preenchido por enquanto (ver painelBuilder.js/nbs-engine/README.md) —
+// mensagem neutra em vez de badge, pra não parecer avaliado nem "cancelado".
+function badgeConferenciaNbs(conferenciaNbs) {
+  if (!conferenciaNbs) return '<span class="hint">Conferência de código de serviço ainda não disponível — pendente da base da lista de serviços (LC 116/2003).</span>';
+  const classe =
+    conferenciaNbs.status === 'CORRETO'
+      ? 'badge-situacao-ok'
+      : conferenciaNbs.status === 'REVISAO_MANUAL'
+        ? 'badge-situacao-inconsistente'
+        : 'badge-erro';
+  return `<span class="badge ${classe}">${ROTULO_STATUS_NBS_DOCUMENTO[conferenciaNbs.status] || conferenciaNbs.status}</span>`;
+}
+
 // situacaoReforma vem de reformaTributariaAnalyzer.js: 'sem_adequacao'/
 // 'parcial' significam que o documento já está sob a vigência da reforma
 // e deveria ter os campos IBS/CBS, mas não tem — isso é uma inconsistência
@@ -614,11 +637,26 @@ function badgeValidacaoReformaDocumento(validacaoReforma, situacaoReforma) {
 
 // Aba "Itens" — dados centrais do item, sem as colunas de conferência (que
 // foram pra suas próprias abas) pra não precisar rolar a tabela pros lados
-// só pra ver produto/NCM/valor.
+// só pra ver produto/NCM/valor. NFS-e não tem NCM/CFOP/ICMS (é serviço, não
+// mercadoria) — troca essas colunas por código de serviço/ISS em vez de
+// mostrar "R$ 0,00 (CST - · 0%)", que pareceria uma alíquota real de ICMS
+// zerada em vez de simplesmente "não se aplica".
 function construirAbaItens(doc) {
+  const ehNfse = doc.tipoDocumento === 'NFSe';
   const linhas = doc.itens
-    .map(
-      (item) => `
+    .map((item) =>
+      ehNfse
+        ? `
+        <tr>
+          <td>${item.codigo || '-'}<br><span class="hint">${item.descricao}</span></td>
+          <td colspan="2">${item.servico?.codigoNbs || '-'}</td>
+          <td>${item.quantidade}</td>
+          <td>${formatMoney(item.valorProduto)}</td>
+          <td>${formatMoney(item.servico?.valorIss || 0)} <span class="hint">(${item.servico?.aliquotaIss || 0}%${item.servico?.issRetido ? ' · retido' : ''})</span></td>
+          <td>${formatMoney(item.pis.valor + item.cofins.valor)} <span class="hint">(retido)</span></td>
+        </tr>
+      `
+        : `
         <tr>
           <td>${item.codigo}<br><span class="hint">${item.descricao}</span></td>
           <td>${item.ncm || '-'}</td>
@@ -637,12 +675,12 @@ function construirAbaItens(doc) {
       <table>
         <thead>
           <tr>
-            <th>Produto</th>
-            <th>NCM</th>
-            <th>CFOP</th>
+            <th>${ehNfse ? 'Serviço' : 'Produto'}</th>
+            <th colspan="${ehNfse ? 2 : 1}">${ehNfse ? 'Código de serviço (NBS)' : 'NCM'}</th>
+            ${ehNfse ? '' : '<th>CFOP</th>'}
             <th>Qtd.</th>
             <th>Valor</th>
-            <th>ICMS</th>
+            <th>${ehNfse ? 'ISS' : 'ICMS'}</th>
             <th>PIS+COFINS</th>
           </tr>
         </thead>
@@ -663,8 +701,8 @@ function construirAbaItens(doc) {
 // divergente (informado → esperado quando dá pra apontar um valor esperado
 // específico, senão a frase completa) e uma linha de base legal ao final
 // juntando as fontes citadas, sem repetir a mesma referência várias vezes.
-const TITULO_GRUPO_DIVERGENCIA = { icms: 'Inconsistência Fiscal — ICMS/CFOP', pis_cofins: 'Inconsistência Fiscal — PIS/COFINS' };
-const MOTOR_PARA_GRUPO = { ncm: 'icms', cfop: 'icms', icms_aliquota: 'icms', icms_cbenef: 'icms', icms_st: 'icms', icms_anexos: 'icms', pis_cofins: 'pis_cofins' };
+const TITULO_GRUPO_DIVERGENCIA = { icms: 'Inconsistência Fiscal — ICMS/CFOP', pis_cofins: 'Inconsistência Fiscal — PIS/COFINS', servico: 'Inconsistência Fiscal — NFS-e/NBS' };
+const MOTOR_PARA_GRUPO = { ncm: 'icms', cfop: 'icms', icms_aliquota: 'icms', icms_cbenef: 'icms', icms_st: 'icms', icms_anexos: 'icms', pis_cofins: 'pis_cofins', nbs: 'servico' };
 
 function construirFichasInconsistenciaFiscal(divergenciasIcms) {
   if (!divergenciasIcms.length) return '';
@@ -727,12 +765,17 @@ function construirAbaDivergencias(doc) {
     let fichasFiscais = '';
     if (icmsItem) {
       if (icmsItem.status === 'SEM_BASE_CARREGADA') icmsSemBase = true;
-      fichasFiscais = construirFichasInconsistenciaFiscal(icmsItem.divergencias || []);
+      fichasFiscais += construirFichasInconsistenciaFiscal(icmsItem.divergencias || []);
       // Pendências (ex.: "UF não disponível pra conferir alíquota") não são
       // divergência confirmada, mas também não devem ficar invisíveis — sem
       // isso, um item "revisão manual" parece idêntico a um item sem
       // nenhuma conferência rodando.
       for (const p of icmsItem.pendencias || []) linhasItem.push(`<li class="hint">${p}</li>`);
+    }
+    const nbsItem = doc.conferenciaNbs?.itens?.[indice]?.conferencia;
+    if (nbsItem) {
+      fichasFiscais += construirFichasInconsistenciaFiscal(nbsItem.divergencias || []);
+      for (const p of nbsItem.pendencias || []) linhasItem.push(`<li class="hint">${p}</li>`);
     }
     if (linhasItem.length || fichasFiscais) {
       blocos.push(`
@@ -772,7 +815,10 @@ function construirAbaDivergencias(doc) {
     : '';
 
   if (!blocos.length) {
-    return `<p class="hint">Nenhuma divergência encontrada neste documento — cálculos batem e, onde há grupo IBS/CBS, está coerente com a tabela oficial.${notaIcmsSemBase ? ` ${notaIcmsSemBase}` : ''}</p>`;
+    const mensagem = doc.tipoDocumento === 'NFSe'
+      ? 'Nota de serviço integrada — conferência de código de serviço/ISS ainda não disponível (ver aba Itens pros dados extraídos do XML).'
+      : 'Nenhuma divergência encontrada neste documento — cálculos batem e, onde há grupo IBS/CBS, está coerente com a tabela oficial.';
+    return `<p class="hint">${mensagem}${notaIcmsSemBase ? ` ${notaIcmsSemBase}` : ''}</p>`;
   }
   if (notaIcmsSemBase) blocos.push(`<p class="hint">${notaIcmsSemBase}</p>`);
   return blocos.join('');
@@ -888,7 +934,8 @@ function contarItensComDivergencia(doc) {
     const temRtc = (doc.validacaoReforma?.itens?.[indice]?.validacao?.divergencias?.length || 0) > 0;
     const temFiscal = Boolean(doc.classificacaoMercadorias?.[indice]?.classificacao?.divergenciaFiscal);
     const temIcms = (doc.conferenciaIcms?.itens?.[indice]?.conferencia?.divergencias?.length || 0) > 0;
-    return temCalc || temRtc || temFiscal || temIcms;
+    const temNbs = (doc.conferenciaNbs?.itens?.[indice]?.conferencia?.divergencias?.length || 0) > 0;
+    return temCalc || temRtc || temFiscal || temIcms || temNbs;
   }).length;
 
   const totaisComProblema =
@@ -899,15 +946,23 @@ function contarItensComDivergencia(doc) {
 }
 
 function abrirModalDocumento(doc) {
-  els.docModalTitulo.textContent = `${doc.tipoDocumento} nº ${doc.numero} — série ${doc.serie}`;
+  const ehNfse = doc.tipoDocumento === 'NFSe';
+  els.docModalTitulo.textContent = ehNfse
+    ? `NFS-e nº ${doc.numero}`
+    : `${doc.tipoDocumento} nº ${doc.numero} — série ${doc.serie}`;
   const totalDivergencias = contarItensComDivergencia(doc);
+
+  const linhaValidacaoMatematica = ehNfse ? '' : `<dt>Validação matemática</dt><dd>${badgeValidacaoCalculo(doc.validacaoMatematica)}</dd>`;
+  const linhaConferenciaEspecifica = ehNfse
+    ? `<dt>Conferência NBS (código de serviço)</dt><dd>${badgeConferenciaNbs(doc.conferenciaNbs)}</dd>`
+    : `<dt>Conferência ICMS/CFOP/CST</dt><dd>${badgeConferenciaIcms(doc.conferenciaIcms)}</dd>`;
 
   els.docModalCorpo.innerHTML = `
     <dl>
       <dt>Situação</dt><dd><span class="badge badge-situacao-${doc.situacao}">${ROTULO_SITUACAO[doc.situacao]}</span></dd>
-      <dt>Validação matemática</dt><dd>${badgeValidacaoCalculo(doc.validacaoMatematica)}</dd>
+      ${linhaValidacaoMatematica}
       <dt>Conferência RTC (IBS/CBS)</dt><dd>${badgeValidacaoReformaDocumento(doc.validacaoReforma, doc.situacaoReforma)}</dd>
-      <dt>Conferência ICMS/CFOP/CST</dt><dd>${badgeConferenciaIcms(doc.conferenciaIcms)}</dd>
+      ${linhaConferenciaEspecifica}
       <dt>Chave de acesso</dt><dd>${doc.chave || '-'}</dd>
       <dt>Emissão</dt><dd>${formatDate(doc.dataEmissao)}</dd>
       <dt>Natureza da operação</dt><dd>${doc.naturezaOperacao || '-'}</dd>

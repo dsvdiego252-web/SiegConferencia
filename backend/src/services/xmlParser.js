@@ -294,6 +294,131 @@ export function parseNfeXml(xmlString) {
  * quando quem está olhando é o escritório de contabilidade, com vários
  * clientes diferentes.
  */
+// NFS-e (nota fiscal de serviço eletrônica) é municipal, não federal — cada
+// prefeitura pode ter seu próprio layout de XML (não existe um único
+// "schema nacional" ainda consolidado). O mais adotado entre municípios é o
+// padrão ABRASF (v1/v2.04) — é o único reconhecido aqui. SIEG pode devolver
+// outros formatos para municípios não-ABRASF; esses simplesmente não batem
+// em nenhum dos caminhos abaixo e o documento é ignorado (mesmo padrão de
+// falha graciosa do parseNfeXml — nunca um dado inventado).
+//
+// IMPORTANTE: este parser ainda não foi validado contra nenhum XML de NFS-e
+// real emitido por um cliente desta contabilidade — foi escrito a partir da
+// documentação pública do padrão ABRASF. Ajustar os caminhos abaixo assim
+// que o primeiro documento real aparecer nos logs/cache (mesmo processo já
+// usado pra encontrar os bugs de CST/UF do motor de ICMS).
+function localizarInfNfse(parsed) {
+  return (
+    parsed?.CompNfse?.Nfse?.InfNfse
+    ?? parsed?.Nfse?.InfNfse
+    ?? parsed?.ConsultarNfseResposta?.ListaNfse?.CompNfse?.Nfse?.InfNfse
+    ?? null
+  );
+}
+
+export function parseNfseXml(xmlString) {
+  let parsed;
+  try {
+    parsed = parser.parse(xmlString);
+  } catch {
+    return null;
+  }
+
+  const infNfse = localizarInfNfse(parsed);
+  if (!infNfse) return null;
+
+  // Municípios ABRASF v2 aninham os dados de fato dentro de
+  // DeclaracaoPrestacaoServico.InfDeclaracaoPrestacaoServico; v1 tem tudo
+  // direto em InfNfse. Cai pro próprio infNfse quando esse nível não existe.
+  const declaracao = infNfse.DeclaracaoPrestacaoServico?.InfDeclaracaoPrestacaoServico ?? infNfse;
+  const servico = declaracao.Servico ?? {};
+  const valores = servico.Valores ?? {};
+  const prestador = declaracao.Prestador ?? infNfse.PrestadorServico ?? {};
+  const identificacaoPrestador = prestador.IdentificacaoPrestador ?? infNfse.PrestadorServico?.IdentificacaoPrestador ?? {};
+  const tomador = declaracao.Tomador ?? infNfse.TomadorServico ?? {};
+  const identificacaoTomador = tomador.IdentificacaoTomador ?? infNfse.TomadorServico?.IdentificacaoTomador ?? {};
+  const cpfCnpjTomador = identificacaoTomador.CpfCnpj ?? {};
+
+  const numero = infNfse.Numero ?? declaracao.Numero ?? null;
+  const codigoVerificacao = infNfse.CodigoVerificacao ?? null;
+  // Cancelamento não segue um único campo entre municípios ABRASF — alguns
+  // usam <Situacao>2 (cancelada) dentro de InfNfse, outros um nó
+  // <NfseCancelamento> à parte no mesmo envelope.
+  const situacao = infNfse.Situacao ?? infNfse.StatusNfse ?? null;
+  const cancelada = String(situacao) === '2' || Boolean(infNfse.NfseCancelamento ?? parsed?.CompNfse?.NfseCancelamento);
+
+  // ItemListaServico é o código da lista de serviços da LC 116/2003 (ex.:
+  // "1.01") — mesmo formato numérico do catálogo NBS 2.0 fornecido pra
+  // conferência (ver tax-engine/nbs-engine). CodigoTributacaoMunicipio é um
+  // código próprio da prefeitura, usado só como fallback quando o primeiro
+  // não vier preenchido.
+  const codigoNbs = String(servico.ItemListaServico ?? servico.CodigoTributacaoMunicipio ?? '').trim() || null;
+  const valorServicos = toNumber(valores.ValorServicos);
+  const valorPis = toNumber(valores.ValorPis);
+  const valorCofins = toNumber(valores.ValorCofins);
+
+  return {
+    tipoDocumento: 'NFSe',
+    // Sem numeração por série (NFS-e não tem esse conceito) — a chave é
+    // sintética (número + código de verificação), só pra deduplicar no
+    // cache; documentos sem código de verificação ficam sem chave e não são
+    // persistidos no cache permanente (mesmo comportamento de qualquer doc
+    // sem chave — ver documentCache.js/registrarSincronizacao).
+    chave: numero && codigoVerificacao ? `NFSE-${numero}-${codigoVerificacao}` : null,
+    numero: toNumber(numero),
+    serie: null,
+    dataEmissao: infNfse.DataEmissao ?? declaracao.DataEmissao ?? null,
+    naturezaOperacao: servico.Discriminacao ?? '',
+    cancelada,
+    emitente: {
+      cnpj: normalizarCnpj(identificacaoPrestador.Cnpj),
+      nome: prestador.RazaoSocial ?? infNfse.PrestadorServico?.RazaoSocial ?? '',
+      uf: prestador.Endereco?.Uf ?? null,
+    },
+    destinatario: {
+      cnpj: normalizarCnpj(cpfCnpjTomador.Cnpj ?? cpfCnpjTomador.Cpf),
+      nome: tomador.RazaoSocial ?? infNfse.TomadorServico?.RazaoSocial ?? '',
+      uf: tomador.Endereco?.Uf ?? null,
+    },
+    valorTotal: valorServicos,
+    valorIcmsTotal: 0,
+    valorProdutosTotal: 0,
+    valorPisTotal: valorPis,
+    valorCofinsTotal: valorCofins,
+    itens: [
+      {
+        numeroItem: 1,
+        // Campos abaixo replicam o formato de item de mercadoria (NCM/CFOP/
+        // ICMS ficam null/zerados de propósito) só pra não quebrar os
+        // agregadores genéricos que já assumem essa forma (taxAnalyzer.js,
+        // resumo de PIS/COFINS do painelBuilder.js) — nenhum desses valores
+        // é "inventado", são estruturalmente ausentes numa nota de serviço.
+        codigo: codigoNbs ?? '',
+        descricao: servico.Discriminacao ?? '',
+        ncm: null,
+        cest: null,
+        cfop: null,
+        quantidade: 1,
+        valorUnitario: valorServicos,
+        valorProduto: valorServicos,
+        icms: { cst: null, aliquota: 0, valor: 0, baseCalculo: 0, cBenef: null },
+        pis: { cst: null, aliquota: 0, valor: valorPis, baseCalculo: 0 },
+        cofins: { cst: null, aliquota: 0, valor: valorCofins, baseCalculo: 0 },
+        reformaTributaria: null,
+        // Campos específicos de NFS-e — consumidos pela conferência de NBS
+        // (tax-engine/nbs-engine); nada aqui tem regra de ISS ainda (ver
+        // README desse motor).
+        servico: {
+          codigoNbs,
+          aliquotaIss: toNumber(valores.Aliquota),
+          valorIss: toNumber(valores.ValorIss),
+          issRetido: String(servico.IssRetido ?? valores.IssRetido ?? '2') === '1',
+        },
+      },
+    ],
+  };
+}
+
 export function classificarOperacao(doc, clienteCnpj) {
   const cnpjLimpo = String(clienteCnpj || '').replace(/\D/g, '');
   // Compara sempre só dígitos dos dois lados — o CNPJ do emitente/
@@ -313,5 +438,5 @@ export function classificarOperacao(doc, clienteCnpj) {
 }
 
 export function parseNfeBatch(xmlStrings) {
-  return xmlStrings.map(parseNfeXml).filter(Boolean);
+  return xmlStrings.map((xml) => parseNfeXml(xml) ?? parseNfseXml(xml)).filter(Boolean);
 }

@@ -50,6 +50,14 @@ export function montarPainelDeClassificados(classificados, dataCorteReforma, reg
 
   const documentos = classificados.map(({ doc, operacao }) => {
     const situacaoReforma = situacaoReformaPorChave.get(doc.chave) || null;
+    // NFS-e é um domínio tributário completamente diferente (ISS municipal,
+    // não ICMS estadual) — os motores de validação matemática (totais de
+    // ICMS/produto), Reforma Tributária de mercadorias, Motor de Mercadorias
+    // e ICMS/CFOP/CST não fazem sentido nenhum aqui e ficam null (mesmo
+    // tratamento de documento cancelado), em vez de rodar sobre campos
+    // estruturalmente ausentes e arriscar uma confirmação falsa (ex.:
+    // "NCM ausente" numa nota que nunca teve NCM pra começo de conversa).
+    const ehNfse = doc.tipoDocumento === 'NFSe';
     return {
       chave: doc.chave,
       operacao,
@@ -67,10 +75,17 @@ export function montarPainelDeClassificados(classificados, dataCorteReforma, reg
       itens: doc.itens,
       situacaoReforma,
       situacao: situacaoDocumento(doc, situacaoReforma),
-      validacaoMatematica: doc.cancelada ? null : comProtecao('validacaoMatematica', () => validarDocumento(doc)),
-      validacaoReforma: doc.cancelada ? null : comProtecao('validacaoReforma', () => validarReformaDocumento(doc, dataCorteReforma)),
-      classificacaoMercadorias: doc.cancelada ? null : comProtecao('classificacaoMercadorias', () => classificarMercadoriasDocumento(doc)),
-      conferenciaIcms: doc.cancelada ? null : comProtecao('conferenciaIcms', () => conferirIcmsDocumento(doc, operacao, regimeTributario, atividade)),
+      validacaoMatematica: doc.cancelada || ehNfse ? null : comProtecao('validacaoMatematica', () => validarDocumento(doc)),
+      validacaoReforma: doc.cancelada || ehNfse ? null : comProtecao('validacaoReforma', () => validarReformaDocumento(doc, dataCorteReforma)),
+      classificacaoMercadorias: doc.cancelada || ehNfse ? null : comProtecao('classificacaoMercadorias', () => classificarMercadoriasDocumento(doc)),
+      conferenciaIcms: doc.cancelada || ehNfse ? null : comProtecao('conferenciaIcms', () => conferirIcmsDocumento(doc, operacao, regimeTributario, atividade)),
+      // Conferência de código de serviço (NBS) ainda não ligada aqui de
+      // propósito — ver tax-engine/nbs-engine/README.md: o campo que o XML
+      // de NFS-e realmente carrega é o código da lista de serviços da
+      // LC 116/2003, não NBS (dois sistemas diferentes, só coincidem
+      // visualmente no nível mais alto). O motor fica pronto e testado,
+      // esperando a base certa (LC 116) ou a confirmação do formato real
+      // contra o primeiro XML de NFS-e de verdade antes de ligar de novo.
     };
   });
 

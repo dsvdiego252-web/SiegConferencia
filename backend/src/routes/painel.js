@@ -21,14 +21,23 @@ export const painelRouter = Router();
 // da Vercel) — reserva tempo pra montar a resposta depois do último combo.
 const ORCAMENTO_MS = 45_000;
 
-function resolverTipos(tipoParam) {
+// "Todos" (sem filtro explícito) sempre busca NFe+NFCe, e só inclui NFS-e
+// quando o cliente está cadastrado com atividade "servico" — sem essa
+// condição, toda busca de todo cliente passaria a gastar cota extra da SIEG
+// por um tipo de documento que a maioria nunca emite. O filtro "NFS-e" na
+// tela sempre funciona, independente do cadastro (ver botão/dropdown do
+// frontend).
+function resolverTipos(tipoParam, cliente) {
   if (tipoParam === 'nfe') return [XmlType.NFE];
   if (tipoParam === 'nfce') return [XmlType.NFCE];
-  return undefined;
+  if (tipoParam === 'nfse') return [XmlType.NFSE];
+  const tipos = [XmlType.NFE, XmlType.NFCE];
+  if (cliente?.atividade?.includes('servico')) tipos.push(XmlType.NFSE);
+  return tipos;
 }
 
 function normalizarTipo(tipoParam) {
-  return tipoParam === 'nfe' || tipoParam === 'nfce' ? tipoParam : 'todos';
+  return ['nfe', 'nfce', 'nfse'].includes(tipoParam) ? tipoParam : 'todos';
 }
 
 // Maior data de emissão entre os documentos já baixados do combo em
@@ -50,10 +59,9 @@ painelRouter.get('/', async (req, res) => {
     if (!cnpj) return res.status(400).json({ erro: 'Informe o parâmetro "cnpj".' });
 
     const { dataInicio, dataFim } = resolverPeriodo(req.query);
-    const tipo = normalizarTipo(req.query.tipo);
-    const tipos = resolverTipos(req.query.tipo);
-
     const cliente = await obterCliente(cnpj);
+    const tipo = normalizarTipo(req.query.tipo);
+    const tipos = resolverTipos(req.query.tipo, cliente);
     const dataCorteReforma = resolverDataCorteReforma(cliente?.regimeTributario);
 
     // Sem Supabase configurado (dev local), busca tudo direto — o modo mock

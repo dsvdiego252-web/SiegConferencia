@@ -3,7 +3,7 @@ import { parseNfeBatch, classificarOperacao } from './xmlParser.js';
 import { estaDentroDoPeriodo } from './dateUtils.js';
 import { periodoTotalmenteCacheado, buscarDocumentosCacheados } from './documentCache.js';
 
-const TIPO_DOCUMENTO_POR_XMLTYPE = { [XmlType.NFE]: 'NFe', [XmlType.NFCE]: 'NFCe' };
+const TIPO_DOCUMENTO_POR_XMLTYPE = { [XmlType.NFE]: 'NFe', [XmlType.NFCE]: 'NFCe', [XmlType.NFSE]: 'NFSe' };
 
 /**
  * Lista os "combos" (tipo de documento x direção emitente/destinatário) que

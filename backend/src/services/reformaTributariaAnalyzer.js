@@ -33,6 +33,12 @@ export function analisarConformidadeReforma(docsClassificados, dataCorte = DATA_
     ({ doc, operacao }) =>
       (operacao === 'entrada' || operacao === 'saida') &&
       !doc.cancelada &&
+      // NFS-e é serviço, não mercadoria — o grupo IBSCBS de bens (esta
+      // análise) não se aplica a ela; IBS/CBS de serviços é um trilho da
+      // reforma ainda não coberto por este motor (ver nbs-engine/README.md).
+      // Sem esse filtro, toda NFS-e emitida após a vigência aparecia como
+      // "sem_adequacao" só por não ter um grupo que nunca deveria ter.
+      doc.tipoDocumento !== 'NFSe' &&
       String(doc.dataEmissao || '').slice(0, 10) >= dataCorte &&
       doc.itens.length > 0
   );
