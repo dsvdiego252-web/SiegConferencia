@@ -53,6 +53,9 @@ export function contextoIcmsDocumento(doc, operacao, regimeTributario, atividade
     ufEmitente,
     ufDestinatario,
     dataEmissao: String(doc.dataEmissao || '').slice(0, 10) || null,
+    // null/ausente = documento cacheado antes de existir extração de cBenef
+    // (ou outro campo futuro) com confiança — ver xmlParser.js VERSAO_PARSER.
+    versaoParser: doc.versaoParser ?? null,
   };
 }
 

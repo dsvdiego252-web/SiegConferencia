@@ -99,6 +99,10 @@ export function linhaParaDocumento(linha) {
     valorProdutosTotal: Number(linha.valor_produtos_total),
     valorPisTotal: Number(linha.valor_pis_total || 0),
     valorCofinsTotal: Number(linha.valor_cofins_total || 0),
+    // null = cacheado antes de existir esse controle (parser legado) — ver
+    // xmlParser.js VERSAO_PARSER e validarCbenef.js pro caso real que
+    // motivou isso (cBenef não capturado por documentos já cacheados).
+    versaoParser: linha.versao_parser ?? null,
     itens: linha.itens || [],
   };
 }
@@ -161,6 +165,7 @@ export async function registrarSincronizacao(cnpjCliente, xmlType, direcao, data
       valor_produtos_total: doc.valorProdutosTotal,
       valor_pis_total: doc.valorPisTotal || 0,
       valor_cofins_total: doc.valorCofinsTotal || 0,
+      versao_parser: doc.versaoParser ?? null,
       itens: doc.itens,
       atualizado_em: new Date().toISOString(),
     }));

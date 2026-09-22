@@ -1,5 +1,17 @@
 import { XMLParser } from 'fast-xml-parser';
 
+// Incrementa toda vez que um campo novo passa a ser extraído do XML (ex.:
+// cBenef, CEST, UF de emitente/destinatário) — documentos já cacheados no
+// Supabase antes da mudança nunca tiveram esse campo capturado, mesmo que
+// o XML original o tivesse, e não tem como reprocessar sem buscar de novo
+// na SIEG (o XML original não fica guardado). Guardado por documento
+// (documentCache.js) e propagado até o contexto do motor de ICMS/CFOP/CST,
+// pra distinguir "campo genuinamente ausente no XML" (parser atual, pode
+// confirmar divergência) de "campo não capturado por um parser antigo"
+// (nunca confirma, só REVISAO_MANUAL) — ver validarCbenef.js pro primeiro
+// caso real encontrado (cBenef null em cache anterior a essa extração).
+export const VERSAO_PARSER = 2;
+
 const parser = new XMLParser({
   ignoreAttributes: false,
   attributeNamePrefix: '@_',
@@ -283,6 +295,7 @@ export function parseNfeXml(xmlString) {
           valorCbs: toNumber(ibscbsTot.vCBS),
         }
       : null,
+    versaoParser: VERSAO_PARSER,
     itens,
   };
 }
@@ -385,6 +398,7 @@ export function parseNfseXml(xmlString) {
     valorProdutosTotal: 0,
     valorPisTotal: valorPis,
     valorCofinsTotal: valorCofins,
+    versaoParser: VERSAO_PARSER,
     itens: [
       {
         numeroItem: 1,

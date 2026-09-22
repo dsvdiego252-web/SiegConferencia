@@ -45,6 +45,16 @@ export function validarCbenefItem(item, contexto) {
   if (!cBenefXml) {
     if (!semPreenchimento) return { status: 'REVISAO_MANUAL', divergencias, pendencias: ['Regra "sem preenchimento de cBenef" não encontrada na base.'] };
     if (!semPreenchimento.cst_permitidos.includes(cstXml)) {
+      // cBenef ausente aqui pode ser genuíno (XML nunca teve) ou só um
+      // documento cacheado antes de o parser extrair esse campo (ver
+      // xmlParser.js VERSAO_PARSER) — sem essa distinção, todo item antigo
+      // com CST que exige cBenef vira uma divergência falsa, mesmo quando o
+      // XML original tinha o campo preenchido (caso real: TOMATE/FILE DE
+      // TILAPIA com cBenef SP010360 no XML, mas null no cache legado).
+      if ((contexto.versaoParser ?? 0) < 2) {
+        pendencias.push(`Item sem cBenef no cache, mas o CST ${cstXml} normalmente exige preenchimento — este documento foi cacheado antes de o parser capturar cBenef com confiança, não dá pra confirmar se o XML original tinha ou não.`);
+        return { status: 'REVISAO_MANUAL', divergencias, pendencias };
+      }
       divergencias.push({
         campo: 'cBenef',
         informado: '(não informado)',
