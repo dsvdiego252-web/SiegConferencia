@@ -22,6 +22,8 @@ const els = {
   novoClienteNome: document.getElementById('novoClienteNome'),
   novoClienteRegime: document.getElementById('novoClienteRegime'),
   novoClienteSegmento: document.getElementById('novoClienteSegmento'),
+  novoClienteTelefone: document.getElementById('novoClienteTelefone'),
+  novoClienteEmail: document.getElementById('novoClienteEmail'),
   btnAdicionarCliente: document.getElementById('btnAdicionarCliente'),
   clienteModalErro: document.getElementById('clienteModalErro'),
   statusBox: document.getElementById('statusBox'),
@@ -98,6 +100,8 @@ const els = {
   consolidadoClienteModalCorpo: document.getElementById('consolidadoClienteModalCorpo'),
   btnFecharModalConsolidadoCliente: document.getElementById('btnFecharModalConsolidadoCliente'),
   consolidadoDocsModalOverlay: document.getElementById('consolidadoDocsModalOverlay'),
+  btnAtualizarNotificacoes: document.getElementById('btnAtualizarNotificacoes'),
+  notificacoesResultado: document.getElementById('notificacoesResultado'),
   consolidadoDocsModalTitulo: document.getElementById('consolidadoDocsModalTitulo'),
   consolidadoDocsModalCorpo: document.getElementById('consolidadoDocsModalCorpo'),
   btnFecharModalConsolidadoDocs: document.getElementById('btnFecharModalConsolidadoDocs'),
@@ -1023,14 +1027,17 @@ async function carregarConsolidado() {
     ultimoConsolidado = resultado;
     if (resultado.status === 'ignorado') {
       els.consolidadoResultado.innerHTML = `<p class="hint">${resultado.motivo}</p>`;
+      els.notificacoesResultado.innerHTML = `<p class="hint">${resultado.motivo}</p>`;
       return;
     }
     preencherFiltroClienteConsolidado(resultado.clientes);
     if (!els.consolidadoFiltroDe.value) els.consolidadoFiltroDe.value = resultado.periodo.dataInicio;
     if (!els.consolidadoFiltroAte.value) els.consolidadoFiltroAte.value = resultado.periodo.dataFim;
     renderConsolidadoTabela();
+    renderNotificacoes();
   } catch (err) {
     els.consolidadoResultado.innerHTML = `<p class="status error">${err.message}</p>`;
+    els.notificacoesResultado.innerHTML = `<p class="status error">${err.message}</p>`;
   }
 }
 
@@ -1051,6 +1058,88 @@ function somarDias(dias) {
     }),
     { totalDocumentos: 0, conformes: 0, parciais: 0, semAdequacao: 0 }
   );
+}
+
+// Só dígitos, com DDI 55 na frente (se quem cadastrou já não tiver posto) —
+// o link wa.me exige o número internacional sem espaço/traço/parênteses.
+function telefoneParaWaMe(telefone) {
+  const digitos = String(telefone || '').replace(/\D/g, '');
+  if (!digitos) return null;
+  return digitos.startsWith('55') ? digitos : `55${digitos}`;
+}
+
+function montarMensagemNotificacao(cliente, pendSaida, pendEntrada) {
+  const partes = [];
+  if (pendSaida > 0) partes.push(`${pendSaida} documento(s) emitido(s)`);
+  if (pendEntrada > 0) partes.push(`${pendEntrada} documento(s) recebido(s)`);
+  return (
+    `Olá! Aqui é da Vital Contabilidade. Identificamos ${partes.join(' e ')} nos últimos 30 dias sem os campos ` +
+    `da Reforma Tributária (IBS/CBS) preenchidos — sinal de que o sistema emissor da ${cliente.nome} pode estar ` +
+    `desatualizado. Poderia verificar com o suporte do seu sistema a atualização pra emissão com os novos campos?`
+  );
+}
+
+// Nível 1: quais clientes têm pendência de Reforma Tributária (parcial ou
+// nenhum campo) — reaproveita o mesmo dado já carregado pelo "Quem tem
+// pendência" (ultimoConsolidado), sem chamada nova. Contato (telefone/
+// e-mail) vem do cadastro do cliente (clientesCarregados), já carregado à
+// parte — o painel consolidado em si não guarda esse dado.
+function renderNotificacoes() {
+  if (!ultimoConsolidado || ultimoConsolidado.status !== 'concluido') {
+    els.notificacoesResultado.innerHTML = '<p class="hint">Carregando...</p>';
+    return;
+  }
+
+  const linhas = ultimoConsolidado.clientes
+    .filter((c) => c.temDados && (c.saida.temPendencia || c.entrada.temPendencia))
+    .map((c) => {
+      const pendSaida = somarDias(c.saida.dias);
+      const pendEntrada = somarDias(c.entrada.dias);
+      const totalSaida = pendSaida.parciais + pendSaida.semAdequacao;
+      const totalEntrada = pendEntrada.parciais + pendEntrada.semAdequacao;
+      const cadastro = clientesCarregados.find((cc) => cc.cnpj === c.cnpj);
+      const telefoneWa = telefoneParaWaMe(cadastro?.telefone);
+      const email = cadastro?.email || null;
+      const mensagem = montarMensagemNotificacao(c, totalSaida, totalEntrada);
+
+      const botaoWhats = telefoneWa
+        ? `<a class="btn-secondary" target="_blank" rel="noopener" href="https://wa.me/${telefoneWa}?text=${encodeURIComponent(mensagem)}">WhatsApp</a>`
+        : `<span class="hint">Sem telefone cadastrado</span>`;
+      const botaoEmail = email
+        ? `<a class="btn-secondary" href="mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent('Pendência na Reforma Tributária')}&body=${encodeURIComponent(mensagem)}">E-mail</a>`
+        : `<span class="hint">Sem e-mail cadastrado</span>`;
+
+      return `
+        <tr>
+          <td>${c.nome}</td>
+          <td>${totalSaida || '—'}</td>
+          <td>${totalEntrada || '—'}</td>
+          <td class="acoes-notificacao">${botaoWhats} ${botaoEmail}</td>
+        </tr>
+      `;
+    })
+    .join('');
+
+  if (!linhas) {
+    els.notificacoesResultado.innerHTML = '<p class="hint">Nenhum cliente com pendência de Reforma Tributária nos últimos 30 dias (a partir do cache).</p>';
+    return;
+  }
+
+  els.notificacoesResultado.innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Pendências (saída)</th>
+            <th>Pendências (entrada)</th>
+            <th>Notificar</th>
+          </tr>
+        </thead>
+        <tbody>${linhas}</tbody>
+      </table>
+    </div>
+  `;
 }
 
 // Aplica o filtro de cliente/período por cima do que já foi buscado — o
@@ -1927,6 +2016,8 @@ function abrirModalCliente() {
   marcarAtividade([]);
   marcarRegimesEspeciais([]);
   els.novoClienteSegmento.value = '';
+  els.novoClienteTelefone.value = '';
+  els.novoClienteEmail.value = '';
   els.clienteModalOverlay.hidden = false;
 }
 
@@ -1946,6 +2037,8 @@ function abrirModalEdicaoCliente(cnpj) {
   marcarAtividade(cliente.atividade);
   marcarRegimesEspeciais(cliente.regimesEspeciais);
   els.novoClienteSegmento.value = cliente.segmento || '';
+  els.novoClienteTelefone.value = cliente.telefone || '';
+  els.novoClienteEmail.value = cliente.email || '';
   els.clienteModalOverlay.hidden = false;
 }
 
@@ -1961,6 +2054,8 @@ async function adicionarCliente() {
   const atividade = lerAtividadeSelecionada();
   const regimesEspeciais = lerRegimesEspeciaisSelecionados();
   const segmento = els.novoClienteSegmento.value.trim() || null;
+  const telefone = els.novoClienteTelefone.value.trim() || null;
+  const email = els.novoClienteEmail.value.trim() || null;
   els.clienteModalErro.hidden = true;
   if (cnpj.length !== 14) {
     els.clienteModalErro.textContent = 'Informe um CNPJ com 14 dígitos para cadastrar o cliente.';
@@ -1969,12 +2064,12 @@ async function adicionarCliente() {
   }
   try {
     if (modoModalCliente === 'editar') {
-      await apiPatch(`/api/clients/${cnpj}`, { nome, regimeTributario, atividade, segmento, regimesEspeciais });
+      await apiPatch(`/api/clients/${cnpj}`, { nome, regimeTributario, atividade, segmento, regimesEspeciais, telefone, email });
       await carregarClientes(cnpj);
       fecharModalCliente();
       setStatus('Cliente atualizado.');
     } else {
-      await apiPost('/api/clients', { cnpj, nome, regimeTributario, atividade, segmento, regimesEspeciais });
+      await apiPost('/api/clients', { cnpj, nome, regimeTributario, atividade, segmento, regimesEspeciais, telefone, email });
       await carregarClientes(cnpj);
       fecharModalCliente();
       setStatus('Cliente adicionado.');
@@ -2125,6 +2220,11 @@ const PAGINAS = {
   conferencia: { titulo: 'Conferência Fiscal', subtitulo: 'Documentos integrados, quebras de sequência e cruzamento tributário', toolbar: true },
   auditoria: { titulo: 'Auditoria Fiscal', subtitulo: 'Saúde dos dados cacheados e cobertura da base de regras da Reforma', toolbar: false },
   dominio: { titulo: 'Domínio x SIEG', subtitulo: 'Cruzamento entre a planilha do Domínio e os documentos da SIEG', toolbar: true },
+  notificacoes: {
+    titulo: 'Notificações',
+    subtitulo: 'Avise clientes com documentos sem os campos da Reforma Tributária — sempre a partir do cache, sem gastar cota da SIEG',
+    toolbar: false,
+  },
 };
 
 function ativarPagina(nome) {
@@ -2145,7 +2245,8 @@ function ativarPagina(nome) {
   document.getElementById('exportButtonsField').hidden = !ehConferencia;
   document.getElementById('exportExcelField').hidden = !ehConferencia;
 
-  if (nome === 'conformidade' && !consolidadoCarregado) carregarConsolidado();
+  if ((nome === 'conformidade' || nome === 'notificacoes') && !consolidadoCarregado) carregarConsolidado();
+  if (nome === 'notificacoes' && consolidadoCarregado) renderNotificacoes();
 
   try {
     localStorage.setItem('vitalConferenciaPaginaAtiva', nome);
@@ -2175,6 +2276,7 @@ async function init() {
     if (evento.target === els.motorClienteModalOverlay) fecharModalMotorCliente();
   });
   els.btnAtualizarConsolidado.addEventListener('click', carregarConsolidado);
+  els.btnAtualizarNotificacoes.addEventListener('click', carregarConsolidado);
   els.btnAdicionarCliente.addEventListener('click', adicionarCliente);
   els.btnFecharModalCliente.addEventListener('click', fecharModalCliente);
   els.clienteModalOverlay.addEventListener('click', (evento) => {
@@ -2244,6 +2346,13 @@ async function init() {
 
   try {
     await carregarClientes();
+    // carregarConsolidado() (disparado por ativarPagina acima) e
+    // carregarClientes() correm em paralelo — se a página inicial for
+    // Notificações, renderNotificacoes() pode ter rodado antes do contato
+    // (telefone/e-mail) do cadastro chegar, mostrando "sem contato" à toa.
+    // Re-renderiza (sem chamada nova, só com o que já está em memória)
+    // agora que os dois já chegaram.
+    if (consolidadoCarregado) renderNotificacoes();
     if (!els.clienteSelect.value) setStatus('Nenhum cliente cadastrado ainda — clique em "+ Cadastrar cliente" acima.');
     // Não busca automaticamente ao carregar a página — cada busca na SIEG
     // consome a cota real de requisições, então só busca quando a pessoa

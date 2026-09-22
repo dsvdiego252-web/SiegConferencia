@@ -32,6 +32,9 @@
         <button type="button" class="nav-item" data-page="dominio">
           <span class="nav-icon">🔁</span> Domínio x SIEG
         </button>
+        <button type="button" class="nav-item" data-page="notificacoes">
+          <span class="nav-icon">🔔</span> Notificações
+        </button>
       </nav>
       <a class="logout-link sidebar-logout" href="/logout">Sair</a>
     </aside>
@@ -443,6 +446,23 @@
           </div>
         </section>
       </div>
+
+      <div class="page-panel" data-page="notificacoes" hidden>
+        <section class="panel">
+          <div class="panel-header">
+            <h2>Clientes com pendência na Reforma Tributária</h2>
+            <button id="btnAtualizarNotificacoes" class="btn-secondary" type="button">↻ Atualizar</button>
+          </div>
+          <p class="hint">
+            Mesma base do "Quem tem pendência" (só cache, sem gastar cota da SIEG) — clientes com documentos sem os
+            campos de IBS/CBS (parcial ou nenhum) nos últimos 30 dias. Selecione um cliente pra abrir um aviso já
+            preenchido no WhatsApp ou no seu e-mail — você revisa e envia.
+          </p>
+          <div id="notificacoesResultado">
+            <p class="hint">Carregando...</p>
+          </div>
+        </section>
+      </div>
     </div>
   </div>
 
@@ -545,6 +565,15 @@
             <option value="Transportadora"></option>
           </datalist>
           <p class="hint">Só auxilia classificações — a tributação é decidida pelo regime, documento, NCM/NBS, CFOP e CST, não pelo segmento.</p>
+        </div>
+        <div class="field">
+          <label for="novoClienteTelefone">Telefone/WhatsApp (opcional)</label>
+          <input id="novoClienteTelefone" type="text" placeholder="Ex.: (11) 91234-5678" />
+        </div>
+        <div class="field">
+          <label for="novoClienteEmail">E-mail (opcional)</label>
+          <input id="novoClienteEmail" type="email" placeholder="Ex.: contato@cliente.com.br" />
+          <p class="hint">Telefone e e-mail são usados só pra montar os links de aviso na aba Notificações.</p>
         </div>
         <button id="btnAdicionarCliente" type="button">Adicionar</button>
         <p id="clienteModalErro" class="status error" hidden></p>

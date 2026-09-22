@@ -44,6 +44,8 @@ function normalizarClienteSupabase(row) {
     atividade: row.atividade || [],
     segmento: row.segmento || null,
     regimesEspeciais: row.regimes_especiais || [],
+    telefone: row.telefone || null,
+    email: row.email || null,
   };
 }
 
@@ -51,7 +53,7 @@ export async function listarClientes() {
   if (usarSupabase) {
     const { data, error } = await supabase
       .from('clientes')
-      .select('cnpj, nome, regime_tributario, atividade, segmento, regimes_especiais')
+      .select('cnpj, nome, regime_tributario, atividade, segmento, regimes_especiais, telefone, email')
       .order('nome');
     if (error) throw new Error(`Falha ao listar clientes no Supabase: ${error.message}`);
     return data.map(normalizarClienteSupabase);
@@ -66,7 +68,7 @@ export async function obterCliente(cnpj) {
   if (usarSupabase) {
     const { data, error } = await supabase
       .from('clientes')
-      .select('cnpj, nome, regime_tributario, atividade, segmento, regimes_especiais')
+      .select('cnpj, nome, regime_tributario, atividade, segmento, regimes_especiais, telefone, email')
       .eq('cnpj', cnpjLimpo)
       .maybeSingle();
     if (error) throw new Error(`Falha ao buscar cliente no Supabase: ${error.message}`);
@@ -94,6 +96,20 @@ function validarSegmento(segmento) {
   return limpo || null;
 }
 
+// Telefone/e-mail são só texto livre (mesmo espírito de segmento) — a
+// aba Notificações monta o link wa.me/mailto com o que estiver aqui, sem
+// exigir um formato específico, pra não travar o cadastro por causa de
+// formatação de número de telefone.
+function validarTelefone(telefone) {
+  const limpo = String(telefone || '').trim();
+  return limpo || null;
+}
+
+function validarEmail(email) {
+  const limpo = String(email || '').trim();
+  return limpo || null;
+}
+
 function validarAtividade(atividade) {
   if (atividade === undefined || atividade === null) return [];
   const lista = Array.isArray(atividade) ? atividade : [atividade];
@@ -110,7 +126,7 @@ function validarRegimesEspeciais(regimesEspeciais) {
   return [...new Set(lista)];
 }
 
-export async function adicionarCliente({ cnpj, nome, regimeTributario, atividade, segmento, regimesEspeciais }) {
+export async function adicionarCliente({ cnpj, nome, regimeTributario, atividade, segmento, regimesEspeciais, telefone, email }) {
   const cnpjLimpo = String(cnpj || '').replace(/\D/g, '');
   if (!cnpjLimpo || cnpjLimpo.length !== 14) {
     throw new Error('CNPJ inválido: informe os 14 dígitos.');
@@ -119,6 +135,8 @@ export async function adicionarCliente({ cnpj, nome, regimeTributario, atividade
   const atividadeValidada = validarAtividade(atividade);
   const segmentoValidado = validarSegmento(segmento);
   const regimesEspeciaisValidados = validarRegimesEspeciais(regimesEspeciais);
+  const telefoneValidado = validarTelefone(telefone);
+  const emailValidado = validarEmail(email);
 
   if (usarSupabase) {
     if (await obterCliente(cnpjLimpo)) {
@@ -131,6 +149,8 @@ export async function adicionarCliente({ cnpj, nome, regimeTributario, atividade
       atividade: atividadeValidada,
       segmento: segmentoValidado,
       regimes_especiais: regimesEspeciaisValidados,
+      telefone: telefoneValidado,
+      email: emailValidado,
     });
     if (error) throw new Error(`Falha ao cadastrar cliente no Supabase: ${error.message}`);
     return listarClientes();
@@ -147,12 +167,14 @@ export async function adicionarCliente({ cnpj, nome, regimeTributario, atividade
     atividade: atividadeValidada,
     segmento: segmentoValidado,
     regimesEspeciais: regimesEspeciaisValidados,
+    telefone: telefoneValidado,
+    email: emailValidado,
   });
   await writeFile(CLIENTS_FILE, JSON.stringify(clientes, null, 2));
   return clientes;
 }
 
-export async function atualizarCliente(cnpj, { nome, regimeTributario, atividade, segmento, regimesEspeciais }) {
+export async function atualizarCliente(cnpj, { nome, regimeTributario, atividade, segmento, regimesEspeciais, telefone, email }) {
   const cnpjLimpo = String(cnpj || '').replace(/\D/g, '');
   const atual = await obterCliente(cnpjLimpo);
   if (!atual) throw new Error('Cliente não encontrado.');
@@ -161,11 +183,21 @@ export async function atualizarCliente(cnpj, { nome, regimeTributario, atividade
   const novaAtividade = atividade === undefined ? atual.atividade : validarAtividade(atividade);
   const novoSegmento = segmento === undefined ? atual.segmento : validarSegmento(segmento);
   const novosRegimesEspeciais = regimesEspeciais === undefined ? atual.regimesEspeciais : validarRegimesEspeciais(regimesEspeciais);
+  const novoTelefone = telefone === undefined ? atual.telefone : validarTelefone(telefone);
+  const novoEmail = email === undefined ? atual.email : validarEmail(email);
 
   if (usarSupabase) {
     const { error } = await supabase
       .from('clientes')
-      .update({ nome: novoNome, regime_tributario: regime, atividade: novaAtividade, segmento: novoSegmento, regimes_especiais: novosRegimesEspeciais })
+      .update({
+        nome: novoNome,
+        regime_tributario: regime,
+        atividade: novaAtividade,
+        segmento: novoSegmento,
+        regimes_especiais: novosRegimesEspeciais,
+        telefone: novoTelefone,
+        email: novoEmail,
+      })
       .eq('cnpj', cnpjLimpo);
     if (error) throw new Error(`Falha ao atualizar cliente no Supabase: ${error.message}`);
     return listarClientes();
@@ -173,7 +205,16 @@ export async function atualizarCliente(cnpj, { nome, regimeTributario, atividade
 
   const clientes = await listarClientes();
   const indice = clientes.findIndex((c) => c.cnpj === cnpjLimpo);
-  clientes[indice] = { ...clientes[indice], nome: novoNome, regimeTributario: regime, atividade: novaAtividade, segmento: novoSegmento, regimesEspeciais: novosRegimesEspeciais };
+  clientes[indice] = {
+    ...clientes[indice],
+    nome: novoNome,
+    regimeTributario: regime,
+    atividade: novaAtividade,
+    segmento: novoSegmento,
+    regimesEspeciais: novosRegimesEspeciais,
+    telefone: novoTelefone,
+    email: novoEmail,
+  };
   await writeFile(CLIENTS_FILE, JSON.stringify(clientes, null, 2));
   return clientes;
 }

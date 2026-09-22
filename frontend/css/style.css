@@ -271,6 +271,29 @@ body {
   border-color: var(--primary);
 }
 
+.acoes-notificacao {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.acoes-notificacao a {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  color: var(--primary);
+  border: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.acoes-notificacao a:hover {
+  background: var(--primary-tint);
+  border-color: var(--primary);
+}
+
 .field-full {
   flex-basis: 100%;
   margin: 0;

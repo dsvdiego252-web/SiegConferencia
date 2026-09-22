@@ -13,8 +13,8 @@ clientsRouter.get('/', async (req, res) => {
 
 clientsRouter.post('/', async (req, res) => {
   try {
-    const { cnpj, nome, regimeTributario, atividade, segmento, regimesEspeciais } = req.body || {};
-    const clientes = await adicionarCliente({ cnpj, nome, regimeTributario, atividade, segmento, regimesEspeciais });
+    const { cnpj, nome, regimeTributario, atividade, segmento, regimesEspeciais, telefone, email } = req.body || {};
+    const clientes = await adicionarCliente({ cnpj, nome, regimeTributario, atividade, segmento, regimesEspeciais, telefone, email });
     res.status(201).json(clientes);
   } catch (err) {
     res.status(400).json({ erro: err.message });
@@ -23,8 +23,8 @@ clientsRouter.post('/', async (req, res) => {
 
 clientsRouter.patch('/:cnpj', async (req, res) => {
   try {
-    const { nome, regimeTributario, atividade, segmento, regimesEspeciais } = req.body || {};
-    const clientes = await atualizarCliente(req.params.cnpj, { nome, regimeTributario, atividade, segmento, regimesEspeciais });
+    const { nome, regimeTributario, atividade, segmento, regimesEspeciais, telefone, email } = req.body || {};
+    const clientes = await atualizarCliente(req.params.cnpj, { nome, regimeTributario, atividade, segmento, regimesEspeciais, telefone, email });
     res.json(clientes);
   } catch (err) {
     res.status(400).json({ erro: err.message });
