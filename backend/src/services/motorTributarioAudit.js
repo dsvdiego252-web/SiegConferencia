@@ -88,7 +88,7 @@ export async function auditarMotorTributario() {
       continue;
     }
 
-    const dataCorteReforma = resolverDataCorteReforma(cliente.regimeTributario);
+    const dataCorteReforma = resolverDataCorteReforma();
     const matematica = { correto: 0, divergenciaArredondamento: 0, divergenciaCalculo: 0 };
     const reforma = { correto: 0, divergente: 0, totalDivergente: 0, revisaoManual: 0, semDados: 0 };
     const icms = { correto: 0, divergente: 0, revisaoManual: 0, semBase: 0 };

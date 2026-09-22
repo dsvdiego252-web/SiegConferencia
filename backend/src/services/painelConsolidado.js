@@ -111,7 +111,7 @@ export async function gerarPainelConsolidado() {
       mapa.get(dia).totalDocumentos += 1;
     }
 
-    const dataCorteReforma = resolverDataCorteReforma(cliente.regimeTributario);
+    const dataCorteReforma = resolverDataCorteReforma();
     const reforma = analisarConformidadeReforma(classificados, dataCorteReforma);
     for (const d of reforma.porDocumento) {
       const dia = String(d.dataEmissao || '').slice(0, 10);
@@ -163,7 +163,7 @@ export async function buscarDocumentosConsolidado(cnpj, dia) {
 
   const docs = await docsCacheadosDoCliente(cnpj, dia, dia);
   const cliente = await obterCliente(cnpj);
-  const dataCorteReforma = resolverDataCorteReforma(cliente?.regimeTributario);
+  const dataCorteReforma = resolverDataCorteReforma();
   const classificados = docs.map((doc) => ({ doc, operacao: classificarOperacao(doc, cnpj) }));
 
   return {

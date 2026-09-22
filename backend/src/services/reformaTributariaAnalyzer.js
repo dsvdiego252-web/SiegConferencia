@@ -1,13 +1,12 @@
-export const DATA_CORTE_PADRAO = '2026-01-01'; // início da obrigatoriedade dos campos de IBS/CBS (Regime Normal)
+export const DATA_CORTE_PADRAO = '2026-01-01'; // início da obrigatoriedade dos campos de IBS/CBS, todo regime tributário
 
-// Empresas do Simples Nacional e MEI não são obrigadas a preencher
-// CST/cClassTrib do IBS/CBS em 2026 — a exigência para elas só começa em
-// janeiro de 2027. Regime Normal (lucro presumido/real) ou desconhecido
-// segue o prazo padrão acima.
-const DATA_CORTE_SIMPLES_MEI = '2027-01-01';
-
-export function resolverDataCorteReforma(regimeTributario) {
-  return regimeTributario === 'simples_nacional' || regimeTributario === 'mei' ? DATA_CORTE_SIMPLES_MEI : DATA_CORTE_PADRAO;
+// Antes havia um prazo maior (01/2027) pra Simples Nacional/MEI preencher
+// CST/cClassTrib do IBS/CBS — removido a pedido: mesmo sem obrigatoriedade
+// legal antecipada, o painel deve sinalizar esses clientes como pendência
+// desde já (01/2026, igual aos demais regimes), pra avisar cedo em vez de
+// esperar o prazo formal vencer.
+export function resolverDataCorteReforma() {
+  return DATA_CORTE_PADRAO;
 }
 
 function preenchido(valor) {

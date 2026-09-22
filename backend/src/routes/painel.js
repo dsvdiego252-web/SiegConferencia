@@ -62,7 +62,7 @@ painelRouter.get('/', async (req, res) => {
     const cliente = await obterCliente(cnpj);
     const tipo = normalizarTipo(req.query.tipo);
     const tipos = resolverTipos(req.query.tipo, cliente);
-    const dataCorteReforma = resolverDataCorteReforma(cliente?.regimeTributario);
+    const dataCorteReforma = resolverDataCorteReforma();
 
     // Sem Supabase configurado (dev local), busca tudo direto — o modo mock
     // é instantâneo, sem risco de estourar o tempo de execução.
