@@ -9,6 +9,7 @@ const els = {
   clientsTableBody: document.getElementById('clientsTableBody'),
   btnExportarAvisos: document.getElementById('btnExportarAvisos'),
   btnExportarExcel: document.getElementById('btnExportarExcel'),
+  btnExportarCadastroProdutos: document.getElementById('btnExportarCadastroProdutos'),
   btnAuditoriaDados: document.getElementById('btnAuditoriaDados'),
   btnRelatorioNcm: document.getElementById('btnRelatorioNcm'),
   btnAuditoriaMotor: document.getElementById('btnAuditoriaMotor'),
@@ -1619,6 +1620,50 @@ function exportarExcelCompleto() {
   setStatus(`Excel exportado: ${linhasDocumentos.length} documento(s), ${gruposComQuebra.length} quebra(s), ${linhasDivergencias.length} divergência(s).`);
 }
 
+// Botão "Exportar cadastro de saídas" — um produto por linha (não uma
+// venda por linha), a partir de TODO o histórico de saída já cacheado do
+// cliente selecionado (não só o período De/Até da tela) — é um cadastro,
+// não um relatório de um mês. Nunca busca ao vivo na SIEG.
+async function exportarCadastroProdutos() {
+  const cnpj = els.clienteSelect.value;
+  if (!cnpj) {
+    setStatus('Selecione um cliente antes de exportar o cadastro de saídas.', true);
+    return;
+  }
+  const cliente = clientesCarregados.find((c) => c.cnpj === cnpj);
+  setStatus('Montando cadastro de produtos...');
+  try {
+    const resultado = await apiGet(`/api/cron/cadastro-produtos?cnpj=${encodeURIComponent(cnpj)}`);
+    if (resultado.status === 'ignorado') {
+      setStatus(resultado.motivo, true);
+      return;
+    }
+    if (!resultado.produtos.length) {
+      setStatus('Nenhum produto encontrado nas saídas já cacheadas desse cliente.', true);
+      return;
+    }
+    const linhas = resultado.produtos.map((p) => ({
+      'Cód. Produto': p.codigo,
+      Descrição: p.descricao,
+      NCM: p.ncm,
+      'CST ICMS': p.cstIcms,
+      'Alíquota ICMS (%)': p.aliquotaIcms,
+      'CST PIS': p.cstPis,
+      'Alíquota PIS (%)': p.aliquotaPis,
+      'CST COFINS': p.cstCofins,
+      'Alíquota COFINS (%)': p.aliquotaCofins,
+      'Última saída com essa classificação': formatDate(p.dataEmissao),
+    }));
+    const planilha = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(planilha, XLSX.utils.json_to_sheet(linhas), 'Cadastro de Produtos');
+    const nomeArquivo = `cadastro_saidas_${cnpj}.xlsx`;
+    XLSX.writeFile(planilha, nomeArquivo);
+    setStatus(`Cadastro exportado: ${linhas.length} produto(s) únicos, a partir de ${resultado.totalDocumentosAnalisados} documento(s) de ${cliente?.nome || cnpj}.`);
+  } catch (err) {
+    setStatus(err.message, true);
+  }
+}
+
 let ultimaAuditoriaMotor = null;
 
 const ROTULO_MOTOR = { matematica: 'Validação matemática', reforma: 'Reforma Tributária (IBS/CBS)', icms: 'ICMS/CFOP/CST' };
@@ -2245,6 +2290,7 @@ function ativarPagina(nome) {
   document.getElementById('tipoDocField').hidden = !ehConferencia;
   document.getElementById('exportButtonsField').hidden = !ehConferencia;
   document.getElementById('exportExcelField').hidden = !ehConferencia;
+  document.getElementById('exportCadastroProdutosField').hidden = !ehConferencia;
 
   if ((nome === 'conformidade' || nome === 'notificacoes') && !consolidadoCarregado) carregarConsolidado();
   if (nome === 'notificacoes' && consolidadoCarregado) renderNotificacoes();
@@ -2269,6 +2315,7 @@ async function init() {
   els.btnAbrirCadastroCliente.addEventListener('click', abrirModalCliente);
   els.btnExportarAvisos.addEventListener('click', exportarAvisos);
   els.btnExportarExcel.addEventListener('click', exportarExcelCompleto);
+  els.btnExportarCadastroProdutos.addEventListener('click', exportarCadastroProdutos);
   els.btnAuditoriaDados.addEventListener('click', rodarAuditoriaDados);
   els.btnRelatorioNcm.addEventListener('click', rodarRelatorioNcm);
   els.btnAuditoriaMotor.addEventListener('click', rodarAuditoriaMotorTributario);

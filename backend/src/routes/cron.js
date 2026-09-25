@@ -7,6 +7,7 @@ import { auditarDocumentosFiscais } from '../services/dataAudit.js';
 import { relatorioNcmSemRegra } from '../services/ncmCoverageReport.js';
 import { gerarPainelConsolidado, buscarDocumentosConsolidado } from '../services/painelConsolidado.js';
 import { auditarMotorTributario } from '../services/motorTributarioAudit.js';
+import { gerarCadastroProdutosSaida } from '../services/productCatalogService.js';
 
 export const cronRouter = Router();
 
@@ -247,6 +248,20 @@ cronRouter.get('/painel-consolidado/documentos', async (req, res) => {
 cronRouter.get('/auditoria-motor-tributario', async (req, res) => {
   try {
     const resultado = await auditarMotorTributario();
+    res.json(resultado);
+  } catch (err) {
+    res.status(500).json({ status: 'erro', erro: err.message });
+  }
+});
+
+// Botão "Exportar cadastro de saídas" na Conferência Fiscal — um produto
+// por linha (não uma venda por linha), a partir de todo o histórico de
+// saída já cacheado do cliente, nunca busca ao vivo na SIEG.
+cronRouter.get('/cadastro-produtos', async (req, res) => {
+  try {
+    const { cnpj } = req.query;
+    if (!cnpj) return res.status(400).json({ erro: 'Informe o parâmetro "cnpj".' });
+    const resultado = await gerarCadastroProdutosSaida(cnpj);
     res.json(resultado);
   } catch (err) {
     res.status(500).json({ status: 'erro', erro: err.message });
