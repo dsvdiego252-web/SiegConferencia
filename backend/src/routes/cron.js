@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { waitUntil } from '@vercel/functions';
 import { listarClientes } from '../services/clientsStore.js';
 import { listarCombos, chaveCombo, buscarCombo } from '../services/documentsService.js';
 import { registrarSincronizacao, cacheDocumentosDisponivel } from '../services/documentCache.js';
@@ -174,13 +175,18 @@ cronRouter.get('/sincronizar-noturno', async (req, res) => {
     // Continua sozinha: chama a si mesma pra processar o restante, sem
     // esperar o próximo disparo do Cron (que na Vercel só roda 1x/dia no
     // plano Hobby — não daria conta de mais de cem clientes numa execução
-    // só de 45s). Não espera a resposta completa, só garante que a
-    // requisição foi enviada antes de responder a esta.
+    // só de 45s). A Vercel congela a função assim que a resposta é
+    // devolvida — um fetch disparado sem esperar nunca chega a sair
+    // (era exatamente esse o motivo da sincronização sempre parar depois
+    // de uma única invocação). waitUntil mantém a função viva até essa
+    // chamada terminar, sem atrasar a resposta desta.
     const proximaUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}${req.path}`;
     const headers = process.env.CRON_SECRET ? { Authorization: `Bearer ${process.env.CRON_SECRET}` } : {};
-    fetch(proximaUrl, { headers }).catch((err) => {
-      console.error('Falha ao encadear a próxima execução da sincronização noturna:', err.message);
-    });
+    waitUntil(
+      fetch(proximaUrl, { headers }).catch((err) => {
+        console.error('Falha ao encadear a próxima execução da sincronização noturna:', err.message);
+      })
+    );
   }
 
   res.json({
