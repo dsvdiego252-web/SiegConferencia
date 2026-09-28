@@ -174,6 +174,15 @@ function formatMoney(n) {
 
 function formatDate(iso) {
   if (!iso) return '-';
+  // Uma string só de data ("2026-09-02", sem hora) é interpretada pelo
+  // JS como meia-noite UTC — convertida de volta pro fuso local (Brasil,
+  // UTC-3) pra exibir, isso cai no dia anterior. Construindo a data pelos
+  // componentes (ano, mês, dia) em vez de por string, o JS já monta meia-
+  // noite no fuso local, sem esse deslocamento.
+  if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) {
+    const [ano, mes, dia] = iso.split('-').map(Number);
+    return new Date(ano, mes - 1, dia).toLocaleDateString('pt-BR');
+  }
   return new Date(iso).toLocaleDateString('pt-BR');
 }
 
