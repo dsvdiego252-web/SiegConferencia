@@ -175,13 +175,26 @@ cronRouter.get('/sincronizar-noturno', async (req, res) => {
     // Continua sozinha: chama a si mesma pra processar o restante, sem
     // esperar o próximo disparo do Cron (que na Vercel só roda 1x/dia no
     // plano Hobby — não daria conta de mais de cem clientes numa execução
-    // só de 45s). A Vercel congela a função assim que a resposta é
-    // devolvida — um fetch disparado sem esperar nunca chega a sair
-    // (era exatamente esse o motivo da sincronização sempre parar depois
-    // de uma única invocação). waitUntil mantém a função viva até essa
-    // chamada terminar, sem atrasar a resposta desta.
+    // só de 45s). waitUntil mantém a função viva até essa chamada
+    // terminar de ser enviada, sem atrasar a resposta desta.
+    //
+    // O projeto tem a Vercel Authentication (SSO) ligada pros domínios
+    // *.vercel.app (não tem domínio próprio) — o disparo real do Cron da
+    // Vercel passa direto por isso (é reconhecido como infraestrutura da
+    // própria Vercel), mas esse fetch daqui é só uma chamada de saída
+    // comum: pro muro de autenticação, é indistinguível de qualquer
+    // visitante anônimo, e era barrado ali mesmo, antes de chegar no
+    // CRON_SECRET (era esse o motivo real da sincronização nunca passar
+    // de uma única invocação, mesmo com o waitUntil). O cabeçalho
+    // x-vercel-protection-bypass com o "Protection Bypass for Automation"
+    // do projeto (exposto automaticamente como
+    // VERCEL_AUTOMATION_BYPASS_SECRET) é o jeito oficial da Vercel de
+    // liberar esse tipo de chamada automatizada.
     const proximaUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}${req.path}`;
     const headers = process.env.CRON_SECRET ? { Authorization: `Bearer ${process.env.CRON_SECRET}` } : {};
+    if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
+      headers['x-vercel-protection-bypass'] = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+    }
     waitUntil(
       fetch(proximaUrl, { headers }).catch((err) => {
         console.error('Falha ao encadear a próxima execução da sincronização noturna:', err.message);
