@@ -49,16 +49,29 @@ export async function gerarCadastroProdutosSaida(cnpj) {
       if (!codigo) continue;
       const atual = porProduto.get(codigo);
       if (atual && atual.dataEmissao >= dataEmissao) continue;
+      const reforma = item.reformaTributaria;
       porProduto.set(codigo, {
         codigo,
         descricao: item.descricao || '',
         ncm: item.ncm || '',
+        cest: item.cest || '',
         cstIcms: item.icms?.cst ?? '',
         aliquotaIcms: item.icms?.aliquota ?? null,
+        cBenefIcms: item.icms?.cBenef ?? '',
         cstPis: item.pis?.cst ?? '',
         aliquotaPis: item.pis?.aliquota ?? null,
         cstCofins: item.cofins?.cst ?? '',
         aliquotaCofins: item.cofins?.aliquota ?? null,
+        // Campos da Reforma Tributária (IBS/CBS, NT 2025.002) — presente=false
+        // significa que o item não tem esse grupo no XML (emissor desatualizado
+        // ou documento anterior à adequação), não que a alíquota é zero.
+        reformaPreenchida: reforma?.presente ?? false,
+        cstReforma: reforma?.cst ?? '',
+        classTribReforma: reforma?.classTrib ?? '',
+        cBenefReforma: reforma?.cBenef ?? '',
+        aliquotaIbsUf: reforma?.ibsUf?.percentual ?? null,
+        aliquotaIbsMunicipio: reforma?.ibsMunicipio?.percentual ?? null,
+        aliquotaCbs: reforma?.cbs?.percentual ?? null,
         dataEmissao,
       });
     }
