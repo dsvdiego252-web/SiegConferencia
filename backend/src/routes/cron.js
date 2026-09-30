@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { waitUntil } from '@vercel/functions';
 import { listarClientes } from '../services/clientsStore.js';
-import { listarCombos, chaveCombo, buscarCombo } from '../services/documentsService.js';
+import { listarCombos, chaveCombo, buscarCombo, mesclarDocumentos } from '../services/documentsService.js';
 import { registrarSincronizacao, cacheDocumentosDisponivel } from '../services/documentCache.js';
 import { obterEstado, salvarEstado, estadoDisponivel } from '../services/syncNoturnoEstado.js';
 import { auditarDocumentosFiscais } from '../services/dataAudit.js';
@@ -97,6 +97,8 @@ cronRouter.get('/sincronizar-noturno', async (req, res) => {
       data_alvo: dias[0],
       offset_inicial: offsetRotativo(totalUnidades),
       visitados: 0,
+      combos_concluidos: [],
+      combo_parcial: null,
       status: 'rodando',
       iniciado_em: agoraISO,
       invocacoes: 0,
@@ -110,6 +112,8 @@ cronRouter.get('/sincronizar-noturno', async (req, res) => {
 
   const prazoFinal = Date.now() + ORCAMENTO_MS;
   let visitados = estado.visitados;
+  let combosConcluidos = new Set(estado.combos_concluidos || []);
+  let comboParcial = estado.combo_parcial || null;
   let processados = 0;
 
   while (visitados < totalUnidades && Date.now() < prazoFinal) {
@@ -117,31 +121,59 @@ cronRouter.get('/sincronizar-noturno', async (req, res) => {
     const cliente = clientes[Math.floor(posicao / dias.length)];
     const dia = dias[posicao % dias.length];
 
+    // Mesma lógica de retomada de painel.js: um combo (tipo x direção) com
+    // bastante volume (ex.: NFCe de venda de uma farmácia) pode precisar de
+    // várias páginas — mais do que cabe no orçamento de uma única invocação,
+    // já que o rate limit real da SIEG (2/min, ~31s entre chamadas) permite
+    // pouco mais de 1 página por chamada. Sem guardar `proximoSkip` entre
+    // invocações, cada tentativa reiniciava esse combo do zero e ele nunca
+    // terminava — era por isso que clientes de alto volume paravam de
+    // aparecer atualizados um dia e nunca mais avançavam.
     for (const combo of combos) {
+      const chave = chaveCombo(combo);
+      if (combosConcluidos.has(chave)) continue;
+      if (Date.now() >= prazoFinal) break;
+
+      const emAndamento = comboParcial && comboParcial.chave === chave;
+      const skipInicial = emAndamento ? comboParcial.proximoSkip : 0;
+      const docsJaDoCombo = emAndamento ? comboParcial.docs : [];
+
       try {
         const resultado = await buscarCombo(combo, {
           clienteCnpj: cliente.cnpj,
           dataInicio: dia,
           dataFim: dia,
-          skipInicial: 0,
+          skipInicial,
           prazoFinal,
         });
-        // Se não deu tempo de completar a paginação desse combo dentro do
-        // orçamento, não tem problema — a próxima rodada tenta esse
-        // cliente+dia+combo de novo do zero (não guardamos progresso
-        // parcial de página aqui, ao contrário de /api/painel).
-        if (resultado.completo && !resultado.doCache) {
-          await registrarSincronizacao(cliente.cnpj, combo.xmlType, combo.direcao, dia, dia, resultado.docs);
+        const docsAtualizados = mesclarDocumentos(docsJaDoCombo, resultado.docs);
+        if (!resultado.completo) {
+          comboParcial = { chave, proximoSkip: resultado.proximoSkip, docs: docsAtualizados };
+          break;
+        }
+        combosConcluidos.add(chave);
+        comboParcial = null;
+        if (!resultado.doCache && docsAtualizados.length) {
+          await registrarSincronizacao(cliente.cnpj, combo.xmlType, combo.direcao, dia, dia, docsAtualizados);
         }
       } catch (err) {
         // Uma falha num cliente/combo não pode travar a rodada inteira dos
-        // outros — só loga e segue pro próximo.
-        console.error(`Sincronização noturna: falha em ${cliente.cnpj} ${chaveCombo(combo)} ${dia}: ${err.message}`);
+        // outros — só loga e segue pro próximo (desiste desse combo por
+        // agora, tenta de novo quando esse cliente+dia voltar na rotação).
+        console.error(`Sincronização noturna: falha em ${cliente.cnpj} ${chave} ${dia}: ${err.message}`);
+        combosConcluidos.add(chave);
+        comboParcial = null;
       }
-      if (Date.now() >= prazoFinal) break;
     }
 
+    // Nem todos os combos desse cliente+dia terminaram dentro do orçamento
+    // desta invocação — para aqui (sem avançar `visitados`) pra retomar
+    // exatamente esse cliente+dia, do combo em que parou, na próxima chamada.
+    if (combosConcluidos.size < combos.length) break;
+
     visitados += 1;
+    combosConcluidos = new Set();
+    comboParcial = null;
     processados += 1;
   }
 
@@ -150,6 +182,8 @@ cronRouter.get('/sincronizar-noturno', async (req, res) => {
     data_alvo: dias[0],
     offset_inicial: estado.offset_inicial,
     visitados: concluiu ? 0 : visitados,
+    combos_concluidos: concluiu ? [] : [...combosConcluidos],
+    combo_parcial: concluiu ? null : comboParcial,
     status: concluiu ? 'concluido' : 'rodando',
     iniciado_em: estado.iniciado_em,
     invocacoes: (estado.invocacoes || 0) + 1,
