@@ -1633,50 +1633,60 @@ function exportarExcelCompleto() {
 // venda por linha), a partir de TODO o histórico de saída já cacheado do
 // cliente selecionado (não só o período De/Até da tela) — é um cadastro,
 // não um relatório de um mês. Nunca busca ao vivo na SIEG.
+function linhaCadastroProduto(p) {
+  return {
+    'Cód. Produto': p.codigo,
+    Descrição: p.descricao,
+    NCM: p.ncm,
+    CEST: p.cest,
+    'CST ICMS': p.cstIcms,
+    'Alíquota ICMS (%)': p.aliquotaIcms,
+    'cBenef ICMS': p.cBenefIcms,
+    'CST PIS': p.cstPis,
+    'Alíquota PIS (%)': p.aliquotaPis,
+    'CST COFINS': p.cstCofins,
+    'Alíquota COFINS (%)': p.aliquotaCofins,
+    'Reforma Tributária preenchida?': p.reformaPreenchida ? 'Sim' : 'Não',
+    'CST Reforma (IBS/CBS)': p.cstReforma,
+    'Classificação Tributária (cClassTrib)': p.classTribReforma,
+    'cBenef Reforma': p.cBenefReforma,
+    'Alíquota IBS UF (%)': p.aliquotaIbsUf,
+    'Alíquota IBS Município (%)': p.aliquotaIbsMunicipio,
+    'Alíquota CBS (%)': p.aliquotaCbs,
+    'Última classificação encontrada': formatDate(p.dataEmissao),
+  };
+}
+
 async function exportarCadastroProdutos() {
   const cnpj = els.clienteSelect.value;
   if (!cnpj) {
-    setStatus('Selecione um cliente antes de exportar o cadastro de saídas.', true);
+    setStatus('Selecione um cliente antes de exportar os cadastros.', true);
     return;
   }
   const cliente = clientesCarregados.find((c) => c.cnpj === cnpj);
-  setStatus('Montando cadastro de produtos...');
+  setStatus('Montando cadastros de produtos...');
   try {
     const resultado = await apiGet(`/api/cron/cadastro-produtos?cnpj=${encodeURIComponent(cnpj)}`);
     if (resultado.status === 'ignorado') {
       setStatus(resultado.motivo, true);
       return;
     }
-    if (!resultado.produtos.length) {
-      setStatus('Nenhum produto encontrado nas saídas já cacheadas desse cliente.', true);
+    const linhasSaida = resultado.saida.produtos.map(linhaCadastroProduto);
+    const linhasEntrada = resultado.entrada.produtos.map(linhaCadastroProduto);
+    if (!linhasSaida.length && !linhasEntrada.length) {
+      setStatus('Nenhum produto encontrado nos documentos já cacheados desse cliente.', true);
       return;
     }
-    const linhas = resultado.produtos.map((p) => ({
-      'Cód. Produto': p.codigo,
-      Descrição: p.descricao,
-      NCM: p.ncm,
-      CEST: p.cest,
-      'CST ICMS': p.cstIcms,
-      'Alíquota ICMS (%)': p.aliquotaIcms,
-      'cBenef ICMS': p.cBenefIcms,
-      'CST PIS': p.cstPis,
-      'Alíquota PIS (%)': p.aliquotaPis,
-      'CST COFINS': p.cstCofins,
-      'Alíquota COFINS (%)': p.aliquotaCofins,
-      'Reforma Tributária preenchida?': p.reformaPreenchida ? 'Sim' : 'Não',
-      'CST Reforma (IBS/CBS)': p.cstReforma,
-      'Classificação Tributária (cClassTrib)': p.classTribReforma,
-      'cBenef Reforma': p.cBenefReforma,
-      'Alíquota IBS UF (%)': p.aliquotaIbsUf,
-      'Alíquota IBS Município (%)': p.aliquotaIbsMunicipio,
-      'Alíquota CBS (%)': p.aliquotaCbs,
-      'Última saída com essa classificação': formatDate(p.dataEmissao),
-    }));
     const planilha = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(planilha, XLSX.utils.json_to_sheet(linhas), 'Cadastro de Produtos');
-    const nomeArquivo = `cadastro_saidas_${cnpj}.xlsx`;
+    XLSX.utils.book_append_sheet(planilha, XLSX.utils.json_to_sheet(linhasSaida), 'Saídas');
+    XLSX.utils.book_append_sheet(planilha, XLSX.utils.json_to_sheet(linhasEntrada), 'Entradas');
+    const nomeArquivo = `cadastros_${cnpj}.xlsx`;
     XLSX.writeFile(planilha, nomeArquivo);
-    setStatus(`Cadastro exportado: ${linhas.length} produto(s) únicos, a partir de ${resultado.totalDocumentosAnalisados} documento(s) de ${cliente?.nome || cnpj}.`);
+    setStatus(
+      `Cadastros exportados de ${cliente?.nome || cnpj}: ${linhasSaida.length} produto(s) de saída ` +
+        `(${resultado.saida.totalDocumentosAnalisados} documento(s)) e ${linhasEntrada.length} produto(s) de entrada ` +
+        `(${resultado.entrada.totalDocumentosAnalisados} documento(s)).`
+    );
   } catch (err) {
     setStatus(err.message, true);
   }

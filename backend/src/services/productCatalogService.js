@@ -1,22 +1,23 @@
 import { createClient } from '@supabase/supabase-js';
 import { linhaParaDocumento, cacheDocumentosDisponivel } from './documentCache.js';
+import { classificarOperacao } from './xmlParser.js';
 
 const supabase = cacheDocumentosDisponivel ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY) : null;
 
 const TAMANHO_PAGINA = 1000;
 
-// Todo o histórico de saída já cacheado desse cliente (emit_cnpj = cliente),
-// sem recorte de período — isso é um cadastro de produtos, não um relatório
-// de um mês específico. Nunca busca ao vivo na SIEG (mesmo espírito do
-// painel consolidado e da auditoria do motor tributário).
-async function todasSaidasCacheadasDoCliente(cnpj) {
+// Todo o histórico já cacheado em que o cliente aparece como emitente OU
+// destinatário, sem recorte de período — isso é um cadastro de produtos, não
+// um relatório de um mês específico. Nunca busca ao vivo na SIEG (mesmo
+// espírito do painel consolidado e da auditoria do motor tributário).
+async function todosDocumentosCacheadosDoCliente(cnpj) {
   const todos = [];
   let offset = 0;
   for (;;) {
     const { data, error } = await supabase
       .from('documentos_fiscais')
       .select('*')
-      .eq('emit_cnpj', cnpj)
+      .or(`emit_cnpj.eq.${cnpj},dest_cnpj.eq.${cnpj}`)
       .range(offset, offset + TAMANHO_PAGINA - 1);
     if (error) throw new Error(`Falha ao ler documentos cacheados pro cadastro de produtos: ${error.message}`);
     todos.push(...(data || []));
@@ -28,21 +29,13 @@ async function todasSaidasCacheadasDoCliente(cnpj) {
 }
 
 /**
- * Monta um cadastro (uma linha por produto, não por venda) com a
+ * Monta um cadastro (uma linha por produto, não por venda/compra) com a
  * classificação fiscal mais recente encontrada pra cada código de produto,
- * a partir de todo o histórico de saída já cacheado do cliente. NFS-e é
- * serviço, não produto (sem NCM/ICMS de verdade) — fica fora desse cadastro.
+ * a partir da lista de documentos já filtrada (saída ou entrada).
  */
-export async function gerarCadastroProdutosSaida(cnpj) {
-  if (!cacheDocumentosDisponivel) {
-    return { status: 'ignorado', motivo: 'Supabase não configurado — cadastro de produtos desligado.' };
-  }
-
-  const docs = await todasSaidasCacheadasDoCliente(cnpj);
-  const docsValidos = docs.filter((d) => !d.cancelada && d.tipoDocumento !== 'NFSe');
-
+function montarCadastroProdutos(docs) {
   const porProduto = new Map();
-  for (const doc of docsValidos) {
+  for (const doc of docs) {
     const dataEmissao = String(doc.dataEmissao || '').slice(0, 10);
     for (const item of doc.itens) {
       const codigo = String(item.codigo || '').trim();
@@ -76,10 +69,29 @@ export async function gerarCadastroProdutosSaida(cnpj) {
       });
     }
   }
+  return [...porProduto.values()].sort((a, b) => a.codigo.localeCompare(b.codigo, 'pt-BR', { numeric: true }));
+}
+
+/**
+ * Cadastro de produtos (saída e entrada, cada um na sua própria lista) a
+ * partir de todo o histórico já cacheado do cliente — uma linha por produto
+ * único, não por venda/compra. NFS-e é serviço, não produto (sem NCM/ICMS de
+ * verdade) — fica fora dos dois cadastros, assim como documentos cancelados.
+ */
+export async function gerarCadastroProdutos(cnpj) {
+  if (!cacheDocumentosDisponivel) {
+    return { status: 'ignorado', motivo: 'Supabase não configurado — cadastro de produtos desligado.' };
+  }
+
+  const docs = await todosDocumentosCacheadosDoCliente(cnpj);
+  const docsValidos = docs.filter((d) => !d.cancelada && d.tipoDocumento !== 'NFSe');
+  const classificados = docsValidos.map((doc) => ({ doc, operacao: classificarOperacao(doc, cnpj) }));
+  const docsSaida = classificados.filter((c) => c.operacao === 'saida').map((c) => c.doc);
+  const docsEntrada = classificados.filter((c) => c.operacao === 'entrada').map((c) => c.doc);
 
   return {
     status: 'concluido',
-    totalDocumentosAnalisados: docsValidos.length,
-    produtos: [...porProduto.values()].sort((a, b) => a.codigo.localeCompare(b.codigo, 'pt-BR', { numeric: true })),
+    saida: { totalDocumentosAnalisados: docsSaida.length, produtos: montarCadastroProdutos(docsSaida) },
+    entrada: { totalDocumentosAnalisados: docsEntrada.length, produtos: montarCadastroProdutos(docsEntrada) },
   };
 }
