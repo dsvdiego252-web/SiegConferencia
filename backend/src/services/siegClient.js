@@ -102,20 +102,45 @@ async function aguardarSlotDownloadPersistente(prazoFinal) {
 // não arriscar usar um token vencido no meio de um lote de chamadas.
 let jwtCache = { token: null, expiraEm: 0 };
 
+// Prazo próprio pra esta chamada específica (não o prazoFinal da busca
+// inteira) — gerar o JWT é rápido em condições normais; sem um limite
+// aqui, uma instância "fria" da Vercel (cache de JWT vazio, cada container
+// novo começa sem ele) que precisasse gerar um token novo ficava pendurada
+// sem fim se a SIEG travasse só nesse endpoint, estourando o tempo máximo
+// de execução da função inteira (60s, erro 504) em vez de cair no mesmo
+// caminho de retry/erro transitório que já existe pro resto da busca.
+const TIMEOUT_JWT_MS = 15_000;
+
 async function obterJwt() {
   const agora = Date.now();
   if (jwtCache.token && agora < jwtCache.expiraEm) return jwtCache.token;
 
-  const response = await fetch(`${config.sieg.baseUrl}/api/v1/create-jwt`, {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'X-Client-Id': config.sieg.clientId,
-      'X-Secret-Key': config.sieg.secretKey,
-    },
-    body: '',
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_JWT_MS);
+
+  let response;
+  try {
+    response = await fetch(`${config.sieg.baseUrl}/api/v1/create-jwt`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'X-Client-Id': config.sieg.clientId,
+        'X-Secret-Key': config.sieg.secretKey,
+      },
+      body: '',
+      signal: controller.signal,
+    });
+  } catch (err) {
+    const erro =
+      err.name === 'AbortError'
+        ? new Error(`Falha ao gerar JWT na SIEG: sem resposta em ${TIMEOUT_JWT_MS / 1000}s.`)
+        : err;
+    erro.transitorio = true;
+    throw erro;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   if (!response.ok) {
     const texto = await response.text().catch(() => '');
