@@ -1166,17 +1166,26 @@ function renderNotificacoes() {
   `;
 }
 
-// Classifica o cliente pela situação predominante no período filtrado — usado
-// tanto pelos cards de resumo (contagem) quanto pelo filtro por categoria.
-function categoriaCliente(totais) {
-  if (totais.parciais > 0) return 'parcial';
-  if (totais.semAdequacao > 0) return 'sem_adequacao';
-  return 'conforme';
+// Cada card é um filtro independente, não uma categoria exclusiva — um
+// cliente com 136 documentos conformes e 2605 sem nenhum campo aparece tanto
+// em "Conformes" quanto em "Sem conformidade", porque ele tem pelo menos um
+// documento de cada situação. Por isso os três "tem" abaixo não somam o
+// total de clientes do período (um cliente pode contar em mais de um).
+function situacoesCliente(totais) {
+  return {
+    temConforme: totais.conformes > 0,
+    temParcial: totais.parciais > 0,
+    temSemAdequacao: totais.semAdequacao > 0,
+  };
 }
 
 function atualizarCardsConsolidado(clientesComTotais) {
   const contagem = { conforme: 0, parcial: 0, sem_adequacao: 0 };
-  for (const c of clientesComTotais) contagem[c.categoria] += 1;
+  for (const c of clientesComTotais) {
+    if (c.situacoes.temConforme) contagem.conforme += 1;
+    if (c.situacoes.temParcial) contagem.parcial += 1;
+    if (c.situacoes.temSemAdequacao) contagem.sem_adequacao += 1;
+  }
   els.consolidadoCardTodosValor.textContent = clientesComTotais.length;
   els.consolidadoCardConformeValor.textContent = contagem.conforme;
   els.consolidadoCardParcialValor.textContent = contagem.parcial;
@@ -1187,6 +1196,12 @@ function atualizarCardsConsolidado(clientesComTotais) {
   els.consolidadoCardParcial.classList.toggle('card-filtro-ativo', consolidadoCategoriaAtiva === 'parcial');
   els.consolidadoCardSemAdequacao.classList.toggle('card-filtro-ativo', consolidadoCategoriaAtiva === 'sem_adequacao');
 }
+
+const CAMPO_SITUACAO_POR_CATEGORIA = {
+  conforme: 'temConforme',
+  parcial: 'temParcial',
+  sem_adequacao: 'temSemAdequacao',
+};
 
 function aplicarFiltroCategoriaConsolidado(valor) {
   consolidadoCategoriaAtiva = consolidadoCategoriaAtiva === valor ? null : valor;
@@ -1213,7 +1228,7 @@ function renderConsolidadoTabela() {
     .filter((c) => c.diasFiltrados.length > 0)
     .map((c) => {
       const totais = somarDias(c.diasFiltrados);
-      return { ...c, totais, categoria: categoriaCliente(totais) };
+      return { ...c, totais, situacoes: situacoesCliente(totais) };
     });
 
   atualizarCardsConsolidado(clientesFiltrados);
@@ -1224,8 +1239,9 @@ function renderConsolidadoTabela() {
     return;
   }
 
-  const clientesExibidos = consolidadoCategoriaAtiva
-    ? clientesFiltrados.filter((c) => c.categoria === consolidadoCategoriaAtiva)
+  const campoSituacao = CAMPO_SITUACAO_POR_CATEGORIA[consolidadoCategoriaAtiva];
+  const clientesExibidos = campoSituacao
+    ? clientesFiltrados.filter((c) => c.situacoes[campoSituacao])
     : clientesFiltrados;
 
   if (!clientesExibidos.length) {
