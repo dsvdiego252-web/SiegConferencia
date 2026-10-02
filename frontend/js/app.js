@@ -96,6 +96,15 @@ const els = {
   consolidadoFiltroCliente: document.getElementById('consolidadoFiltroCliente'),
   consolidadoFiltroDe: document.getElementById('consolidadoFiltroDe'),
   consolidadoFiltroAte: document.getElementById('consolidadoFiltroAte'),
+  btnFiltrarConsolidado: document.getElementById('btnFiltrarConsolidado'),
+  consolidadoCardTodos: document.getElementById('consolidadoCardTodos'),
+  consolidadoCardTodosValor: document.getElementById('consolidadoCardTodosValor'),
+  consolidadoCardConforme: document.getElementById('consolidadoCardConforme'),
+  consolidadoCardConformeValor: document.getElementById('consolidadoCardConformeValor'),
+  consolidadoCardParcial: document.getElementById('consolidadoCardParcial'),
+  consolidadoCardParcialValor: document.getElementById('consolidadoCardParcialValor'),
+  consolidadoCardSemAdequacao: document.getElementById('consolidadoCardSemAdequacao'),
+  consolidadoCardSemAdequacaoValor: document.getElementById('consolidadoCardSemAdequacaoValor'),
   consolidadoClienteModalOverlay: document.getElementById('consolidadoClienteModalOverlay'),
   consolidadoClienteModalTitulo: document.getElementById('consolidadoClienteModalTitulo'),
   consolidadoClienteModalCorpo: document.getElementById('consolidadoClienteModalCorpo'),
@@ -1024,6 +1033,10 @@ function fecharModal() {
 let consolidadoCarregado = false;
 let ultimoConsolidado = null;
 let consolidadoDirecaoAtiva = 'saida';
+// null = todos; 'conforme' | 'parcial' | 'sem_adequacao' — filtro por card de
+// resumo (quantos clientes caem em cada situação), por cima do filtro de
+// cliente/período já aplicado.
+let consolidadoCategoriaAtiva = null;
 
 // Só lê o que já está cacheado (nunca busca ao vivo na SIEG) — cruza todos
 // os clientes cadastrados de uma vez. A tabela é agrupada por cliente (não
@@ -1153,11 +1166,38 @@ function renderNotificacoes() {
   `;
 }
 
-// Aplica o filtro de cliente/período por cima do que já foi buscado — o
-// relatório já cobre os últimos 30 dias numa chamada só, então filtrar não
-// precisa de nova ida ao servidor. Se nada bater, mostra que não achou.
-// A aba ativa (Saídas/Entradas) decide qual lado do cliente ler — cada
-// documento só conta de um lado (saída = ele emitiu, entrada = ele recebeu).
+// Classifica o cliente pela situação predominante no período filtrado — usado
+// tanto pelos cards de resumo (contagem) quanto pelo filtro por categoria.
+function categoriaCliente(totais) {
+  if (totais.parciais > 0) return 'parcial';
+  if (totais.semAdequacao > 0) return 'sem_adequacao';
+  return 'conforme';
+}
+
+function atualizarCardsConsolidado(clientesComTotais) {
+  const contagem = { conforme: 0, parcial: 0, sem_adequacao: 0 };
+  for (const c of clientesComTotais) contagem[c.categoria] += 1;
+  els.consolidadoCardTodosValor.textContent = clientesComTotais.length;
+  els.consolidadoCardConformeValor.textContent = contagem.conforme;
+  els.consolidadoCardParcialValor.textContent = contagem.parcial;
+  els.consolidadoCardSemAdequacaoValor.textContent = contagem.sem_adequacao;
+
+  els.consolidadoCardTodos.classList.toggle('card-filtro-ativo', consolidadoCategoriaAtiva === null);
+  els.consolidadoCardConforme.classList.toggle('card-filtro-ativo', consolidadoCategoriaAtiva === 'conforme');
+  els.consolidadoCardParcial.classList.toggle('card-filtro-ativo', consolidadoCategoriaAtiva === 'parcial');
+  els.consolidadoCardSemAdequacao.classList.toggle('card-filtro-ativo', consolidadoCategoriaAtiva === 'sem_adequacao');
+}
+
+function aplicarFiltroCategoriaConsolidado(valor) {
+  consolidadoCategoriaAtiva = consolidadoCategoriaAtiva === valor ? null : valor;
+  renderConsolidadoTabela();
+}
+
+// Aplica o filtro de cliente/período/categoria por cima do que já foi
+// buscado — o relatório já cobre os últimos 30 dias numa chamada só, então
+// filtrar não precisa de nova ida ao servidor. Se nada bater, mostra que não
+// achou. A aba ativa (Saídas/Entradas) decide qual lado do cliente ler —
+// cada documento só conta de um lado (saída = ele emitiu, entrada = recebeu).
 function renderConsolidadoTabela() {
   if (!ultimoConsolidado || ultimoConsolidado.status !== 'concluido') return;
   const cnpjFiltro = els.consolidadoFiltroCliente.value;
@@ -1170,7 +1210,13 @@ function renderConsolidadoTabela() {
       ...c,
       diasFiltrados: (c[consolidadoDirecaoAtiva]?.dias || []).filter((d) => (!de || d.dia >= de) && (!ate || d.dia <= ate)),
     }))
-    .filter((c) => c.diasFiltrados.length > 0);
+    .filter((c) => c.diasFiltrados.length > 0)
+    .map((c) => {
+      const totais = somarDias(c.diasFiltrados);
+      return { ...c, totais, categoria: categoriaCliente(totais) };
+    });
+
+  atualizarCardsConsolidado(clientesFiltrados);
 
   if (!clientesFiltrados.length) {
     const rotulo = consolidadoDirecaoAtiva === 'saida' ? 'saídas' : 'entradas';
@@ -1178,14 +1224,22 @@ function renderConsolidadoTabela() {
     return;
   }
 
-  const linhas = clientesFiltrados
-    .map((c) => {
-      const totais = somarDias(c.diasFiltrados);
+  const clientesExibidos = consolidadoCategoriaAtiva
+    ? clientesFiltrados.filter((c) => c.categoria === consolidadoCategoriaAtiva)
+    : clientesFiltrados;
+
+  if (!clientesExibidos.length) {
+    els.consolidadoResultado.innerHTML = '<p class="hint">Nenhum cliente nessa categoria, no filtro atual. Clique no card de novo pra limpar.</p>';
+    return;
+  }
+
+  const linhas = clientesExibidos
+    .map(({ cnpj, nome, diasFiltrados, totais }) => {
       const pendente = totais.semAdequacao > 0 || totais.parciais > 0;
       return `
-        <tr class="${pendente ? 'row-inconsistente' : 'row-ok'} row-clickable" data-cnpj="${c.cnpj}">
-          <td>${c.nome}</td>
-          <td>${c.diasFiltrados.length} dia(s)</td>
+        <tr class="${pendente ? 'row-inconsistente' : 'row-ok'} row-clickable" data-cnpj="${cnpj}">
+          <td>${nome}</td>
+          <td>${diasFiltrados.length} dia(s)</td>
           <td>${totais.totalDocumentos}</td>
           <td>${totais.conformes}</td>
           <td>${totais.parciais}</td>
@@ -1196,7 +1250,7 @@ function renderConsolidadoTabela() {
     .join('');
 
   els.consolidadoResultado.innerHTML = `
-    <p class="hint">${clientesFiltrados.length} cliente(s) encontrado(s) no período. Clique numa linha pra ver os dias.</p>
+    <p class="hint">${clientesExibidos.length} cliente(s) encontrado(s) no período. Clique numa linha pra ver os dias.</p>
     <div class="table-wrap">
       <table>
         <thead><tr><th>Cliente</th><th>Dias com dado</th><th>Documentos</th><th>Conformes</th><th>Parciais</th><th>Sem campos</th></tr></thead>
@@ -2382,9 +2436,15 @@ async function init() {
   els.consolidadoFiltroCliente.addEventListener('change', renderConsolidadoTabela);
   els.consolidadoFiltroDe.addEventListener('change', renderConsolidadoTabela);
   els.consolidadoFiltroAte.addEventListener('change', renderConsolidadoTabela);
+  els.btnFiltrarConsolidado.addEventListener('click', renderConsolidadoTabela);
+  els.consolidadoCardTodos.addEventListener('click', () => aplicarFiltroCategoriaConsolidado(null));
+  els.consolidadoCardConforme.addEventListener('click', () => aplicarFiltroCategoriaConsolidado('conforme'));
+  els.consolidadoCardParcial.addEventListener('click', () => aplicarFiltroCategoriaConsolidado('parcial'));
+  els.consolidadoCardSemAdequacao.addEventListener('click', () => aplicarFiltroCategoriaConsolidado('sem_adequacao'));
   document.querySelectorAll('[data-consolidado-direcao]').forEach((botao) => {
     botao.addEventListener('click', () => {
       consolidadoDirecaoAtiva = botao.dataset.consolidadoDirecao;
+      consolidadoCategoriaAtiva = null;
       document
         .querySelectorAll('[data-consolidado-direcao]')
         .forEach((b) => b.classList.toggle('tab-button-ativo', b === botao));

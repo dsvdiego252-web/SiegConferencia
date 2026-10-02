@@ -152,6 +152,27 @@
               <label for="consolidadoFiltroAte">Até</label>
               <input id="consolidadoFiltroAte" type="date" />
             </div>
+            <div class="field field-button">
+              <button id="btnFiltrarConsolidado" class="btn-secondary" type="button">Filtrar</button>
+            </div>
+          </div>
+          <div class="summary" id="consolidadoCardsPanel">
+            <div class="summary-card summary-card-clickable" id="consolidadoCardTodos" title="Clique para ver todos os clientes do período">
+              <span class="summary-value" id="consolidadoCardTodosValor">0</span>
+              <span class="summary-label">Clientes no período</span>
+            </div>
+            <div class="summary-card summary-card-clickable" id="consolidadoCardConforme" title="Clique para ver só os clientes conformes">
+              <span class="summary-value" id="consolidadoCardConformeValor">0</span>
+              <span class="summary-label">Conformes</span>
+            </div>
+            <div class="summary-card summary-card-clickable" id="consolidadoCardParcial" title="Clique para ver só os clientes parcialmente adequados">
+              <span class="summary-value" id="consolidadoCardParcialValor">0</span>
+              <span class="summary-label">Parciais</span>
+            </div>
+            <div class="summary-card summary-card-clickable" id="consolidadoCardSemAdequacao" title="Clique para ver só os clientes sem nenhum campo da reforma">
+              <span class="summary-value" id="consolidadoCardSemAdequacaoValor">0</span>
+              <span class="summary-label">Sem conformidade</span>
+            </div>
           </div>
           <div id="consolidadoResultado"><p class="hint">Carregando...</p></div>
         </section>
