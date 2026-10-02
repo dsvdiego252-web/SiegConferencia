@@ -52,15 +52,24 @@ function dentroDaJanelaNoturna() {
   return horaBRT >= 22 || horaBRT < 6;
 }
 
-// Com ~150+ clientes x 2 dias x 4 combos, uma única janela noturna (~8h)
-// pode não dar conta de todo mundo, dependendo do volume (o limite de
-// 2 req/min da SIEG é o mesmo de sempre, compartilhado). Pra não deixar
-// sempre os mesmos clientes "no final da fila" sem cobertura em noites que
-// não terminam, o ponto de partida gira um pouco a cada dia.
-function offsetRotativo(totalUnidades) {
+// Com 40+ clientes x 2 dias, uma única janela noturna (~8h) não dá conta de
+// todo mundo (o limite de 2 req/min da SIEG é compartilhado, e um cliente de
+// alto volume sozinho pode consumir várias invocações inteiras — ver
+// combos_concluidos/combo_parcial abaixo). Girar o ponto de partida por um
+// cálculo baseado no dia corrido (como era antes) não garante nada: se uma
+// rodada não termina a tempo, a rodada seguinte começa de novo num ponto
+// pseudo-aleatório, sem relação com onde a anterior parou — um cliente
+// específico podia ficar sempre "atrás" de clientes pesados e nunca ser
+// alcançado de fato. cursor_global, em vez disso, é persistido pra sempre
+// (nunca reseta com a troca de dia-alvo) e avança exatamente pelo número de
+// cliente+dia realmente concluídos a cada invocação — cada rodada nova
+// começa de offset_inicial = cursor_global % totalUnidades, continuando o
+// rodízio de onde a última invocação (de qualquer rodada, terminada ou não)
+// parou. Isso garante que, ao longo de sucessivas noites, a fila dá a volta
+// completa por todos os clientes antes de repetir alguém.
+function calcularOffsetInicial(cursorGlobal, totalUnidades) {
   if (!totalUnidades) return 0;
-  const diasDesdeEpoch = Math.floor(Date.now() / 86_400_000);
-  return diasDesdeEpoch % totalUnidades;
+  return cursorGlobal % totalUnidades;
 }
 
 cronRouter.get('/sincronizar-noturno', async (req, res) => {
@@ -86,6 +95,7 @@ cronRouter.get('/sincronizar-noturno', async (req, res) => {
 
   let estado = await obterEstado();
   const agoraISO = new Date().toISOString();
+  const cursorGlobalAtual = estado?.cursor_global ?? 0;
 
   const rodadaAntigaAbandonada =
     estado?.status === 'rodando' && estado.iniciado_em && Date.now() - new Date(estado.iniciado_em).getTime() > TRAVA_ABANDONADA_MS;
@@ -95,13 +105,14 @@ cronRouter.get('/sincronizar-noturno', async (req, res) => {
   if (precisaComecarDeNovo) {
     estado = {
       data_alvo: dias[0],
-      offset_inicial: offsetRotativo(totalUnidades),
+      offset_inicial: calcularOffsetInicial(cursorGlobalAtual, totalUnidades),
       visitados: 0,
       combos_concluidos: [],
       combo_parcial: null,
       status: 'rodando',
       iniciado_em: agoraISO,
       invocacoes: 0,
+      cursor_global: cursorGlobalAtual,
     };
   }
 
@@ -187,6 +198,11 @@ cronRouter.get('/sincronizar-noturno', async (req, res) => {
     status: concluiu ? 'concluido' : 'rodando',
     iniciado_em: estado.iniciado_em,
     invocacoes: (estado.invocacoes || 0) + 1,
+    // Avança pelo número de cliente+dia realmente concluídos nesta
+    // invocação (processados), nunca reseta — é o que permite à próxima
+    // rodada (mesmo numa noite diferente) continuar o rodízio exatamente
+    // de onde esta parou, em vez de recomeçar num ponto desconectado.
+    cursor_global: (estado.cursor_global ?? cursorGlobalAtual) + processados,
   };
   await salvarEstado(novoEstado);
 
