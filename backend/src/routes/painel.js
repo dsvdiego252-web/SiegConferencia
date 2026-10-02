@@ -170,11 +170,29 @@ painelRouter.get('/', async (req, res) => {
     if (combosConcluidos.size === combos.length) {
       const classificados = classificarDocumentos(docsAcumulados, cnpj, dataInicio, dataFim, tipos);
       const dados = montarPainelDeClassificados(classificados, dataCorteReforma, cliente?.regimeTributario, cliente?.atividade, cliente?.regimesEspeciais);
-      await salvarResultado(cnpj, dataInicio, dataFim, tipo, dados);
+      // Uma falha ao gravar o cache de resultado (ex.: timeout pontual do
+      // Supabase) não pode jogar fora uma busca que já terminou de verdade —
+      // só loga e segue; o pior caso é essa mesma busca ser refeita do zero
+      // na próxima vez (cache de 10min não vigorou), não perder o resultado
+      // que o usuário está vendo agora. Mesmo espírito do try/catch em volta
+      // de registrarSincronizacao logo acima.
+      try {
+        await salvarResultado(cnpj, dataInicio, dataFim, tipo, dados);
+      } catch (erroCache) {
+        console.error('Falha ao gravar cache de resultado do painel:', erroCache.message);
+      }
       return res.json({ status: 'pronto', periodo: { dataInicio, dataFim }, desatualizado: false, cliente, ...dados });
     }
 
-    await salvarProgresso(cnpj, dataInicio, dataFim, tipo, [...combosConcluidos], docsAcumulados, comboParcial);
+    try {
+      await salvarProgresso(cnpj, dataInicio, dataFim, tipo, [...combosConcluidos], docsAcumulados, comboParcial);
+    } catch (erroCache) {
+      // Mesma lógica: um combo já concluído nesta chamada não pode se perder
+      // por causa de uma falha pontual ao persistir o progresso — a próxima
+      // chamada só reconsulta esse combo de novo (gasta uma cota extra da
+      // SIEG, mas não trava a busca inteira).
+      console.error('Falha ao gravar progresso do painel no Supabase:', erroCache.message);
+    }
     const documentosNoComboAtual = comboParcial?.docs?.length || 0;
     return res.json({
       status: 'buscando',
