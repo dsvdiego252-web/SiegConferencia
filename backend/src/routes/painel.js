@@ -21,19 +21,18 @@ export const painelRouter = Router();
 // da Vercel) — reserva tempo pra montar a resposta depois do último combo.
 const ORCAMENTO_MS = 45_000;
 
-// "Todos" (sem filtro explícito) sempre busca NFe+NFCe, e só inclui NFS-e
-// quando o cliente está cadastrado com atividade "servico" — sem essa
-// condição, toda busca de todo cliente passaria a gastar cota extra da SIEG
-// por um tipo de documento que a maioria nunca emite. O filtro "NFS-e" na
-// tela sempre funciona, independente do cadastro (ver botão/dropdown do
-// frontend).
-function resolverTipos(tipoParam, cliente) {
+// "Todos" (sem filtro explícito) sempre busca NFe+NFCe+NFS-e — NFS-e de
+// destinatário importa pra qualquer cliente (pode ter recebido nota de
+// serviço de algum fornecedor, independente da própria atividade), só a de
+// emissão é que só faz sentido pra quem presta serviço (ver
+// incluirEmitNfse, calculado logo abaixo, em listarCombos). O filtro
+// "NFS-e" na tela sempre busca as duas direções, independente do cadastro
+// (ver botão/dropdown do frontend).
+function resolverTipos(tipoParam) {
   if (tipoParam === 'nfe') return [XmlType.NFE];
   if (tipoParam === 'nfce') return [XmlType.NFCE];
   if (tipoParam === 'nfse') return [XmlType.NFSE];
-  const tipos = [XmlType.NFE, XmlType.NFCE];
-  if (cliente?.atividade?.includes('servico')) tipos.push(XmlType.NFSE);
-  return tipos;
+  return [XmlType.NFE, XmlType.NFCE, XmlType.NFSE];
 }
 
 function normalizarTipo(tipoParam) {
@@ -61,7 +60,10 @@ painelRouter.get('/', async (req, res) => {
     const { dataInicio, dataFim } = resolverPeriodo(req.query);
     const cliente = await obterCliente(cnpj);
     const tipo = normalizarTipo(req.query.tipo);
-    const tipos = resolverTipos(req.query.tipo, cliente);
+    const tipos = resolverTipos(req.query.tipo);
+    // Só busca NFS-e de emissão quando o filtro pede ela explicitamente, ou
+    // quando o cliente presta serviço de verdade — ver resolverTipos acima.
+    const incluirEmitNfse = tipo !== 'todos' || Boolean(cliente?.atividade?.includes('servico'));
     const dataCorteReforma = resolverDataCorteReforma();
 
     // Sem Supabase configurado (dev local), busca tudo direto — o modo mock
@@ -104,7 +106,7 @@ painelRouter.get('/', async (req, res) => {
     // pode estourar o tempo de execução da função, então o `prazoFinal`
     // passado pra buscarCombo faz a busca parar antes de uma espera do
     // rate limit que não caberia no tempo restante desta requisição.
-    const combos = listarCombos(tipos);
+    const combos = listarCombos(tipos, { incluirEmitNfse });
     const combosConcluidos = new Set(cache.combos_concluidos || []);
     let docsAcumulados = cache.docs_parciais || [];
     let comboParcial = cache.combo_parcial || null;

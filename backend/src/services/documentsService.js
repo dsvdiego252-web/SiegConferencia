@@ -22,13 +22,22 @@ const TIPO_DOCUMENTO_POR_XMLTYPE = { [XmlType.NFE]: 'NFe', [XmlType.NFCE]: 'NFCe
  * precisam ser consultados na SIEG. tipos (array de XmlType) restringe a
  * NFe e/ou NFCe; sem ele, usa os dois — cada combo é uma requisição de
  * download separada, com sua própria cota na SIEG.
+ *
+ * `incluirEmitNfse` (default true): quando false, omite o combo NFS-e de
+ * emissão (mas mantém o de destinatário) — usado pelo "Todos" do painel pra
+ * não gastar cota da SIEG com NFS-e emitida por um cliente que não presta
+ * serviço, sem deixar de checar se ELE recebeu NFS-e de algum fornecedor
+ * (isso não depende da atividade do próprio cliente).
  */
-export function listarCombos(tipos) {
+export function listarCombos(tipos, { incluirEmitNfse = true } = {}) {
   const tiposConsultados = tipos && tipos.length ? tipos : [XmlType.NFE, XmlType.NFCE];
-  return tiposConsultados.flatMap((xmlType) => [
-    { xmlType, direcao: 'emit' },
-    { xmlType, direcao: 'dest' },
-  ]);
+  return tiposConsultados.flatMap((xmlType) => {
+    if (xmlType === XmlType.NFSE && !incluirEmitNfse) return [{ xmlType, direcao: 'dest' }];
+    return [
+      { xmlType, direcao: 'emit' },
+      { xmlType, direcao: 'dest' },
+    ];
+  });
 }
 
 export function chaveCombo(combo) {
