@@ -48,7 +48,7 @@ export async function buscarCombo(combo, { clienteCnpj, dataInicio, dataFim, ski
     try {
       const cacheado = await periodoTotalmenteCacheado(clienteCnpj, combo.xmlType, combo.direcao, dataInicio, dataFim);
       if (cacheado) {
-        const docs = await buscarDocumentosCacheados(clienteCnpj, combo.direcao, dataInicio, dataFim);
+        const docs = await buscarDocumentosCacheados(clienteCnpj, combo.direcao, dataInicio, dataFim, TIPO_DOCUMENTO_POR_XMLTYPE[combo.xmlType], prazoFinal);
         return { docs, completo: true, proximoSkip: 0, doCache: true };
       }
     } catch (erroCache) {

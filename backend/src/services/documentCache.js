@@ -114,16 +114,36 @@ export function linhaParaDocumento(linha) {
 // páginas até vir menos que o tamanho pedido.
 const TAMANHO_PAGINA_SUPABASE = 1000;
 
-/** Documentos já cacheados relevantes pro combo (cliente como emitente ou destinatário, conforme a direção). */
-export async function buscarDocumentosCacheados(cnpjCliente, direcao, dataInicio, dataFim) {
+/**
+ * Documentos já cacheados relevantes pro combo (cliente como emitente ou
+ * destinatário, conforme a direção). Filtrar por `tipoDocumento` aqui (e não
+ * só depois, em classificarDocumentos) importa pra não duplicar trabalho: um
+ * cliente de alto volume (ex.: muitas vendas NFCe) tem o combo de NFe e o de
+ * NFCe buscando essa mesma direção cada um por sua vez — sem o filtro, os
+ * dois acabavam buscando o período inteiro (NFe + NFCe juntos) do zero,
+ * dobrando a leitura do Supabase à toa e arriscando estourar o tempo de
+ * execução da função mesmo com tudo cacheado, sem nenhuma chamada à SIEG.
+ */
+export async function buscarDocumentosCacheados(cnpjCliente, direcao, dataInicio, dataFim, tipoDocumento, prazoFinal) {
   const coluna = direcao === 'emit' ? 'emit_cnpj' : 'dest_cnpj';
   const todos = [];
   let offset = 0;
   for (;;) {
+    // Cliente de altíssimo volume (muitas páginas) nunca deveria arriscar
+    // estourar o tempo de execução da função só lendo o próprio cache —
+    // melhor desistir cedo e deixar quem chamou tratar como instabilidade
+    // passageira (salva o progresso já feito, tenta de novo no próximo poll)
+    // do que um 504 sem nada salvo.
+    if (prazoFinal && Date.now() >= prazoFinal) {
+      const erro = new Error('Tempo esgotado lendo documentos cacheados no Supabase.');
+      erro.transitorio = true;
+      throw erro;
+    }
     const { data, error } = await supabase
       .from('documentos_fiscais')
       .select('*')
       .eq(coluna, cnpjCliente)
+      .eq('tipo_documento', tipoDocumento)
       .gte('data_emissao_dia', dataInicio)
       .lte('data_emissao_dia', dataFim)
       .range(offset, offset + TAMANHO_PAGINA_SUPABASE - 1);
