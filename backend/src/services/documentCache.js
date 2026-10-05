@@ -45,20 +45,20 @@ function diaEstavel(dia) {
 }
 
 /**
- * true se TODO o período pedido já está sincronizado (cache confiável) pra
- * este cliente+combo — nesse caso nem vale a pena chamar a SIEG, os
- * documentos já buscados antes servem. "Hoje" nunca é considerado cacheado
- * (ainda pode receber notas novas/canceladas a qualquer momento). Um dia
- * "recente" (ver DIAS_ESTABILIDADE) só conta como cacheado se foi
- * sincronizado há pouco tempo (JANELA_PROVISORIA_HORAS) — o suficiente pra
- * cobrir o intervalo até a próxima sincronização noturna, mas não pra
- * sempre.
+ * Lista (em ordem) os dias do período pedido que NÃO estão com cache
+ * confiável pra este cliente+combo — "hoje" sempre entra na lista (ainda
+ * pode receber notas novas/canceladas a qualquer momento); um dia "recente"
+ * (ver DIAS_ESTABILIDADE) só conta como cacheado se foi sincronizado há
+ * pouco tempo (JANELA_PROVISORIA_HORAS). Lista vazia = período inteiro
+ * cacheado. Usada tanto pra decidir se vale a pena ler do cache
+ * (periodoTotalmenteCacheado) quanto pra buscar na SIEG só a faixa que
+ * falta em vez do período inteiro (ver buscarCombo em documentsService.js)
+ * quando falta só uma parte.
  */
-export async function periodoTotalmenteCacheado(cnpjCliente, xmlType, direcao, dataInicio, dataFim) {
-  if (!cacheDocumentosDisponivel) return false;
+export async function diasFaltantes(cnpjCliente, xmlType, direcao, dataInicio, dataFim) {
   const dias = listarDias(dataInicio, dataFim);
+  if (!cacheDocumentosDisponivel) return dias;
   const hoje = hojeStr();
-  if (dias.includes(hoje)) return false;
 
   const { data, error } = await supabase
     .from('sieg_sync_dias')
@@ -72,13 +72,24 @@ export async function periodoTotalmenteCacheado(cnpjCliente, xmlType, direcao, d
 
   const sincronizadoEmPorDia = new Map((data || []).map((linha) => [linha.dia, linha.sincronizado_em]));
   const agora = Date.now();
-  return dias.every((dia) => {
+  return dias.filter((dia) => {
+    if (dia === hoje) return true;
     const sincronizadoEm = sincronizadoEmPorDia.get(dia);
-    if (!sincronizadoEm) return false;
-    if (diaEstavel(dia)) return true;
+    if (!sincronizadoEm) return true;
+    if (diaEstavel(dia)) return false;
     const idadeHoras = (agora - new Date(sincronizadoEm).getTime()) / 3_600_000;
-    return idadeHoras < JANELA_PROVISORIA_HORAS;
+    return idadeHoras >= JANELA_PROVISORIA_HORAS;
   });
+}
+
+/**
+ * true se TODO o período pedido já está sincronizado (cache confiável) pra
+ * este cliente+combo — nesse caso nem vale a pena chamar a SIEG, os
+ * documentos já buscados antes servem.
+ */
+export async function periodoTotalmenteCacheado(cnpjCliente, xmlType, direcao, dataInicio, dataFim) {
+  const faltando = await diasFaltantes(cnpjCliente, xmlType, direcao, dataInicio, dataFim);
+  return faltando.length === 0;
 }
 
 export function linhaParaDocumento(linha) {

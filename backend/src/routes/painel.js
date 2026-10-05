@@ -119,8 +119,10 @@ painelRouter.get('/', async (req, res) => {
         const emAndamento = comboParcial && comboParcial.chave === chave;
         const skipInicial = emAndamento ? comboParcial.proximoSkip : 0;
         const docsJaDoCombo = emAndamento ? comboParcial.docs : [];
+        const gapInicio = emAndamento ? comboParcial.gapInicio : undefined;
+        const gapFim = emAndamento ? comboParcial.gapFim : undefined;
 
-        const resultado = await buscarCombo(combo, { clienteCnpj: cnpj, dataInicio, dataFim, skipInicial, prazoFinal });
+        const resultado = await buscarCombo(combo, { clienteCnpj: cnpj, dataInicio, dataFim, skipInicial, prazoFinal, gapInicio, gapFim });
         const docsDoComboAtualizados = mesclarDocumentos(docsJaDoCombo, resultado.docs);
 
         if (resultado.completo) {
@@ -128,20 +130,25 @@ painelRouter.get('/', async (req, res) => {
           combosConcluidos.add(chave);
           // Só grava no cache permanente o que realmente veio da SIEG agora
           // — reescrever o que acabou de vir do próprio cache é trabalho à
-          // toa. Falha ao gravar não pode derrubar a busca (os documentos já
-          // buscados nesta requisição continuam válidos de qualquer forma) —
-          // só registra e segue, tenta gravar de novo na próxima vez que
-          // esse período for buscado.
+          // toa. Usa a faixa que realmente foi buscada ao vivo (gapInicio/
+          // gapFim — pode ser menor que o período inteiro pedido, ver
+          // buscarCombo), não o período inteiro: marcar como "sincronizado
+          // agora" um dia que nem foi tocado nesta busca (porque já estava
+          // cacheado) seria certificar uma frescura que não foi checada de
+          // verdade. Falha ao gravar não pode derrubar a busca (os
+          // documentos já buscados nesta requisição continuam válidos de
+          // qualquer forma) — só registra e segue, tenta gravar de novo na
+          // próxima vez que esse período for buscado.
           if (!resultado.doCache) {
             try {
-              await registrarSincronizacao(cnpj, combo.xmlType, combo.direcao, dataInicio, dataFim, docsDoComboAtualizados);
+              await registrarSincronizacao(cnpj, combo.xmlType, combo.direcao, resultado.gapInicio ?? dataInicio, resultado.gapFim ?? dataFim, docsDoComboAtualizados);
             } catch (erroCache) {
               console.error('Falha ao gravar cache permanente de documentos:', erroCache.message);
             }
           }
           comboParcial = null;
         } else {
-          comboParcial = { chave, proximoSkip: resultado.proximoSkip, docs: docsDoComboAtualizados };
+          comboParcial = { chave, proximoSkip: resultado.proximoSkip, docs: docsDoComboAtualizados, gapInicio: resultado.gapInicio, gapFim: resultado.gapFim };
           break;
         }
       }
