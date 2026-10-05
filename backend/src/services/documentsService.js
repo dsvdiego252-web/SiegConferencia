@@ -67,11 +67,17 @@ export function chaveCombo(combo) {
  * `gapFim` devolvidos aqui junto com o resto do estado parcial, e
  * devolvê-los na próxima chamada do mesmo combo.
  *
+ * `ignorarCache` (opcional): quando true, pula o cache permanente de
+ * documentos inteiro e busca o período pedido ao vivo na SIEG, como se nada
+ * estivesse cacheado — usado pelo "Forçar atualização" (ver painel.js) pra
+ * consertar um cliente cujo cache se suspeita incompleto (ex.: dados
+ * cacheados por uma versão antiga da paginação, antes de uma correção).
+ *
  * Retorna { docs, completo, proximoSkip, gapInicio, gapFim }: `completo:
  * false` significa que ainda faltam páginas — quem chamou deve guardar
  * `proximoSkip`, `gapInicio` e `gapFim` e tentar de novo depois.
  */
-export async function buscarCombo(combo, { clienteCnpj, dataInicio, dataFim, skipInicial, prazoFinal, gapInicio, gapFim }) {
+export async function buscarCombo(combo, { clienteCnpj, dataInicio, dataFim, skipInicial, prazoFinal, gapInicio, gapFim, ignorarCache }) {
   let faixaInicio = gapInicio ?? dataInicio;
   let faixaFim = gapFim ?? dataFim;
   let docsCache = [];
@@ -80,7 +86,7 @@ export async function buscarCombo(combo, { clienteCnpj, dataInicio, dataFim, ski
   // 0) — uma busca retomada no meio de uma paginação já está usando a faixa
   // calculada na primeira chamada (gapInicio/gapFim), repassada por quem
   // chamou.
-  if (!skipInicial) {
+  if (!skipInicial && !ignorarCache) {
     // Uma falha ao consultar o cache (ex.: instabilidade pontual do
     // Supabase) não pode impedir a busca — só faz cair no caminho normal
     // (buscar ao vivo na SIEG o período inteiro), como se nada estivesse

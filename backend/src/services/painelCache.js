@@ -25,7 +25,14 @@ export async function lerCache(cnpj, dataInicio, dataFim, tipo) {
   return data;
 }
 
-export async function reiniciarBusca(cnpj, dataInicio, dataFim, tipo) {
+// ignorarCachePermanente: true quando veio de "Forçar atualização" — fica
+// salvo na linha (não só nesta chamada) porque uma busca de alto volume
+// avança aos poucos em várias chamadas (ver painel.js); sem persistir isso,
+// só a primeira combo da primeira chamada ignorava o cache permanente de
+// documentos (documentCache.js) e as combos seguintes, nas chamadas
+// seguintes, voltavam a usar o cache normalmente — nem toda a busca forçada
+// realmente ia buscar tudo de novo na SIEG.
+export async function reiniciarBusca(cnpj, dataInicio, dataFim, tipo, ignorarCachePermanente = false) {
   const linha = {
     cnpj,
     data_inicio: dataInicio,
@@ -37,6 +44,7 @@ export async function reiniciarBusca(cnpj, dataInicio, dataFim, tipo) {
     combos_concluidos: [],
     docs_parciais: [],
     combo_parcial: null,
+    ignorar_cache_permanente: ignorarCachePermanente,
     atualizado_em: new Date().toISOString(),
   };
   const { error } = await supabase.from('painel_cache').upsert(linha);
@@ -75,6 +83,7 @@ export async function salvarResultado(cnpj, dataInicio, dataFim, tipo, dados) {
       combos_concluidos: [],
       docs_parciais: [],
       combo_parcial: null,
+      ignorar_cache_permanente: false,
       atualizado_em: new Date().toISOString(),
     })
     .eq('cnpj', cnpj)

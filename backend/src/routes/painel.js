@@ -82,7 +82,7 @@ painelRouter.get('/', async (req, res) => {
 
     const precisaReiniciar = !cache || forcar === '1' || (cache.status === 'pronto' && estaExpirado(cache.atualizado_em));
     if (precisaReiniciar) {
-      cache = await reiniciarBusca(cnpj, dataInicio, dataFim, tipo);
+      cache = await reiniciarBusca(cnpj, dataInicio, dataFim, tipo, forcar === '1');
     }
 
     if (cache.status === 'pronto') {
@@ -124,7 +124,16 @@ painelRouter.get('/', async (req, res) => {
         const gapInicio = emAndamento ? comboParcial.gapInicio : undefined;
         const gapFim = emAndamento ? comboParcial.gapFim : undefined;
 
-        const resultado = await buscarCombo(combo, { clienteCnpj: cnpj, dataInicio, dataFim, skipInicial, prazoFinal, gapInicio, gapFim });
+        const resultado = await buscarCombo(combo, {
+          clienteCnpj: cnpj,
+          dataInicio,
+          dataFim,
+          skipInicial,
+          prazoFinal,
+          gapInicio,
+          gapFim,
+          ignorarCache: Boolean(cache.ignorar_cache_permanente),
+        });
         const docsDoComboAtualizados = mesclarDocumentos(docsJaDoCombo, resultado.docs);
 
         if (resultado.completo) {
