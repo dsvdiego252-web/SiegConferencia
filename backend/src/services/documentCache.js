@@ -124,6 +124,14 @@ const TAMANHO_PAGINA_SUPABASE = 1000;
  * dobrando a leitura do Supabase à toa e arriscando estourar o tempo de
  * execução da função mesmo com tudo cacheado, sem nenhuma chamada à SIEG.
  */
+// Teto por página — uma página sozinha nunca deveria precisar de mais que
+// isso num uso normal; existe só pra não deixar uma chamada travada (ex.:
+// instabilidade de rede entre a função e o Supabase) presa sem retorno até
+// o corte duro de 60s da Vercel, sem nenhuma chance de salvar o progresso já
+// feito. Ver prazoFinal abaixo: o teto real de cada chamada é o menor entre
+// este valor e o tempo que resta do orçamento da requisição.
+const TIMEOUT_PAGINA_MS = 20_000;
+
 export async function buscarDocumentosCacheados(cnpjCliente, direcao, dataInicio, dataFim, tipoDocumento, prazoFinal) {
   const coluna = direcao === 'emit' ? 'emit_cnpj' : 'dest_cnpj';
   const todos = [];
@@ -134,19 +142,44 @@ export async function buscarDocumentosCacheados(cnpjCliente, direcao, dataInicio
     // melhor desistir cedo e deixar quem chamou tratar como instabilidade
     // passageira (salva o progresso já feito, tenta de novo no próximo poll)
     // do que um 504 sem nada salvo.
-    if (prazoFinal && Date.now() >= prazoFinal) {
+    const agora = Date.now();
+    if (prazoFinal && agora >= prazoFinal) {
       const erro = new Error('Tempo esgotado lendo documentos cacheados no Supabase.');
       erro.transitorio = true;
       throw erro;
     }
-    const { data, error } = await supabase
-      .from('documentos_fiscais')
-      .select('*')
-      .eq(coluna, cnpjCliente)
-      .eq('tipo_documento', tipoDocumento)
-      .gte('data_emissao_dia', dataInicio)
-      .lte('data_emissao_dia', dataFim)
-      .range(offset, offset + TAMANHO_PAGINA_SUPABASE - 1);
+
+    // Sem isso, uma página sozinha que travasse (a chamada ao Supabase nunca
+    // resolve nem rejeita) não seria interrompida por nada — a checagem
+    // acima só vale ENTRE páginas, não durante uma chamada já em andamento.
+    // Foi exatamente isso que causou um 504 sem nenhum progresso salvo: a
+    // própria chamada ficou pendurada, sem nunca devolver o controle pro
+    // loop verificar o prazo de novo.
+    const timeoutMs = prazoFinal ? Math.max(1, Math.min(TIMEOUT_PAGINA_MS, prazoFinal - agora - 1000)) : TIMEOUT_PAGINA_MS;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    let data, error;
+    try {
+      ({ data, error } = await supabase
+        .from('documentos_fiscais')
+        .select('*')
+        .eq(coluna, cnpjCliente)
+        .eq('tipo_documento', tipoDocumento)
+        .gte('data_emissao_dia', dataInicio)
+        .lte('data_emissao_dia', dataFim)
+        .range(offset, offset + TAMANHO_PAGINA_SUPABASE - 1)
+        .abortSignal(controller.signal));
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        const erro = new Error(`Tempo esgotado lendo página de documentos cacheados no Supabase (${timeoutMs / 1000}s).`);
+        erro.transitorio = true;
+        throw erro;
+      }
+      throw err;
+    } finally {
+      clearTimeout(timeoutId);
+    }
     if (error) throw new Error(`Falha ao ler documentos cacheados no Supabase: ${error.message}`);
     todos.push(...(data || []));
     if (!data || data.length < TAMANHO_PAGINA_SUPABASE) break;

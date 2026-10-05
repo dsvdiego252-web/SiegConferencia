@@ -44,7 +44,15 @@ export async function buscarCombo(combo, { clienteCnpj, dataInicio, dataFim, ski
   if (!skipInicial) {
     // Uma falha ao consultar o cache (ex.: instabilidade pontual do
     // Supabase) não pode impedir a busca — só faz cair no caminho normal
-    // (buscar ao vivo na SIEG), como se nada estivesse cacheado.
+    // (buscar ao vivo na SIEG), como se nada estivesse cacheado. Já um
+    // timeout por falta de orçamento de tempo (erroCache.transitorio) é
+    // diferente: os documentos estão mesmo cacheados, só não deu tempo de
+    // ler agora — cair pro caminho ao vivo nesse caso gastaria cota da SIEG
+    // à toa (e, pior, "comprometeria" as próximas tentativas desse combo
+    // com o modo ao vivo, já que um skipInicial > 0 pula a checagem de cache
+    // de novo). Propaga como transitório pra quem chamou (painel.js) tratar
+    // como as outras instabilidades passageiras: salva o progresso já feito
+    // e tenta ler o cache de novo no próximo poll.
     try {
       const cacheado = await periodoTotalmenteCacheado(clienteCnpj, combo.xmlType, combo.direcao, dataInicio, dataFim);
       if (cacheado) {
@@ -52,6 +60,7 @@ export async function buscarCombo(combo, { clienteCnpj, dataInicio, dataFim, ski
         return { docs, completo: true, proximoSkip: 0, doCache: true };
       }
     } catch (erroCache) {
+      if (erroCache.transitorio) throw erroCache;
       console.error('Falha ao consultar cache permanente de documentos:', erroCache.message);
     }
   }
