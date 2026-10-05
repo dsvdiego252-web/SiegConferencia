@@ -111,12 +111,29 @@ let jwtCache = { token: null, expiraEm: 0 };
 // caminho de retry/erro transitório que já existe pro resto da busca.
 const TIMEOUT_JWT_MS = 15_000;
 
-async function obterJwt() {
+async function obterJwt(prazoFinal) {
   const agora = Date.now();
   if (jwtCache.token && agora < jwtCache.expiraEm) return jwtCache.token;
 
+  // Sem isso, um container novo (JWT ainda não cacheado) podia esperar os
+  // 15s inteiros de TIMEOUT_JWT_MS mesmo quando o orçamento da requisição
+  // (prazoFinal, ver painel.js/cron.js) já estava quase no fim — empurrando
+  // o tempo total de execução pra perto ou além dos 60s da Vercel (504),
+  // mesmo num período já totalmente cacheado (só faltava gerar o JWT pra
+  // confirmar isso contra a SIEG).
+  let timeoutMs = TIMEOUT_JWT_MS;
+  let limitadoPeloPrazo = false;
+  if (prazoFinal) {
+    const restante = prazoFinal - agora - 1000;
+    if (restante <= 0) throw new PrazoExcedidoError();
+    if (restante < timeoutMs) {
+      timeoutMs = restante;
+      limitadoPeloPrazo = true;
+    }
+  }
+
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_JWT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   let response;
   try {
@@ -132,9 +149,13 @@ async function obterJwt() {
       signal: controller.signal,
     });
   } catch (err) {
+    // Abortado só porque o prazo desta requisição estava acabando (não uma
+    // lentidão real da SIEG) — mesmo sinal usado pro rate limit, pra quem
+    // chamou pausar e tentar de novo na próxima chamada, sem mostrar erro.
+    if (err.name === 'AbortError' && limitadoPeloPrazo) throw new PrazoExcedidoError();
     const erro =
       err.name === 'AbortError'
-        ? new Error(`Falha ao gerar JWT na SIEG: sem resposta em ${TIMEOUT_JWT_MS / 1000}s.`)
+        ? new Error(`Falha ao gerar JWT na SIEG: sem resposta em ${timeoutMs / 1000}s.`)
         : err;
     erro.transitorio = true;
     throw erro;
@@ -165,7 +186,7 @@ async function chamarApiV1(caminho, body, aguardarSlot, prazoFinal) {
   const conseguiuSlot = await aguardarSlot(prazoFinal);
   if (!conseguiuSlot) throw new PrazoExcedidoError();
 
-  const jwt = await obterJwt();
+  const jwt = await obterJwt(prazoFinal);
 
   // A própria chamada HTTP à SIEG (não a espera do rate limit) também pode
   // demorar — um cliente com muitas notas no período faz a SIEG levar mais
