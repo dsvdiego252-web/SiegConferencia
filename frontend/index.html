@@ -469,6 +469,61 @@
             </table>
           </div>
         </section>
+
+        <section class="panel">
+          <h2>Conferência de cadastro de produtos (código x descrição)</h2>
+          <p class="hint">
+            Envie o cadastro de produtos exportado do Domínio (código + descrição). Compara com a descrição real
+            vista nos XMLs já baixados desse cliente (todo o histórico, sem recorte de período) pra achar código
+            cadastrado com a descrição de outro produto — ex.: um código de carne parametrizado como água.
+          </p>
+          <div class="filters" style="padding: 0;">
+            <div class="field">
+              <label for="dominioProdutosFileInput">Cadastro de produtos do Domínio</label>
+              <input id="dominioProdutosFileInput" type="file" accept=".csv,.xlsx,.xls" />
+            </div>
+            <div class="field field-button">
+              <button id="btnConferirCadastroProdutos">Conferir</button>
+            </div>
+          </div>
+          <div id="produtosReconciliationStatus" class="status"></div>
+        </section>
+
+        <section class="panel summary" id="produtosReconciliationSummaryPanel" hidden>
+          <div class="summary-card">
+            <span class="summary-value" id="reconProdutosTotalConformes">0</span>
+            <span class="summary-label">Descrição bate</span>
+          </div>
+          <div class="summary-card" id="reconProdutosDivergentesCard">
+            <span class="summary-value" id="reconProdutosTotalDivergentes">0</span>
+            <span class="summary-label">Descrição divergente</span>
+          </div>
+          <div class="summary-card" id="reconProdutosSomenteDominioCard">
+            <span class="summary-value" id="reconProdutosTotalSomenteDominio">0</span>
+            <span class="summary-label">Só no cadastro Domínio</span>
+          </div>
+          <div class="summary-card" id="reconProdutosSomenteXmlCard">
+            <span class="summary-value" id="reconProdutosTotalSomenteXml">0</span>
+            <span class="summary-label">Só no XML</span>
+          </div>
+        </section>
+
+        <section class="panel" id="produtosReconciliationDetailPanel" hidden>
+          <h2>Códigos de produto — Domínio x XML</h2>
+          <div class="table-wrap">
+            <table id="reconProdutosTable">
+              <thead>
+                <tr>
+                  <th>Situação</th>
+                  <th>Código</th>
+                  <th>Descrição no Domínio</th>
+                  <th>Descrição no XML</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
       </div>
 
       <div class="page-panel" data-page="notificacoes" hidden>

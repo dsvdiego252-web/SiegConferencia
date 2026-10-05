@@ -87,6 +87,17 @@ const els = {
   reconResumoTableBody: document.querySelector('#reconResumoTable tbody'),
   reconciliationDetailPanel: document.getElementById('reconciliationDetailPanel'),
   reconDetailTableBody: document.querySelector('#reconDetailTable tbody'),
+  dominioProdutosFileInput: document.getElementById('dominioProdutosFileInput'),
+  btnConferirCadastroProdutos: document.getElementById('btnConferirCadastroProdutos'),
+  produtosReconciliationStatus: document.getElementById('produtosReconciliationStatus'),
+  produtosReconciliationSummaryPanel: document.getElementById('produtosReconciliationSummaryPanel'),
+  reconProdutosTotalConformes: document.getElementById('reconProdutosTotalConformes'),
+  reconProdutosTotalDivergentes: document.getElementById('reconProdutosTotalDivergentes'),
+  reconProdutosDivergentesCard: document.getElementById('reconProdutosDivergentesCard'),
+  reconProdutosTotalSomenteDominio: document.getElementById('reconProdutosTotalSomenteDominio'),
+  reconProdutosTotalSomenteXml: document.getElementById('reconProdutosTotalSomenteXml'),
+  produtosReconciliationDetailPanel: document.getElementById('produtosReconciliationDetailPanel'),
+  reconProdutosTableBody: document.querySelector('#reconProdutosTable tbody'),
   docModalOverlay: document.getElementById('docModalOverlay'),
   docModalTitulo: document.getElementById('docModalTitulo'),
   docModalCorpo: document.getElementById('docModalCorpo'),
@@ -2362,6 +2373,81 @@ async function conferirDominio() {
   }
 }
 
+function renderCadastroProdutosComparacao(resultado) {
+  els.produtosReconciliationSummaryPanel.hidden = false;
+  els.produtosReconciliationDetailPanel.hidden = false;
+
+  els.reconProdutosTotalConformes.textContent = resultado.conformes.length;
+  els.reconProdutosTotalDivergentes.textContent = resultado.totalDivergentes;
+  els.reconProdutosTotalSomenteDominio.textContent = resultado.somenteDominio.length;
+  els.reconProdutosTotalSomenteXml.textContent = resultado.somenteXml.length;
+  els.reconProdutosDivergentesCard.classList.toggle('alerta', resultado.totalDivergentes > 0);
+
+  const linhas = [
+    ...resultado.divergentes.map((p) => ({ ...p, badge: 'Divergente', rowClass: 'row-divergente' })),
+    ...resultado.somenteDominio.map((p) => ({ ...p, descricaoXml: '—', badge: 'Só no Domínio', rowClass: 'row-somente-dominio' })),
+    ...resultado.somenteXml.map((p) => ({ ...p, descricaoDominio: '—', badge: 'Só no XML', rowClass: 'row-pendente' })),
+    ...resultado.conformes.map((p) => ({ ...p, badge: 'OK', rowClass: 'row-ok' })),
+  ].sort((a, b) => String(a.codigo).localeCompare(String(b.codigo), 'pt-BR', { numeric: true }));
+
+  els.reconProdutosTableBody.innerHTML = '';
+  if (!linhas.length) {
+    els.reconProdutosTableBody.innerHTML = '<tr class="empty-row"><td colspan="4">Nenhum produto encontrado pra comparar.</td></tr>';
+    return;
+  }
+  for (const p of linhas) {
+    const tr = document.createElement('tr');
+    tr.className = p.rowClass;
+    const badgeClasse = p.badge === 'Divergente' ? 'divergente' : p.badge === 'Só no Domínio' ? 'somente-dominio' : p.badge === 'Só no XML' ? 'pendente' : 'situacao-ok';
+    tr.innerHTML = `
+      <td><span class="badge badge-${badgeClasse}">${p.badge}</span></td>
+      <td>${p.codigo}</td>
+      <td>${p.descricaoDominio ?? '—'}</td>
+      <td>${p.descricaoXml ?? '—'}</td>
+    `;
+    els.reconProdutosTableBody.appendChild(tr);
+  }
+}
+
+async function conferirCadastroProdutos() {
+  const cnpj = els.clienteSelect.value;
+  const arquivo = els.dominioProdutosFileInput.files[0];
+
+  els.produtosReconciliationStatus.classList.remove('error');
+
+  if (!cnpj) {
+    els.produtosReconciliationStatus.textContent = 'Selecione um cliente primeiro.';
+    return;
+  }
+  if (!arquivo) {
+    els.produtosReconciliationStatus.textContent = 'Escolha o arquivo de cadastro de produtos exportado do Domínio (XLSX ou CSV).';
+    return;
+  }
+
+  els.btnConferirCadastroProdutos.disabled = true;
+  els.produtosReconciliationStatus.textContent = 'Comparando com os XMLs já baixados desse cliente...';
+  try {
+    const formData = new FormData();
+    formData.append('cnpj', cnpj);
+    formData.append('dominioProdutosFile', arquivo);
+
+    const resultado = await apiPostForm('/api/reconciliation/produtos', formData);
+    if (resultado.status === 'ignorado') {
+      els.produtosReconciliationStatus.textContent = resultado.motivo;
+      return;
+    }
+    renderCadastroProdutosComparacao(resultado);
+    els.produtosReconciliationStatus.textContent =
+      `Conferido às ${new Date().toLocaleTimeString('pt-BR')} — ${resultado.totalDominio} produtos no cadastro Domínio, ` +
+      `${resultado.totalXml} códigos distintos vistos nos XMLs.`;
+  } catch (err) {
+    els.produtosReconciliationStatus.classList.add('error');
+    els.produtosReconciliationStatus.textContent = err.message;
+  } finally {
+    els.btnConferirCadastroProdutos.disabled = false;
+  }
+}
+
 const PAGINAS = {
   cadastros: { titulo: 'Cadastros', subtitulo: 'Clientes cadastrados no sistema', toolbar: false },
   conformidade: {
@@ -2437,6 +2523,7 @@ async function init() {
     if (evento.target === els.clienteModalOverlay) fecharModalCliente();
   });
   els.btnConferirDominio.addEventListener('click', conferirDominio);
+  els.btnConferirCadastroProdutos.addEventListener('click', conferirCadastroProdutos);
   els.situacaoFiltroSelect.addEventListener('change', () => {
     // Muda de dimensão de filtro (Situação em vez de um card) — limpa os
     // filtros de card pra não combinar e sumir com a lista sem explicação.
