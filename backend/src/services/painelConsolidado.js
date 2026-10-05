@@ -70,28 +70,33 @@ function finalizarDirecao(porDiaMap) {
 
 /**
  * Cruza todos os clientes cadastrados de uma vez, mostrando — pra cada um
- * que já tem algum documento cacheado nos últimos 30 dias — quantos
- * documentos foram encontrados por dia, e quantos desses estão conformes,
- * parcialmente adequados ou sem nenhum campo da Reforma Tributária. Separa
- * saída (o que o cliente emitiu) de entrada (o que ele recebeu) porque são
- * conferências com finalidade diferente: saída é sobre o próprio emissor do
- * cliente estar adequado; entrada é sobre os fornecedores dele. Só lê o
- * cache permanente (nunca busca ao vivo na SIEG): 150+ clientes numa
- * chamada só não cabem no limite de 2 requisições/minuto da SIEG,
- * compartilhado por todo mundo.
+ * que já tem algum documento cacheado no período — quantos documentos foram
+ * encontrados por dia, e quantos desses estão conformes, parcialmente
+ * adequados ou sem nenhum campo da Reforma Tributária. Separa saída (o que
+ * o cliente emitiu) de entrada (o que ele recebeu) porque são conferências
+ * com finalidade diferente: saída é sobre o próprio emissor do cliente
+ * estar adequado; entrada é sobre os fornecedores dele. Só lê o cache
+ * permanente (nunca busca ao vivo na SIEG): 150+ clientes numa chamada só
+ * não cabem no limite de 2 requisições/minuto da SIEG, compartilhado por
+ * todo mundo.
+ *
+ * `dataInicio`/`dataFim` (opcionais) sobrescrevem a janela padrão de
+ * últimos 30 dias — sem isso, o filtro de período da tela só conseguia
+ * estreitar o que já tinha vindo nos últimos 30 dias, nunca enxergar nada
+ * mais antigo, mesmo com o próprio cliente já totalmente cacheado.
  */
-export async function gerarPainelConsolidado() {
+export async function gerarPainelConsolidado({ dataInicio, dataFim } = {}) {
   if (!cacheDocumentosDisponivel) {
     return { status: 'ignorado', motivo: 'Supabase não configurado — painel consolidado desligado.' };
   }
 
-  const dataFim = hojeStr();
-  const dataInicio = diasAtras(JANELA_DIAS);
+  const fim = dataFim || hojeStr();
+  const inicio = dataInicio || diasAtras(JANELA_DIAS);
   const clientes = await listarClientes();
 
   const linhasClientes = [];
   for (const cliente of clientes) {
-    const docs = await docsCacheadosDoCliente(cliente.cnpj, dataInicio, dataFim);
+    const docs = await docsCacheadosDoCliente(cliente.cnpj, inicio, fim);
     if (!docs.length) {
       linhasClientes.push({ cnpj: cliente.cnpj, nome: cliente.nome, temDados: false, saida: direcaoVazia(), entrada: direcaoVazia() });
       continue;
@@ -138,7 +143,7 @@ export async function gerarPainelConsolidado() {
 
   return {
     status: 'concluido',
-    periodo: { dataInicio, dataFim },
+    periodo: { dataInicio: inicio, dataFim: fim },
     executadoEm: new Date().toISOString(),
     totalClientes: clientes.length,
     clientesComDados: linhasClientes.filter((l) => l.temDados).length,

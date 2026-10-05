@@ -9,6 +9,7 @@ import { relatorioNcmSemRegra } from '../services/ncmCoverageReport.js';
 import { gerarPainelConsolidado, buscarDocumentosConsolidado } from '../services/painelConsolidado.js';
 import { auditarMotorTributario } from '../services/motorTributarioAudit.js';
 import { gerarCadastroProdutos } from '../services/productCatalogService.js';
+import { resolverPeriodo } from '../services/dateUtils.js';
 
 export const cronRouter = Router();
 
@@ -287,10 +288,14 @@ cronRouter.get('/relatorio-ncm-sem-regra', async (req, res) => {
 // Cruza todos os clientes cadastrados de uma vez (só lê o cache permanente,
 // nunca busca ao vivo na SIEG) — "quem tem pendência" sem precisar abrir
 // cliente por cliente. Ver painelConsolidado.js para os detalhes da janela
-// de 30 dias e do porquê de nunca disparar busca ao vivo aqui.
+// padrão de 30 dias e do porquê de nunca disparar busca ao vivo aqui.
+// Aceita "inicio"/"fim" opcionais (mesma convenção de /api/painel) pra
+// estender além dos últimos 30 dias — sem isso, o filtro de período da tela
+// só conseguia estreitar o que já tinha vindo nos últimos 30 dias.
 cronRouter.get('/painel-consolidado', async (req, res) => {
   try {
-    const resultado = await gerarPainelConsolidado();
+    const { dataInicio, dataFim } = resolverPeriodo(req.query);
+    const resultado = await gerarPainelConsolidado({ dataInicio, dataFim });
     res.json(resultado);
   } catch (err) {
     res.status(500).json({ status: 'erro', erro: err.message });

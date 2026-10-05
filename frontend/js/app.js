@@ -1039,14 +1039,22 @@ let consolidadoDirecaoAtiva = 'saida';
 let consolidadoCategoriaAtiva = null;
 
 // Só lê o que já está cacheado (nunca busca ao vivo na SIEG) — cruza todos
-// os clientes cadastrados de uma vez. A tabela é agrupada por cliente (não
-// por cliente+dia); o filtro de cliente/período de cima aplica em cima do
-// que já veio nessa chamada só, sem precisar buscar de novo.
-async function carregarConsolidado() {
+// os clientes cadastrados de uma vez. O filtro de cliente aplica em cima do
+// que já veio nessa chamada, sem precisar buscar de novo — mas o filtro de
+// período (de/ate) precisa de uma nova chamada: o servidor só devolve os
+// últimos 30 dias por padrão, então pedir um período mais antigo sem
+// rebuscar nunca mostraria nada de antes disso (era exatamente isso que
+// fazia dias fora da janela de 30 dias nunca aparecerem, não importa o que
+// fosse digitado no filtro).
+async function carregarConsolidado(dataInicio, dataFim) {
   consolidadoCarregado = true;
   els.consolidadoResultado.innerHTML = '<p class="hint">Carregando...</p>';
   try {
-    const resultado = await apiGet('/api/cron/painel-consolidado');
+    const params = new URLSearchParams();
+    if (dataInicio) params.set('inicio', dataInicio);
+    if (dataFim) params.set('fim', dataFim);
+    const qs = params.toString();
+    const resultado = await apiGet(`/api/cron/painel-consolidado${qs ? `?${qs}` : ''}`);
     ultimoConsolidado = resultado;
     if (resultado.status === 'ignorado') {
       els.consolidadoResultado.innerHTML = `<p class="hint">${resultado.motivo}</p>`;
@@ -2450,9 +2458,12 @@ async function init() {
     if (evento.target === els.docModalOverlay) fecharModal();
   });
   els.consolidadoFiltroCliente.addEventListener('change', renderConsolidadoTabela);
-  els.consolidadoFiltroDe.addEventListener('change', renderConsolidadoTabela);
-  els.consolidadoFiltroAte.addEventListener('change', renderConsolidadoTabela);
-  els.btnFiltrarConsolidado.addEventListener('click', renderConsolidadoTabela);
+  // De/Até precisam rebuscar no servidor (não só re-filtrar em memória) —
+  // ver o comentário em carregarConsolidado().
+  const recarregarConsolidadoComFiltro = () => carregarConsolidado(els.consolidadoFiltroDe.value, els.consolidadoFiltroAte.value);
+  els.consolidadoFiltroDe.addEventListener('change', recarregarConsolidadoComFiltro);
+  els.consolidadoFiltroAte.addEventListener('change', recarregarConsolidadoComFiltro);
+  els.btnFiltrarConsolidado.addEventListener('click', recarregarConsolidadoComFiltro);
   els.consolidadoCardTodos.addEventListener('click', () => aplicarFiltroCategoriaConsolidado(null));
   els.consolidadoCardConforme.addEventListener('click', () => aplicarFiltroCategoriaConsolidado('conforme'));
   els.consolidadoCardParcial.addEventListener('click', () => aplicarFiltroCategoriaConsolidado('parcial'));
