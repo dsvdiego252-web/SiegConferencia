@@ -1,8 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabase, supabaseDisponivel as relatorioDisponivel } from './supabaseClient.js';
 import { classificarMercadoria } from '../tax-engine/goods-engine/classificarMercadoria.js';
-
-const relatorioDisponivel = Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SECRET_KEY);
-const supabase = relatorioDisponivel ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY) : null;
 
 // Mesmos "origem" de baixa confiança usados no frontend (app.js,
 // tagConfiancaClassificacao) — aqui servem pra decidir quais NCMs entram no

@@ -1,7 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createClient } from '@supabase/supabase-js';
+import { supabase, supabaseDisponivel as usarSupabase } from './supabaseClient.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CLIENTS_FILE = path.join(__dirname, '..', 'data', 'clients.json');
@@ -12,10 +12,6 @@ const CLIENTS_FILE = path.join(__dirname, '..', 'data', 'clients.json');
 // a lista de clientes numa tabela do Supabase; sem isso (dev local), cai de
 // volta pro arquivo JSON. A secret key é usada porque esse client roda só
 // no backend (nunca chega ao navegador) e a tabela não tem RLS habilitado.
-const usarSupabase = Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SECRET_KEY);
-const supabase = usarSupabase
-  ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY)
-  : null;
 
 export const REGIMES_TRIBUTARIOS = ['simples_nacional', 'mei', 'lucro_presumido', 'lucro_real'];
 

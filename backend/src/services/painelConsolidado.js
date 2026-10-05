@@ -1,11 +1,9 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from './supabaseClient.js';
 import { listarClientes, obterCliente } from './clientsStore.js';
 import { linhaParaDocumento, cacheDocumentosDisponivel } from './documentCache.js';
 import { classificarOperacao } from './xmlParser.js';
 import { analisarConformidadeReforma, resolverDataCorteReforma } from './reformaTributariaAnalyzer.js';
 import { montarPainelDeClassificados } from './painelBuilder.js';
-
-const supabase = cacheDocumentosDisponivel ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY) : null;
 
 // Não é "os últimos 7 dias têm que estar 100% sincronizados" (like a
 // primeira versão deste relatório tentava) — isso quase nunca acontece na

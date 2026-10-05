@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from './supabaseClient.js';
 import { listarClientes } from './clientsStore.js';
 import { linhaParaDocumento, cacheDocumentosDisponivel } from './documentCache.js';
 import { resolverDataCorteReforma } from './reformaTributariaAnalyzer.js';
@@ -6,8 +6,6 @@ import { classificarOperacao } from './xmlParser.js';
 import { validarDocumento } from '../tax-engine/math-validation/mathValidator.js';
 import { validarReformaDocumento } from '../tax-engine/rtc-xml-validator/validarReformaXml.js';
 import { conferirIcmsDocumento } from '../tax-engine/icms-engine/conferirIcms.js';
-
-const supabase = cacheDocumentosDisponivel ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY) : null;
 
 const TAMANHO_PAGINA = 1000;
 

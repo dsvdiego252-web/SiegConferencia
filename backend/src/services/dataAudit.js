@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabase, supabaseDisponivel as auditoriaDisponivel } from './supabaseClient.js';
 
 // Canário contra a classe de bug que já pegou NCM (commit 82cd50c) e CNPJ
 // (commit a605a66): o fast-xml-parser converte o conteúdo de uma tag pra
@@ -6,8 +6,6 @@ import { createClient } from '@supabase/supabase-js';
 // tem 14 dígitos e NCM sempre tem 8. Qualquer linha com tamanho diferente
 // desses é, por definição, um valor corrompido (nunca um CNPJ/NCM válido
 // mais curto por natureza), então dá pra detectar sem falso positivo.
-const auditoriaDisponivel = Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SECRET_KEY);
-const supabase = auditoriaDisponivel ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY) : null;
 
 // O Supabase (PostgREST) limita cada resposta a 1000 linhas por padrão —
 // mesmo bug que já cortou documentos cacheados silenciosamente em outro

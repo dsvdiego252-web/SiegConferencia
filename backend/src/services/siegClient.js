@@ -2,13 +2,8 @@ import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import AdmZip from 'adm-zip';
-import { createClient } from '@supabase/supabase-js';
+import { supabase, supabaseDisponivel as cacheDisponivel } from './supabaseClient.js';
 import { config, assertSiegConfigured } from '../config.js';
-
-// Mesmo padrão usado em painelCache.js/clientsStore.js: sem Supabase
-// configurado (dev local), fica indisponível e cai no limitador em memória.
-const cacheDisponivel = Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SECRET_KEY);
-const supabase = cacheDisponivel ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY) : null;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = path.join(__dirname, '..', 'data', 'fixtures');

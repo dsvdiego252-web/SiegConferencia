@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabase, supabaseDisponivel } from './supabaseClient.js';
 
 // A busca completa na SIEG pode precisar de mais tempo do que uma função
 // aguenta rodar de uma vez na Vercel (rate limit real de 2 req/min pra
@@ -8,8 +8,7 @@ import { createClient } from '@supabase/supabase-js';
 // requisições — cada nova chamada a /api/painel retoma de onde parou.
 // Sem Supabase configurado (dev local), esse cache fica indisponível e o
 // painel busca tudo de forma síncrona.
-export const cacheDisponivel = Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SECRET_KEY);
-const supabase = cacheDisponivel ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY) : null;
+export const cacheDisponivel = supabaseDisponivel;
 
 const TTL_MS = 10 * 60 * 1000; // considera um resultado "pronto" desatualizado depois disso
 

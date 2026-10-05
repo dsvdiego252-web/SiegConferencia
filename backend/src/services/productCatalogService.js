@@ -1,8 +1,6 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from './supabaseClient.js';
 import { linhaParaDocumento, cacheDocumentosDisponivel } from './documentCache.js';
 import { classificarOperacao } from './xmlParser.js';
-
-const supabase = cacheDocumentosDisponivel ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY) : null;
 
 const TAMANHO_PAGINA = 1000;
 

@@ -1,12 +1,11 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabase, supabaseDisponivel } from './supabaseClient.js';
 
 // Cache permanente de documentos por chave de acesso — ao contrário do
 // painel_cache (resultado de uma busca específica, expira em 10min), este
 // guarda o documento em si pra sempre, deduplicado por chave. Sem Supabase
 // configurado (dev local), fica desligado e todo combo é buscado ao vivo,
 // como sempre foi.
-export const cacheDocumentosDisponivel = Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SECRET_KEY);
-const supabase = cacheDocumentosDisponivel ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY) : null;
+export const cacheDocumentosDisponivel = supabaseDisponivel;
 
 // O cancelamento de NFe/NFCe tem prazo real de 24h a partir da emissão. Uma
 // nota emitida às 23h59 de um dia só pode ser cancelada até 23h59 do dia
