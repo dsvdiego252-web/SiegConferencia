@@ -128,11 +128,20 @@ export async function buscarCombo(combo, { clienteCnpj, dataInicio, dataFim, ski
 
   // Idempotente por chave — gravar de novo numa tentativa seguinte (ex.:
   // depois de um erro transitório na página anterior) não duplica nada.
+  //
+  // Uma falha aqui precisa impedir o combo de avançar: ela nunca pode
+  // chegar em marcarDiasSincronizados logo abaixo sem esta página ter sido
+  // gravada de verdade. Como os dias "estáveis" nunca mais são
+  // reconsultados (ver diaEstavel em documentCache.js), marcar o dia como
+  // sincronizado com uma página perdida apaga documentos de verdade do
+  // resultado pra sempre, sem deixar rastro.
   if (docsAoVivo.length) {
     try {
       await upsertDocumentosCacheados(docsAoVivo);
     } catch (erroUpsert) {
-      console.error('Falha ao gravar página de documentos no cache permanente:', erroUpsert.message);
+      const erro = new Error(`Falha ao gravar página de documentos no cache permanente: ${erroUpsert.message}`);
+      erro.transitorio = true;
+      throw erro;
     }
   }
 
