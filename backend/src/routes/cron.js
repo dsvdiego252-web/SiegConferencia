@@ -10,6 +10,8 @@ import { gerarPainelConsolidado, buscarDocumentosConsolidado } from '../services
 import { auditarMotorTributario } from '../services/motorTributarioAudit.js';
 import { gerarCadastroProdutos } from '../services/productCatalogService.js';
 import { resolverPeriodo } from '../services/dateUtils.js';
+import { processarUmPasso } from '../services/painelSearchService.js';
+import { cacheDisponivel as painelCacheDisponivel, lerCache, marcarProcessamentoEmFundo, MAX_TENTATIVAS_FUNDO, salvarErro as salvarErroPainel } from '../services/painelCache.js';
 
 export const cronRouter = Router();
 
@@ -23,10 +25,24 @@ const ORCAMENTO_MS = 45_000;
 // marcada com erro, em vez de ficar chamando a si mesma pra sempre.
 const MAX_INVOCACOES_ENCADEADAS = 300;
 
-// Uma trava "rodando" que nunca terminou (ex.: a função caiu no meio) fica
-// abandonada depois desse tempo, liberando uma nova rodada em vez de travar
-// pra sempre.
-const TRAVA_ABANDONADA_MS = 6 * 60 * 60 * 1000;
+// Uma trava "rodando" que nunca terminou (ex.: a função caiu no meio, ou a
+// chamada encadeada falhou em sair) fica abandonada depois desse tempo sem
+// NENHUMA atualização (ver atualizado_em, não iniciado_em, abaixo), liberando
+// uma nova rodada em vez de travar pra sempre.
+//
+// Esse valor costumava ser 6 horas E comparado contra `iniciado_em` (o
+// início da rodada, não a última atualização) — ou seja, mesmo uma rodada
+// saudável, avançando normalmente a cada invocação encadeada (a cada
+// 15min, pelo cron da Vercel, ou mais rápido via waitUntil), era destruída
+// e reiniciada do zero assim que completasse 6h de idade, mesmo sem nunca
+// ter travado de verdade. Como a janela noturna inteira (22h–6h) tem só
+// 8h, isso fazia a rodada da noite ser jogada fora perto do fim, sobrando
+// só ~2h de trabalho de verdade antes da janela fechar — explicava
+// clientes de alto volume nunca conseguirem ficar em dia sozinhos. Agora
+// mede contra a última atualização de verdade (atualizado_em), que uma
+// rodada saudável refresca a cada invocação — só uma rodada REALMENTE
+// parada (sem nenhum progresso) por esse tempo é considerada abandonada.
+const TRAVA_ABANDONADA_MS = 15 * 60 * 1000;
 
 function diaOffset(offsetDias) {
   const data = new Date();
@@ -99,7 +115,7 @@ cronRouter.get('/sincronizar-noturno', async (req, res) => {
   const cursorGlobalAtual = estado?.cursor_global ?? 0;
 
   const rodadaAntigaAbandonada =
-    estado?.status === 'rodando' && estado.iniciado_em && Date.now() - new Date(estado.iniciado_em).getTime() > TRAVA_ABANDONADA_MS;
+    estado?.status === 'rodando' && estado.atualizado_em && Date.now() - new Date(estado.atualizado_em).getTime() > TRAVA_ABANDONADA_MS;
 
   const precisaComecarDeNovo = !estado || estado.status !== 'rodando' || estado.data_alvo !== dias[0] || rodadaAntigaAbandonada;
 
@@ -339,5 +355,79 @@ cronRouter.get('/cadastro-produtos', async (req, res) => {
     res.json(resultado);
   } catch (err) {
     res.status(500).json({ status: 'erro', erro: err.message });
+  }
+});
+
+// Continuação em segundo plano de uma busca do painel (ver
+// routes/painel.js:dispararContinuacaoEmSegundoPlano) que não coube numa
+// única requisição do navegador — avança um passo e, se ainda não
+// terminou, encadeia a si mesma de novo (mesmo padrão de
+// /sincronizar-noturno), sem depender de nenhum poll do navegador pra
+// continuar. Existe porque um cliente de alto volume pode precisar de bem
+// mais de uma hora de busca contínua (rate limit real da SIEG: 2
+// requisições/minuto) — tempo que nenhuma aba de navegador aguenta ficar
+// garantidamente ativa sem interrupção.
+//
+// Protegida por CRON_SECRET como as outras rotas de /api/cron (ver
+// ehChamadaDeCronValida em app.js) — não é pra ser chamada por ninguém
+// além da própria automação do projeto.
+cronRouter.get('/continuar-painel', async (req, res) => {
+  if (process.env.CRON_SECRET) {
+    const auth = req.headers.authorization || '';
+    if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
+      return res.status(401).json({ erro: 'Não autorizado.' });
+    }
+  }
+
+  const { cnpj, inicio: dataInicio, fim: dataFim, tipo } = req.query;
+  if (!cnpj || !dataInicio || !dataFim || !tipo) {
+    return res.status(400).json({ erro: 'Parâmetros obrigatórios: cnpj, inicio, fim, tipo.' });
+  }
+  if (!painelCacheDisponivel) {
+    return res.json({ status: 'ignorado', motivo: 'Supabase não configurado — cache do painel desligado.' });
+  }
+
+  try {
+    const cache = await lerCache(cnpj, dataInicio, dataFim, tipo);
+    // A busca já terminou (ou nunca existiu) nesse meio-tempo — nada a
+    // continuar. Não é erro: é só a continuação chegando depois do
+    // navegador já ter resolvido sozinho, ou de um reinício/forçar ter
+    // trocado a linha debaixo dela.
+    if (!cache || cache.status !== 'buscando') {
+      return res.json({ status: cache?.status || 'sem_cache' });
+    }
+
+    const tentativas = (cache.tentativas_fundo || 0) + 1;
+    if (tentativas > MAX_TENTATIVAS_FUNDO) {
+      const mensagem = `Continuação em segundo plano excedeu ${MAX_TENTATIVAS_FUNDO} tentativas sem terminar.`;
+      console.error(`Continuação em segundo plano do painel: ${mensagem} (${cnpj} ${dataInicio}-${dataFim} ${tipo})`);
+      await salvarErroPainel(cnpj, dataInicio, dataFim, tipo, mensagem);
+      return res.json({ status: 'erro', motivo: mensagem });
+    }
+    await marcarProcessamentoEmFundo(cnpj, dataInicio, dataFim, tipo, tentativas);
+
+    const resultado = await processarUmPasso(cnpj, dataInicio, dataFim, tipo);
+
+    if (resultado.tipo === 'buscando') {
+      const proximaUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}/continuar-painel?cnpj=${encodeURIComponent(cnpj)}&inicio=${encodeURIComponent(dataInicio)}&fim=${encodeURIComponent(dataFim)}&tipo=${encodeURIComponent(tipo)}`;
+      const headers = process.env.CRON_SECRET ? { Authorization: `Bearer ${process.env.CRON_SECRET}` } : {};
+      if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) headers['x-vercel-protection-bypass'] = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+      waitUntil(
+        fetch(proximaUrl, { headers }).catch((err) => {
+          console.error('Falha ao encadear a próxima continuação do painel:', err.message);
+        })
+      );
+    }
+
+    res.json({ status: resultado.tipo, tentativas });
+  } catch (err) {
+    console.error('Falha na continuação em segundo plano do painel:', err.message);
+    try {
+      await salvarErroPainel(cnpj, dataInicio, dataFim, tipo, err.message);
+    } catch (_) {
+      // Já logado acima — não deixa uma falha ao gravar o erro mascarar a
+      // falha original.
+    }
+    res.json({ status: 'erro', erro: err.message });
   }
 });

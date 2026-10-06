@@ -45,6 +45,8 @@ export async function reiniciarBusca(cnpj, dataInicio, dataFim, tipo, ignorarCac
     docs_parciais: [],
     combo_parcial: null,
     ignorar_cache_permanente: ignorarCachePermanente,
+    processando_em: null,
+    tentativas_fundo: 0,
     atualizado_em: new Date().toISOString(),
   };
   const { error } = await supabase.from('painel_cache').upsert(linha);
@@ -84,6 +86,8 @@ export async function salvarResultado(cnpj, dataInicio, dataFim, tipo, dados) {
       docs_parciais: [],
       combo_parcial: null,
       ignorar_cache_permanente: false,
+      processando_em: null,
+      tentativas_fundo: 0,
       atualizado_em: new Date().toISOString(),
     })
     .eq('cnpj', cnpj)
@@ -106,4 +110,35 @@ export async function salvarErro(cnpj, dataInicio, dataFim, tipo, mensagem) {
 
 export function estaExpirado(atualizadoEm) {
   return Date.now() - new Date(atualizadoEm).getTime() > TTL_MS;
+}
+
+// Janela em que um "processando_em" recente é considerado prova de que a
+// continuação em segundo plano (routes/cron.js:/continuar-painel) já está
+// ativa pra este cnpj/período/tipo — maior que ORCAMENTO_MS (45s, o teto de
+// um passo) pra dar folga, mas curta o bastante pra, se a cadeia realmente
+// morreu no meio (ex.: a função caiu), o próximo poll do navegador perceba
+// e dispare uma nova sem ficar esperando pra sempre.
+export const JANELA_PROCESSAMENTO_FUNDO_MS = 90_000;
+
+// Travessa de segurança contra um loop sem fim (ex.: bug que nunca deixa o
+// combo concluir) — nesse número de passos encadeados a continuação em
+// segundo plano desiste e marca erro, em vez de chamar a si mesma pra
+// sempre. Cada passo é até ORCAMENTO_MS (45s), então isso cobre até várias
+// horas de busca contínua — bem mais que qualquer cliente real precisa,
+// mesmo de altíssimo volume.
+export const MAX_TENTATIVAS_FUNDO = 500;
+
+// Marca que um passo da busca em segundo plano está prestes a rodar
+// (heartbeat) e devolve o número da tentativa — usado tanto pra alimentar
+// a checagem de "já tem uma continuação ativa" (ver painel.js) quanto pra
+// aplicar o teto acima.
+export async function marcarProcessamentoEmFundo(cnpj, dataInicio, dataFim, tipo, tentativas) {
+  const { error } = await supabase
+    .from('painel_cache')
+    .update({ processando_em: new Date().toISOString(), tentativas_fundo: tentativas })
+    .eq('cnpj', cnpj)
+    .eq('data_inicio', dataInicio)
+    .eq('data_fim', dataFim)
+    .eq('tipo', tipo);
+  if (error) throw new Error(`Falha ao marcar processamento em segundo plano no Supabase: ${error.message}`);
 }
