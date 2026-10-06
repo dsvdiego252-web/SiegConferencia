@@ -1,19 +1,7 @@
 import { fetchAllXmls, XmlType } from './siegClient.js';
 import { parseNfeBatch, classificarOperacao } from './xmlParser.js';
 import { estaDentroDoPeriodo } from './dateUtils.js';
-import { diasFaltantes, buscarDocumentosCacheados } from './documentCache.js';
-
-function proximoDiaIso(diaIso) {
-  const data = new Date(`${diaIso}T00:00:00Z`);
-  data.setUTCDate(data.getUTCDate() + 1);
-  return data.toISOString().slice(0, 10);
-}
-
-function diaAnteriorIso(diaIso) {
-  const data = new Date(`${diaIso}T00:00:00Z`);
-  data.setUTCDate(data.getUTCDate() - 1);
-  return data.toISOString().slice(0, 10);
-}
+import { diasFaltantes, buscarDocumentosCacheados, upsertDocumentosCacheados, marcarDiasSincronizados } from './documentCache.js';
 
 const TIPO_DOCUMENTO_POR_XMLTYPE = { [XmlType.NFE]: 'NFe', [XmlType.NFCE]: 'NFCe', [XmlType.NFSE]: 'NFSe' };
 
@@ -73,14 +61,26 @@ export function chaveCombo(combo) {
  * consertar um cliente cujo cache se suspeita incompleto (ex.: dados
  * cacheados por uma versão antiga da paginação, antes de uma correção).
  *
+ * Cada página buscada ao vivo é gravada no cache permanente assim que
+ * chega (upsertDocumentosCacheados), não só no fim do combo inteiro — pra
+ * um combo de alto volume (milhares de documentos), acumular tudo num
+ * parâmetro repassado de chamada em chamada (como era antes) fazia esse
+ * mesmo parâmetro crescer sem parar, até a própria gravação do progresso no
+ * Supabase (painel.js) estourar o tempo (statement timeout). Por isso quem
+ * chamou não precisa mais carregar `docs` entre chamadas — só `proximoSkip`/
+ * `gapInicio`/`gapFim` — e o resultado de um combo incompleto vem com
+ * `docs: []` (os documentos já estão salvos, não precisam viajar de volta).
+ *
  * Retorna { docs, completo, proximoSkip, gapInicio, gapFim }: `completo:
  * false` significa que ainda faltam páginas — quem chamou deve guardar
- * `proximoSkip`, `gapInicio` e `gapFim` e tentar de novo depois.
+ * `proximoSkip`, `gapInicio` e `gapFim` e tentar de novo depois. Quando
+ * `completo: true`, `docs` vem completo (lido de volta do cache permanente,
+ * que acabou de ficar com tudo), pronto pra classificar.
  */
 export async function buscarCombo(combo, { clienteCnpj, dataInicio, dataFim, skipInicial, prazoFinal, gapInicio, gapFim, ignorarCache }) {
   let faixaInicio = gapInicio ?? dataInicio;
   let faixaFim = gapFim ?? dataFim;
-  let docsCache = [];
+  const tipoDocumento = TIPO_DOCUMENTO_POR_XMLTYPE[combo.xmlType];
 
   // Só faz sentido calcular a faixa que falta no início do combo (skipInicial
   // 0) — uma busca retomada no meio de uma paginação já está usando a faixa
@@ -100,33 +100,18 @@ export async function buscarCombo(combo, { clienteCnpj, dataInicio, dataFim, ski
     // passageiras: salva o progresso já feito e tenta ler o cache de novo
     // no próximo poll.
     try {
-      const tipoDocumento = TIPO_DOCUMENTO_POR_XMLTYPE[combo.xmlType];
       const faltando = await diasFaltantes(clienteCnpj, combo.xmlType, combo.direcao, dataInicio, dataFim);
       if (!faltando.length) {
         const docs = await buscarDocumentosCacheados(clienteCnpj, combo.direcao, dataInicio, dataFim, tipoDocumento, prazoFinal);
         return { docs, completo: true, proximoSkip: 0, doCache: true, gapInicio: dataInicio, gapFim: dataFim };
       }
-
       faixaInicio = faltando[0];
       faixaFim = faltando[faltando.length - 1];
-
-      // O que sobra fora da faixa que falta (antes e/ou depois dela) já está
-      // cacheado de verdade — lê direto do Supabase, sem gastar cota da
-      // SIEG. Só essa leitura usa o orçamento de tempo (prazoFinal); a busca
-      // ao vivo que vem a seguir tem seu próprio controle de paginação.
-      if (faixaInicio > dataInicio) {
-        docsCache = await buscarDocumentosCacheados(clienteCnpj, combo.direcao, dataInicio, diaAnteriorIso(faixaInicio), tipoDocumento, prazoFinal);
-      }
-      if (faixaFim < dataFim) {
-        const docsDepois = await buscarDocumentosCacheados(clienteCnpj, combo.direcao, proximoDiaIso(faixaFim), dataFim, tipoDocumento, prazoFinal);
-        docsCache = mesclarDocumentos(docsCache, docsDepois);
-      }
     } catch (erroCache) {
       if (erroCache.transitorio) throw erroCache;
       console.error('Falha ao consultar cache permanente de documentos:', erroCache.message);
       faixaInicio = dataInicio;
       faixaFim = dataFim;
-      docsCache = [];
     }
   }
 
@@ -140,14 +125,47 @@ export async function buscarCombo(combo, { clienteCnpj, dataInicio, dataFim, ski
     prazoFinal,
   });
   const docsAoVivo = parseNfeBatch(resultado.xmls);
-  return {
-    docs: mesclarDocumentos(docsCache, docsAoVivo),
-    completo: resultado.completo,
-    proximoSkip: resultado.proximoSkip,
-    doCache: false,
-    gapInicio: faixaInicio,
-    gapFim: faixaFim,
-  };
+
+  // Idempotente por chave — gravar de novo numa tentativa seguinte (ex.:
+  // depois de um erro transitório na página anterior) não duplica nada.
+  if (docsAoVivo.length) {
+    try {
+      await upsertDocumentosCacheados(docsAoVivo);
+    } catch (erroUpsert) {
+      console.error('Falha ao gravar página de documentos no cache permanente:', erroUpsert.message);
+    }
+  }
+
+  if (!resultado.completo) {
+    // `docs` aqui é só a página desta chamada (não acumula com chamadas
+    // anteriores) — usada por quem chamou (painel.js) só pra feedback de
+    // progresso (ex.: "já chegou até tal data"), nunca persistida.
+    return { docs: docsAoVivo, completo: false, proximoSkip: resultado.proximoSkip, doCache: false, gapInicio: faixaInicio, gapFim: faixaFim };
+  }
+
+  // A faixa que faltava terminou de baixar — marca os dias como
+  // sincronizados e devolve o combo inteiro lendo de volta do cache
+  // permanente (que inclui tanto o que já estava cacheado antes quanto o
+  // que acabou de ser gravado), em vez de ter carregado tudo isso entre
+  // chamadas.
+  try {
+    await marcarDiasSincronizados(clienteCnpj, combo.xmlType, combo.direcao, faixaInicio, faixaFim);
+  } catch (erroMarcar) {
+    console.error('Falha ao marcar dias sincronizados no cache permanente:', erroMarcar.message);
+  }
+
+  let docs;
+  try {
+    docs = await buscarDocumentosCacheados(clienteCnpj, combo.direcao, dataInicio, dataFim, tipoDocumento, prazoFinal);
+  } catch (erroRelerCache) {
+    // Não deveria falhar logo depois de gravar, mas por segurança: se a
+    // releitura falhar, ainda devolve ao menos os documentos desta última
+    // página (já gravados) em vez de perder o combo inteiro.
+    console.error('Falha ao reler cache permanente após concluir combo:', erroRelerCache.message);
+    docs = docsAoVivo;
+  }
+
+  return { docs, completo: true, proximoSkip: 0, doCache: false, gapInicio: dataInicio, gapFim: dataFim };
 }
 
 /** Junta duas listas de documentos já parseados, sem duplicar por chave de acesso. */

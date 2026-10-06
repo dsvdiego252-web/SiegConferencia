@@ -199,55 +199,75 @@ export async function buscarDocumentosCacheados(cnpjCliente, direcao, dataInicio
 }
 
 /**
- * Grava os documentos de um combo recém-concluído no cache permanente e
- * marca como sincronizados os dias do período que já passaram da janela de
- * estabilidade. Chamar só quando o combo terminou de verdade (todas as
- * páginas), com a lista completa de documentos do combo (não só a última
- * página) — quem chama (painel.js) já mescla isso antes.
+ * Grava documentos no cache permanente, deduplicado por chave — idempotente
+ * (gravar o mesmo documento de novo não duplica nada), então pode ser
+ * chamada incrementalmente, página a página, em vez de só uma vez no fim de
+ * um combo inteiro. Importante pra combo de alto volume (milhares de
+ * documentos): esperar o combo inteiro terminar pra gravar tudo de uma vez
+ * fazia o UPSERT de uma chamada só crescer demais e estourar o tempo
+ * (statement timeout do Postgres) — gravar aos poucos mantém cada chamada
+ * pequena e rápida, não importa o tamanho do combo inteiro.
  */
-export async function registrarSincronizacao(cnpjCliente, xmlType, direcao, dataInicio, dataFim, docs) {
+export async function upsertDocumentosCacheados(docs) {
   if (!cacheDocumentosDisponivel) return;
-
   const comChave = docs.filter((doc) => doc.chave);
-  if (comChave.length) {
-    const linhas = comChave.map((doc) => ({
-      chave: doc.chave,
-      tipo_documento: doc.tipoDocumento,
-      numero: doc.numero,
-      serie: doc.serie,
-      data_emissao: doc.dataEmissao,
-      data_emissao_dia: String(doc.dataEmissao || '').slice(0, 10),
-      natureza_operacao: doc.naturezaOperacao,
-      cancelada: doc.cancelada,
-      emit_cnpj: doc.emitente.cnpj,
-      emit_nome: doc.emitente.nome,
-      dest_cnpj: doc.destinatario.cnpj || null,
-      dest_nome: doc.destinatario.nome || null,
-      valor_total: doc.valorTotal,
-      valor_icms_total: doc.valorIcmsTotal,
-      valor_produtos_total: doc.valorProdutosTotal,
-      valor_pis_total: doc.valorPisTotal || 0,
-      valor_cofins_total: doc.valorCofinsTotal || 0,
-      versao_parser: doc.versaoParser ?? null,
-      itens: doc.itens,
-      atualizado_em: new Date().toISOString(),
-    }));
-    const { error } = await supabase.from('documentos_fiscais').upsert(linhas);
-    if (error) throw new Error(`Falha ao gravar documentos no cache do Supabase: ${error.message}`);
-  }
+  if (!comChave.length) return;
 
-  // Marca todo dia do período (menos "hoje", que nunca deve ser
-  // considerado cacheado) com o horário desta sincronização — dias já
-  // estáveis ficam cacheados pra sempre (diaEstavel cobre isso sozinho,
-  // independente da idade do registro); dias recentes ficam cacheados só
-  // durante a janela provisória, e são resincronizados de novo depois disso
-  // (pela sincronização noturna, ou pelo próprio uso do painel).
+  const linhas = comChave.map((doc) => ({
+    chave: doc.chave,
+    tipo_documento: doc.tipoDocumento,
+    numero: doc.numero,
+    serie: doc.serie,
+    data_emissao: doc.dataEmissao,
+    data_emissao_dia: String(doc.dataEmissao || '').slice(0, 10),
+    natureza_operacao: doc.naturezaOperacao,
+    cancelada: doc.cancelada,
+    emit_cnpj: doc.emitente.cnpj,
+    emit_nome: doc.emitente.nome,
+    dest_cnpj: doc.destinatario.cnpj || null,
+    dest_nome: doc.destinatario.nome || null,
+    valor_total: doc.valorTotal,
+    valor_icms_total: doc.valorIcmsTotal,
+    valor_produtos_total: doc.valorProdutosTotal,
+    valor_pis_total: doc.valorPisTotal || 0,
+    valor_cofins_total: doc.valorCofinsTotal || 0,
+    versao_parser: doc.versaoParser ?? null,
+    itens: doc.itens,
+    atualizado_em: new Date().toISOString(),
+  }));
+  const { error } = await supabase.from('documentos_fiscais').upsert(linhas);
+  if (error) throw new Error(`Falha ao gravar documentos no cache do Supabase: ${error.message}`);
+}
+
+/**
+ * Marca como sincronizados os dias do período (menos "hoje", que nunca deve
+ * ser considerado cacheado) — chamar só quando o combo terminou de verdade
+ * (todas as páginas já gravadas via upsertDocumentosCacheados), nunca no
+ * meio de uma paginação incompleta. Dias já estáveis ficam cacheados pra
+ * sempre (diaEstavel cobre isso sozinho, independente da idade do
+ * registro); dias recentes ficam cacheados só durante a janela provisória,
+ * e são resincronizados de novo depois disso (pela sincronização noturna,
+ * ou pelo próprio uso do painel).
+ */
+export async function marcarDiasSincronizados(cnpjCliente, xmlType, direcao, dataInicio, dataFim) {
+  if (!cacheDocumentosDisponivel) return;
   const hoje = hojeStr();
   const dias = listarDias(dataInicio, dataFim).filter((dia) => dia !== hoje);
-  if (dias.length) {
-    const agora = new Date().toISOString();
-    const linhasDias = dias.map((dia) => ({ cnpj_cliente: cnpjCliente, xml_type: xmlType, direcao, dia, sincronizado_em: agora }));
-    const { error } = await supabase.from('sieg_sync_dias').upsert(linhasDias);
-    if (error) throw new Error(`Falha ao gravar cobertura de sincronização no Supabase: ${error.message}`);
-  }
+  if (!dias.length) return;
+
+  const agora = new Date().toISOString();
+  const linhasDias = dias.map((dia) => ({ cnpj_cliente: cnpjCliente, xml_type: xmlType, direcao, dia, sincronizado_em: agora }));
+  const { error } = await supabase.from('sieg_sync_dias').upsert(linhasDias);
+  if (error) throw new Error(`Falha ao gravar cobertura de sincronização no Supabase: ${error.message}`);
+}
+
+/**
+ * Grava os documentos de um combo recém-concluído no cache permanente e
+ * marca os dias do período como sincronizados, tudo de uma vez — usada
+ * pela sincronização noturna (cron.js), onde cada combo é só um dia (nunca
+ * alto volume o bastante pra precisar da gravação incremental acima).
+ */
+export async function registrarSincronizacao(cnpjCliente, xmlType, direcao, dataInicio, dataFim, docs) {
+  await upsertDocumentosCacheados(docs);
+  await marcarDiasSincronizados(cnpjCliente, xmlType, direcao, dataInicio, dataFim);
 }

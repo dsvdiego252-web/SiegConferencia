@@ -12,7 +12,6 @@ import { resolverDataCorteReforma } from '../services/reformaTributariaAnalyzer.
 import { XmlType } from '../services/siegClient.js';
 import { obterCliente } from '../services/clientsStore.js';
 import { cacheDisponivel, lerCache, reiniciarBusca, salvarProgresso, salvarResultado, salvarErro, estaExpirado } from '../services/painelCache.js';
-import { registrarSincronizacao } from '../services/documentCache.js';
 import { montarPainelDeClassificados } from '../services/painelBuilder.js';
 
 export const painelRouter = Router();
@@ -111,6 +110,12 @@ painelRouter.get('/', async (req, res) => {
     let docsAcumulados = cache.docs_parciais || [];
     let comboParcial = cache.combo_parcial || null;
     const prazoFinal = Date.now() + ORCAMENTO_MS;
+    // Só a página mais recente buscada ao vivo (não acumula entre chamadas)
+    // — usada apenas pra feedback de progresso ("já chegou até tal data"),
+    // nunca persistida no painel_cache. Ver buscarCombo em
+    // documentsService.js: cada página já é gravada no cache permanente
+    // assim que chega, então não precisa viajar de volta aqui.
+    let docsUltimaPagina = [];
 
     try {
       for (const combo of combos) {
@@ -120,7 +125,6 @@ painelRouter.get('/', async (req, res) => {
 
         const emAndamento = comboParcial && comboParcial.chave === chave;
         const skipInicial = emAndamento ? comboParcial.proximoSkip : 0;
-        const docsJaDoCombo = emAndamento ? comboParcial.docs : [];
         const gapInicio = emAndamento ? comboParcial.gapInicio : undefined;
         const gapFim = emAndamento ? comboParcial.gapFim : undefined;
 
@@ -134,32 +138,14 @@ painelRouter.get('/', async (req, res) => {
           gapFim,
           ignorarCache: Boolean(cache.ignorar_cache_permanente),
         });
-        const docsDoComboAtualizados = mesclarDocumentos(docsJaDoCombo, resultado.docs);
 
         if (resultado.completo) {
-          docsAcumulados = mesclarDocumentos(docsAcumulados, docsDoComboAtualizados);
+          docsAcumulados = mesclarDocumentos(docsAcumulados, resultado.docs);
           combosConcluidos.add(chave);
-          // Só grava no cache permanente o que realmente veio da SIEG agora
-          // — reescrever o que acabou de vir do próprio cache é trabalho à
-          // toa. Usa a faixa que realmente foi buscada ao vivo (gapInicio/
-          // gapFim — pode ser menor que o período inteiro pedido, ver
-          // buscarCombo), não o período inteiro: marcar como "sincronizado
-          // agora" um dia que nem foi tocado nesta busca (porque já estava
-          // cacheado) seria certificar uma frescura que não foi checada de
-          // verdade. Falha ao gravar não pode derrubar a busca (os
-          // documentos já buscados nesta requisição continuam válidos de
-          // qualquer forma) — só registra e segue, tenta gravar de novo na
-          // próxima vez que esse período for buscado.
-          if (!resultado.doCache) {
-            try {
-              await registrarSincronizacao(cnpj, combo.xmlType, combo.direcao, resultado.gapInicio ?? dataInicio, resultado.gapFim ?? dataFim, docsDoComboAtualizados);
-            } catch (erroCache) {
-              console.error('Falha ao gravar cache permanente de documentos:', erroCache.message);
-            }
-          }
           comboParcial = null;
         } else {
-          comboParcial = { chave, proximoSkip: resultado.proximoSkip, docs: docsDoComboAtualizados, gapInicio: resultado.gapInicio, gapFim: resultado.gapFim };
+          comboParcial = { chave, proximoSkip: resultado.proximoSkip, gapInicio: resultado.gapInicio, gapFim: resultado.gapFim };
+          docsUltimaPagina = resultado.docs;
           break;
         }
       }
@@ -177,7 +163,7 @@ painelRouter.get('/', async (req, res) => {
           status: 'buscando',
           periodo: { dataInicio, dataFim },
           progresso: `${combosConcluidos.size}/${combos.length}`,
-          documentosNoComboAtual: comboParcial?.docs?.length || 0,
+          documentosNoComboAtual: comboParcial?.proximoSkip || 0,
           avisoTransitorio: err.message,
         });
       }
@@ -192,8 +178,7 @@ painelRouter.get('/', async (req, res) => {
       // Supabase) não pode jogar fora uma busca que já terminou de verdade —
       // só loga e segue; o pior caso é essa mesma busca ser refeita do zero
       // na próxima vez (cache de 10min não vigorou), não perder o resultado
-      // que o usuário está vendo agora. Mesmo espírito do try/catch em volta
-      // de registrarSincronizacao logo acima.
+      // que o usuário está vendo agora.
       try {
         await salvarResultado(cnpj, dataInicio, dataFim, tipo, dados);
       } catch (erroCache) {
@@ -211,7 +196,6 @@ painelRouter.get('/', async (req, res) => {
       // SIEG, mas não trava a busca inteira).
       console.error('Falha ao gravar progresso do painel no Supabase:', erroCache.message);
     }
-    const documentosNoComboAtual = comboParcial?.docs?.length || 0;
     return res.json({
       status: 'buscando',
       periodo: { dataInicio, dataFim },
@@ -219,9 +203,10 @@ painelRouter.get('/', async (req, res) => {
       // Um combo sozinho pode ter muitas páginas quando o cliente tem
       // bastante volume (ex.: muitas vendas NFCe) — sem isso, o contador de
       // combos concluídos fica parado em "0/2" por bastante tempo mesmo com
-      // a busca avançando de verdade, página a página.
-      documentosNoComboAtual,
-      dataMaisRecenteBaixada: comboParcial ? maiorDataEmissao(comboParcial.docs) : null,
+      // a busca avançando de verdade, página a página. proximoSkip é
+      // literalmente quantos documentos desse combo já foram baixados.
+      documentosNoComboAtual: comboParcial?.proximoSkip || 0,
+      dataMaisRecenteBaixada: maiorDataEmissao(docsUltimaPagina),
     });
   } catch (err) {
     res.status(400).json({ erro: err.message });
