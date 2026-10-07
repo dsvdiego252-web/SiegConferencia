@@ -91,9 +91,17 @@ export function montarPainelDeClassificados(classificados, dataCorteReforma, reg
 
   const docsSaida = classificados.filter((c) => c.operacao === 'saida').map((c) => c.doc);
 
+  // Documento cancelado não é uma venda/compra de verdade — nunca deveria
+  // entrar no total de valor/ICMS/PIS/COFINS, mesmo continuando listado em
+  // "Documentos integrados" (com a situação "cancelada" sinalizada) pra
+  // conferência. Sem esse filtro, uma nota cancelada na SEFAZ depois de já
+  // cacheada inflava os totais mostrados em relação ao que a própria SIEG
+  // soma (ela já exclui canceladas das vendas), sem nenhum sinal visível
+  // de que a diferença vinha daí.
   const valores = { entrada: { valor: 0, icms: 0, pis: 0, cofins: 0 }, saida: { valor: 0, icms: 0, pis: 0, cofins: 0 } };
   for (const { doc, operacao } of classificados) {
     if (operacao !== 'entrada' && operacao !== 'saida') continue;
+    if (doc.cancelada) continue;
     valores[operacao].valor += doc.valorTotal;
     valores[operacao].icms += doc.valorIcmsTotal;
     for (const item of doc.itens) {
