@@ -1,3 +1,4 @@
+import { gzipSync, gunzipSync } from 'node:zlib';
 import { supabase, supabaseDisponivel, supabaseEscritaGrande } from './supabaseClient.js';
 
 // A busca completa na SIEG pode precisar de mais tempo do que uma função
@@ -12,6 +13,26 @@ export const cacheDisponivel = supabaseDisponivel;
 
 const TTL_MS = 10 * 60 * 1000; // considera um resultado "pronto" desatualizado depois disso
 
+// O resultado de um cliente de alto volume (itens de cada documento do
+// período inteiro + o resultado dos 4 motores tributários por documento)
+// pode passar de vários MB de JSON — gravado comprimido em
+// `dados_comprimido` (ver salvarResultado) em vez de na coluna `dados`
+// (jsonb) direto, porque mesmo com um timeout generoso o payload cru é
+// grande demais pra sempre caber no tempo disponível de uma invocação.
+// Descomprime aqui, de volta pra `linha.dados` como objeto normal, pra
+// quem lê o cache (painel.js, cron.js) nunca precisar saber que existe
+// compressão por trás — só mexe nisso quem grava/lê, não quem consome.
+function descomprimirLinha(linha) {
+  if (!linha || !linha.dados_comprimido) return linha;
+  try {
+    const json = gunzipSync(Buffer.from(linha.dados_comprimido, 'base64')).toString('utf-8');
+    linha.dados = JSON.parse(json);
+  } catch (err) {
+    console.error('Falha ao descomprimir dados do cache do painel:', err.message);
+  }
+  return linha;
+}
+
 export async function lerCache(cnpj, dataInicio, dataFim, tipo) {
   const { data, error } = await supabase
     .from('painel_cache')
@@ -22,7 +43,7 @@ export async function lerCache(cnpj, dataInicio, dataFim, tipo) {
     .eq('tipo', tipo)
     .maybeSingle();
   if (error) throw new Error(`Falha ao ler cache do painel no Supabase: ${error.message}`);
-  return data;
+  return descomprimirLinha(data);
 }
 
 // ignorarCachePermanente: true quando veio de "Forçar atualização" — fica
@@ -40,6 +61,7 @@ export async function reiniciarBusca(cnpj, dataInicio, dataFim, tipo, ignorarCac
     tipo,
     status: 'buscando',
     dados: null,
+    dados_comprimido: null,
     erro_mensagem: null,
     combos_concluidos: [],
     docs_parciais: [],
@@ -75,27 +97,37 @@ export async function salvarProgresso(cnpj, dataInicio, dataFim, tipo, combosCon
   if (error) throw new Error(`Falha ao salvar progresso da busca no Supabase: ${error.message}`);
 }
 
-// Grava com o cliente de timeout maior (ver supabaseClient.js) — o `dados`
-// aqui inclui os itens de cada documento do período inteiro, podendo passar
-// de 1-2MB de JSON pra um cliente de alto volume, e os 20s do timeout
-// padrão nem sempre bastam (confirmado em produção: a busca de um cliente
-// de ~3100 documentos terminava de verdade mas falhava só nesta gravação,
-// nunca deixando o cache ficar 'pronto' — cada tentativa seguinte refazia
-// tudo de novo do zero achando que ainda faltava).
+// O `dados` aqui inclui os itens de cada documento do período inteiro (o
+// motor tributário roda 4 conferências por documento) — pra um cliente de
+// alto volume isso passa fácil de vários MB de JSON cru, demais pra
+// transferir e gravar com confiança em qualquer timeout razoável. Gravado
+// comprimido (gzip + base64) em `dados_comprimido` em vez da coluna `dados`
+// (jsonb) direto — tipicamente reduz o tamanho real transferido em boa
+// margem, sem perder nenhum campo (ver descomprimirLinha, em lerCache
+// acima, pra quem lê de volta). Mesmo assim ainda usa o client de timeout
+// maior (ver supabaseClient.js) como segunda camada de proteção, caso o
+// comprimido em si ainda seja grande pra um cliente realmente enorme.
 //
-// `prazoFinal`, quando informado, limita esse timeout maior ao que
-// realmente resta até o corte dos 60s da Vercel (e não aos 40s cheios
-// sempre) — sem isso, um `prazoFinal` já quase esgotado (ex.: os combos
-// levaram quase o orçamento inteiro pra terminar) deixaria essa gravação
-// livre pra passar dos 60s reais e matar a função no meio, sem nem chance
-// do catch de quem chamou rodar.
+// Confirmado em produção: sem isso, a busca de um cliente de ~3100
+// documentos terminava de verdade mas falhava só nesta gravação (mesmo já
+// com um timeout maior), nunca deixando o cache ficar 'pronto' — cada
+// tentativa seguinte refazia os combos de novo achando que ainda faltava.
+//
+// `prazoFinal`, quando informado, limita o timeout maior ao que realmente
+// resta até o corte dos 60s da Vercel (e não aos 40s cheios sempre) — sem
+// isso, um `prazoFinal` já quase esgotado deixaria essa gravação livre pra
+// passar dos 60s reais e matar a função no meio, sem nem chance do catch
+// de quem chamou rodar.
 export async function salvarResultado(cnpj, dataInicio, dataFim, tipo, dados, prazoFinal) {
+  const dadosComprimido = gzipSync(JSON.stringify(dados)).toString('base64');
+
   const cliente = supabaseEscritaGrande || supabase;
   let query = cliente
     .from('painel_cache')
     .update({
       status: 'pronto',
-      dados,
+      dados: null,
+      dados_comprimido: dadosComprimido,
       erro_mensagem: null,
       combos_concluidos: [],
       docs_parciais: [],
