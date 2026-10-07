@@ -34,3 +34,29 @@ function fetchComTimeout(input, init) {
 export const supabase = supabaseDisponivel
   ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY, { global: { fetch: fetchComTimeout } })
   : null;
+
+// Teto maior, só pra gravações de payload grande conhecidas (hoje: o
+// resultado final do painel — painelCache.js:salvarResultado — que inclui
+// os itens de cada documento do período inteiro; pra um cliente de alto
+// volume isso passa fácil de 1-2MB de JSON, e os 20s do timeout padrão
+// acima não bastam sempre, gerando AbortError mesmo com a gravação tendo
+// ido bem o suficiente pra só precisar de mais alguns segundos). Nunca usar
+// pra uma chamada comum (leitura pequena, UPDATE de status) — ali o timeout
+// padrão continua sendo o certo: uma chamada pequena que trava de verdade
+// deve ser detectada rápido, não esperar quase o dobro à toa.
+const TIMEOUT_SUPABASE_ESCRITA_GRANDE_MS = 40_000;
+
+function fetchComTimeoutGrande(input, init) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_SUPABASE_ESCRITA_GRANDE_MS);
+  const sinalExterno = init?.signal;
+  if (sinalExterno) {
+    if (sinalExterno.aborted) controller.abort();
+    else sinalExterno.addEventListener('abort', () => controller.abort(), { once: true });
+  }
+  return fetch(input, { ...init, signal: controller.signal }).finally(() => clearTimeout(timeoutId));
+}
+
+export const supabaseEscritaGrande = supabaseDisponivel
+  ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY, { global: { fetch: fetchComTimeoutGrande } })
+  : null;

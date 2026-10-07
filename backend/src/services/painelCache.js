@@ -1,4 +1,4 @@
-import { supabase, supabaseDisponivel } from './supabaseClient.js';
+import { supabase, supabaseDisponivel, supabaseEscritaGrande } from './supabaseClient.js';
 
 // A busca completa na SIEG pode precisar de mais tempo do que uma função
 // aguenta rodar de uma vez na Vercel (rate limit real de 2 req/min pra
@@ -75,8 +75,23 @@ export async function salvarProgresso(cnpj, dataInicio, dataFim, tipo, combosCon
   if (error) throw new Error(`Falha ao salvar progresso da busca no Supabase: ${error.message}`);
 }
 
-export async function salvarResultado(cnpj, dataInicio, dataFim, tipo, dados) {
-  const { error } = await supabase
+// Grava com o cliente de timeout maior (ver supabaseClient.js) — o `dados`
+// aqui inclui os itens de cada documento do período inteiro, podendo passar
+// de 1-2MB de JSON pra um cliente de alto volume, e os 20s do timeout
+// padrão nem sempre bastam (confirmado em produção: a busca de um cliente
+// de ~3100 documentos terminava de verdade mas falhava só nesta gravação,
+// nunca deixando o cache ficar 'pronto' — cada tentativa seguinte refazia
+// tudo de novo do zero achando que ainda faltava).
+//
+// `prazoFinal`, quando informado, limita esse timeout maior ao que
+// realmente resta até o corte dos 60s da Vercel (e não aos 40s cheios
+// sempre) — sem isso, um `prazoFinal` já quase esgotado (ex.: os combos
+// levaram quase o orçamento inteiro pra terminar) deixaria essa gravação
+// livre pra passar dos 60s reais e matar a função no meio, sem nem chance
+// do catch de quem chamou rodar.
+export async function salvarResultado(cnpj, dataInicio, dataFim, tipo, dados, prazoFinal) {
+  const cliente = supabaseEscritaGrande || supabase;
+  let query = cliente
     .from('painel_cache')
     .update({
       status: 'pronto',
@@ -94,7 +109,26 @@ export async function salvarResultado(cnpj, dataInicio, dataFim, tipo, dados) {
     .eq('data_inicio', dataInicio)
     .eq('data_fim', dataFim)
     .eq('tipo', tipo);
-  if (error) throw new Error(`Falha ao salvar resultado no Supabase: ${error.message}`);
+
+  let timeoutId;
+  if (prazoFinal) {
+    // prazoFinal = início real da invocação + ORCAMENTO_MS (45s, ver
+    // painelSearchService.js) — o corte duro real da Vercel é 60s desde
+    // esse mesmo início, então os 15s de diferença são o que realmente
+    // ainda sobra além do prazoFinal.
+    const restanteAteCorteReal = prazoFinal + 15_000 - Date.now() - 2_000;
+    const timeoutMs = Math.max(1, Math.min(40_000, restanteAteCorteReal));
+    const controller = new AbortController();
+    timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    query = query.abortSignal(controller.signal);
+  }
+
+  try {
+    const { error } = await query;
+    if (error) throw new Error(`Falha ao salvar resultado no Supabase: ${error.message}`);
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+  }
 }
 
 export async function salvarErro(cnpj, dataInicio, dataFim, tipo, mensagem) {

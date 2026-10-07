@@ -151,7 +151,7 @@ export async function processarUmPasso(cnpj, dataInicio, dataFim, tipo, prazoFin
     const classificados = classificarDocumentos(docsAcumulados, cnpj, dataInicio, dataFim, tipos);
     const dados = montarPainelDeClassificados(classificados, dataCorteReforma, cliente?.regimeTributario, cliente?.atividade, cliente?.regimesEspeciais);
     try {
-      await salvarResultado(cnpj, dataInicio, dataFim, tipo, dados);
+      await salvarResultado(cnpj, dataInicio, dataFim, tipo, dados, prazoFinal);
     } catch (erroCache) {
       console.error('Falha ao gravar cache de resultado do painel:', erroCache.message);
     }
