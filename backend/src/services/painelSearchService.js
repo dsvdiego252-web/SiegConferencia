@@ -62,12 +62,23 @@ function maiorDataEmissao(docs) {
  * chama (a rota, ou a continuação) é responsável por reiniciar a busca
  * (reiniciarBusca) e tratar 'pronto'/'erro' antes de chegar aqui.
  *
+ * `prazoFinal` (opcional): quando quem chama já gastou algum tempo antes
+ * de chegar aqui (ex.: a continuação em segundo plano em cron.js lê o
+ * cache e grava o heartbeat antes de chamar isto), deve calcular o próprio
+ * prazo (Date.now() + ORCAMENTO_MS) ANTES desse trabalho e passá-lo pra cá
+ * — senão esse tempo gasto antes vira tempo "de graça" somado por cima do
+ * orçamento de 45s computado aqui, arriscando estourar os 60s reais da
+ * Vercel (Task timed out) e derrubar a função no meio, sem nem chegar a
+ * disparar a próxima chamada encadeada. Sem isso (uso direto da rota
+ * GET /api/painel, onde o trabalho antes daqui é desprezível), calcula um
+ * prazo novo.
+ *
  * Retorna um de:
  * - { tipo: 'pronto', cliente, dados }
  * - { tipo: 'erro', erro }
  * - { tipo: 'buscando', progresso, documentosNoComboAtual, dataMaisRecenteBaixada?, avisoTransitorio? }
  */
-export async function processarUmPasso(cnpj, dataInicio, dataFim, tipo) {
+export async function processarUmPasso(cnpj, dataInicio, dataFim, tipo, prazoFinal = Date.now() + ORCAMENTO_MS) {
   const cliente = await obterCliente(cnpj);
   const tipos = resolverTipos(tipo);
   const incluirEmitNfse = tipo !== 'todos' || Boolean(cliente?.atividade?.includes('servico'));
@@ -82,7 +93,6 @@ export async function processarUmPasso(cnpj, dataInicio, dataFim, tipo) {
   const combosConcluidos = new Set(cache.combos_concluidos || []);
   let docsAcumulados = cache.docs_parciais || [];
   let comboParcial = cache.combo_parcial || null;
-  const prazoFinal = Date.now() + ORCAMENTO_MS;
   // Só a página mais recente buscada ao vivo (não acumula entre chamadas)
   // — usada apenas pra feedback de progresso, nunca persistida.
   let docsUltimaPagina = [];

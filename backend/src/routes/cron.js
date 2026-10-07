@@ -10,7 +10,7 @@ import { gerarPainelConsolidado, buscarDocumentosConsolidado } from '../services
 import { auditarMotorTributario } from '../services/motorTributarioAudit.js';
 import { gerarCadastroProdutos } from '../services/productCatalogService.js';
 import { resolverPeriodo } from '../services/dateUtils.js';
-import { processarUmPasso } from '../services/painelSearchService.js';
+import { processarUmPasso, ORCAMENTO_MS as ORCAMENTO_MS_PAINEL } from '../services/painelSearchService.js';
 import { cacheDisponivel as painelCacheDisponivel, lerCache, marcarProcessamentoEmFundo, MAX_TENTATIVAS_FUNDO, salvarErro as salvarErroPainel } from '../services/painelCache.js';
 
 export const cronRouter = Router();
@@ -372,6 +372,15 @@ cronRouter.get('/cadastro-produtos', async (req, res) => {
 // ehChamadaDeCronValida em app.js) — não é pra ser chamada por ninguém
 // além da própria automação do projeto.
 cronRouter.get('/continuar-painel', async (req, res) => {
+  // Calculado JÁ AQUI, antes de qualquer trabalho (ler o cache, gravar o
+  // heartbeat) — ver o comentário de processarUmPasso em
+  // painelSearchService.js pro motivo: esse trabalho prévio precisa CONSUMIR
+  // o orçamento de 45s, não se somar a ele por cima, senão o total passa dos
+  // 60s reais da Vercel e a função morre no meio (Task timed out), sem nem
+  // chegar a disparar a próxima chamada encadeada — foi exatamente isso que
+  // interrompeu a primeira versão desta rota em produção.
+  const prazoFinal = Date.now() + ORCAMENTO_MS_PAINEL;
+
   if (process.env.CRON_SECRET) {
     const auth = req.headers.authorization || '';
     if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -406,7 +415,7 @@ cronRouter.get('/continuar-painel', async (req, res) => {
     }
     await marcarProcessamentoEmFundo(cnpj, dataInicio, dataFim, tipo, tentativas);
 
-    const resultado = await processarUmPasso(cnpj, dataInicio, dataFim, tipo);
+    const resultado = await processarUmPasso(cnpj, dataInicio, dataFim, tipo, prazoFinal);
 
     if (resultado.tipo === 'buscando') {
       const proximaUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}/continuar-painel?cnpj=${encodeURIComponent(cnpj)}&inicio=${encodeURIComponent(dataInicio)}&fim=${encodeURIComponent(dataFim)}&tipo=${encodeURIComponent(tipo)}`;
