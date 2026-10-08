@@ -72,7 +72,20 @@ async function aguardarSlotDownloadPersistente(prazoFinal) {
       .select('ultima_chamada')
       .eq('chave', 'baixar_xmls')
       .maybeSingle();
-    if (error) throw new Error(`Falha ao ler controle de rate limit da SIEG no Supabase: ${error.message}`);
+    if (error) {
+      // Uma falha aqui (ex.: instabilidade pontual de rede entre a função,
+      // nos EUA, e o Supabase, em São Paulo — a mesma latência cross-region
+      // que motivou os timeouts protegidos em outros lugares) não é um
+      // problema de dados nem de lógica: é passageira. Sem marcar como
+      // transitório, isso encerrava a busca inteira com status 'erro' só
+      // por causa de um soluço de conexão, obrigando o usuário a clicar em
+      // "Buscar" de novo manualmente — igual às outras instabilidades já
+      // tratadas (429/5xx da SIEG), a próxima tentativa deveria resolver
+      // sozinha.
+      const erro = new Error(`Falha ao ler controle de rate limit da SIEG no Supabase: ${error.message}`);
+      erro.transitorio = true;
+      throw erro;
+    }
 
     const ultima = data?.ultima_chamada ? new Date(data.ultima_chamada).getTime() : 0;
     const agora = Date.now();
@@ -82,7 +95,11 @@ async function aguardarSlotDownloadPersistente(prazoFinal) {
       const { error: erroGravar } = await supabase
         .from('sieg_rate_limit')
         .upsert({ chave: 'baixar_xmls', ultima_chamada: new Date().toISOString() });
-      if (erroGravar) throw new Error(`Falha ao gravar controle de rate limit da SIEG no Supabase: ${erroGravar.message}`);
+      if (erroGravar) {
+        const erro = new Error(`Falha ao gravar controle de rate limit da SIEG no Supabase: ${erroGravar.message}`);
+        erro.transitorio = true;
+        throw erro;
+      }
       return true;
     }
 

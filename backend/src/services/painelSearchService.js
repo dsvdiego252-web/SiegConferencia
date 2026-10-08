@@ -134,8 +134,26 @@ export async function processarUmPasso(cnpj, dataInicio, dataFim, tipo, prazoFin
     // busca — o progresso já salvo continua valendo, e a próxima chamada
     // (poll do navegador ou passo da continuação em segundo plano) tenta
     // de novo sozinha.
-    if (err.transitorio) {
-      await salvarProgresso(cnpj, dataInicio, dataFim, tipo, [...combosConcluidos], docsAcumulados, comboParcial);
+    //
+    // Nem toda chamada ao Supabase espalhada pelos vários serviços (ler
+    // cache de documentos, controle de rate limit, estado da sincronização
+    // etc.) marca explicitamente seus erros como transitórios — um timeout
+    // pontual ali (AbortError, a mesma latência cross-region tratada em
+    // vários lugares já) nunca deveria ser fatal só porque aquele ponto
+    // específico esqueceu de marcar. Reconhece pelo padrão da mensagem como
+    // rede de segurança, além do sinal explícito.
+    const transitorio = err.transitorio || /AbortError/i.test(err.message || '');
+    if (transitorio) {
+      // A própria gravação do progresso pode falhar pela mesma
+      // instabilidade que causou o erro original — não deixa essa segunda
+      // falha derrubar a resposta: o pior caso é só perder esse pedacinho
+      // de progresso (a próxima tentativa refaz), nunca travar sem
+      // resposta nenhuma pro chamador.
+      try {
+        await salvarProgresso(cnpj, dataInicio, dataFim, tipo, [...combosConcluidos], docsAcumulados, comboParcial);
+      } catch (erroSalvar) {
+        console.error('Falha ao salvar progresso após erro transitório:', erroSalvar.message);
+      }
       return {
         tipo: 'buscando',
         progresso: `${combosConcluidos.size}/${combos.length}`,
@@ -143,7 +161,11 @@ export async function processarUmPasso(cnpj, dataInicio, dataFim, tipo, prazoFin
         avisoTransitorio: err.message,
       };
     }
-    await salvarErro(cnpj, dataInicio, dataFim, tipo, err.message);
+    try {
+      await salvarErro(cnpj, dataInicio, dataFim, tipo, err.message);
+    } catch (erroSalvar) {
+      console.error('Falha ao salvar erro (não-transitório) no painel_cache:', erroSalvar.message);
+    }
     return { tipo: 'erro', erro: err.message };
   }
 
