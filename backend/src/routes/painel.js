@@ -71,7 +71,16 @@ painelRouter.get('/', async (req, res) => {
 
     let cache = await lerCache(cnpj, dataInicio, dataFim, tipo);
 
-    const precisaReiniciar = !cache || forcar === '1' || (cache.status === 'pronto' && estaExpirado(cache.atualizado_em));
+    // 'erro' entra aqui também: sem isso, um clique comum em "Buscar"
+    // depois de uma falha (mesmo uma instabilidade passageira que já foi
+    // corrigida ou resolvida sozinha) só repetia pra sempre a mesma
+    // mensagem salva, até alguém descobrir que precisa clicar em "Forçar
+    // atualização" especificamente pra tentar de novo. Reiniciar do zero
+    // num erro é seguro (idempotente — nada se perde, combos já
+    // confirmados no cache permanente não precisam ser rebaixados de
+    // verdade, só reconferidos).
+    const precisaReiniciar =
+      !cache || forcar === '1' || cache.status === 'erro' || (cache.status === 'pronto' && estaExpirado(cache.atualizado_em));
     if (precisaReiniciar) {
       cache = await reiniciarBusca(cnpj, dataInicio, dataFim, tipo, forcar === '1');
     }
