@@ -1316,6 +1316,8 @@ function abrirConsolidadoCliente(cnpj) {
   const linhas = dias
     .map((d) => {
       const pendente = d.semAdequacao > 0 || d.parciais > 0;
+      const aVerificar = d.aVerificar || 0;
+      const classeBadgeAVerificar = aVerificar > 0 ? 'badge-situacao-inconsistente' : 'badge-situacao-ok';
       return `
         <tr class="${pendente ? 'row-inconsistente' : 'row-ok'} row-clickable" data-dia="${d.dia}">
           <td>${formatDate(d.dia)}</td>
@@ -1323,19 +1325,32 @@ function abrirConsolidadoCliente(cnpj) {
           <td>${d.conformes}</td>
           <td>${d.parciais}</td>
           <td>${d.semAdequacao}</td>
+          <td class="cell-clickable" data-dia-verificar="${d.dia}" title="Documentos onde a sugestão do Motor de Mercadorias diverge dos campos da Reforma no XML — clique pra ver só esses">
+            <span class="badge ${classeBadgeAVerificar}">${aVerificar}</span>
+          </td>
         </tr>
       `;
     })
     .join('');
   els.consolidadoClienteModalCorpo.innerHTML = `
-    <p class="hint">Clique num dia pra ver os documentos encontrados naquele dia.</p>
+    <p class="hint">Clique num dia pra ver os documentos encontrados naquele dia. "Documentos a Verificar" conta quem a sugestão do Motor de Mercadorias diverge dos campos da Reforma no XML — clique na coluna pra ver só esses.</p>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Dia</th><th>Documentos</th><th>Conformes</th><th>Parciais</th><th>Sem campos</th></tr></thead>
-        <tbody>${linhas || '<tr class="empty-row"><td colspan="5">Nenhum dia no período filtrado.</td></tr>'}</tbody>
+        <thead><tr><th>Dia</th><th>Documentos</th><th>Conformes</th><th>Parciais</th><th>Sem campos</th><th>Documentos a Verificar</th></tr></thead>
+        <tbody>${linhas || '<tr class="empty-row"><td colspan="6">Nenhum dia no período filtrado.</td></tr>'}</tbody>
       </table>
     </div>
   `;
+  // A célula "Documentos a Verificar" fica DENTRO da linha clicável (que
+  // abre o dia inteiro) — sem parar a propagação, o clique nela também
+  // disparava o clique da linha, abrindo a lista sem filtro nenhum logo
+  // depois de abrir filtrada.
+  els.consolidadoClienteModalCorpo.querySelectorAll('td[data-dia-verificar]').forEach((td) => {
+    td.addEventListener('click', (evento) => {
+      evento.stopPropagation();
+      abrirConsolidadoDocumentos(cnpj, td.dataset.diaVerificar, cliente.nome, 'aVerificar');
+    });
+  });
   els.consolidadoClienteModalCorpo.querySelectorAll('tr[data-dia]').forEach((tr) => {
     tr.addEventListener('click', () => abrirConsolidadoDocumentos(cnpj, tr.dataset.dia, cliente.nome));
   });
@@ -1349,8 +1364,14 @@ function fecharModalConsolidadoDocs() {
 // Nível 3 do drill-down: os documentos de verdade daquele cliente/dia, só
 // do cache (1 chamada leve) — clicar num documento abre o mesmo modal de
 // detalhe completo (itens/divergências/reforma) usado na Conferência Fiscal.
-async function abrirConsolidadoDocumentos(cnpj, dia, nomeCliente) {
-  els.consolidadoDocsModalTitulo.textContent = `${nomeCliente} — ${formatDate(dia)}`;
+// `filtro` (opcional): 'aVerificar' mostra só documentos onde a sugestão do
+// Motor de Mercadorias diverge dos campos da Reforma no XML (mesma
+// conferência da aba "Reforma Tributária" do detalhe do documento — ver
+// validarReformaDocumento, backend) — acionado pela coluna "Documentos a
+// Verificar" do nível 2 do drill-down.
+async function abrirConsolidadoDocumentos(cnpj, dia, nomeCliente, filtro = null) {
+  const sufixoTitulo = filtro === 'aVerificar' ? ' — a verificar' : '';
+  els.consolidadoDocsModalTitulo.textContent = `${nomeCliente} — ${formatDate(dia)}${sufixoTitulo}`;
   els.consolidadoDocsModalCorpo.innerHTML = '<p class="hint">Carregando...</p>';
   els.consolidadoDocsModalOverlay.hidden = false;
   try {
@@ -1364,9 +1385,15 @@ async function abrirConsolidadoDocumentos(cnpj, dia, nomeCliente) {
     // aberto a partir da aba Saídas mostrava entradas misturadas (e
     // vice-versa), incoerente com o resto do painel (que já separa por
     // direção desde o nível 1 do drill-down).
-    const documentos = painel.xmls.documentos.filter((d) => d.operacao === consolidadoDirecaoAtiva);
+    let documentos = painel.xmls.documentos.filter((d) => d.operacao === consolidadoDirecaoAtiva);
+    if (filtro === 'aVerificar') {
+      documentos = documentos.filter((d) => d.validacaoReforma?.status === 'DIVERGENTE');
+    }
     if (!documentos.length) {
-      els.consolidadoDocsModalCorpo.innerHTML = '<p class="hint">Nenhum documento encontrado.</p>';
+      els.consolidadoDocsModalCorpo.innerHTML =
+        filtro === 'aVerificar'
+          ? '<p class="hint">Nenhum documento a verificar neste dia — sugestão do motor bate com os campos do XML em todos.</p>'
+          : '<p class="hint">Nenhum documento encontrado.</p>';
       return;
     }
     const linhas = documentos
@@ -1384,8 +1411,9 @@ async function abrirConsolidadoDocumentos(cnpj, dia, nomeCliente) {
         `;
       })
       .join('');
+    const rotuloFiltro = filtro === 'aVerificar' ? ' a verificar (divergência entre a sugestão do motor e o XML)' : '';
     els.consolidadoDocsModalCorpo.innerHTML = `
-      <p class="hint">${documentos.length} documento(s). Clique numa linha pra ver o detalhe completo.</p>
+      <p class="hint">${documentos.length} documento(s)${rotuloFiltro}. Clique numa linha pra ver o detalhe completo.</p>
       <div class="table-wrap">
         <table>
           <thead><tr><th>Situação</th><th>Operação</th><th>Tipo</th><th>Nº</th><th>Emissão</th><th>Valor</th></tr></thead>

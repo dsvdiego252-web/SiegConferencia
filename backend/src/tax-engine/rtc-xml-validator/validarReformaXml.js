@@ -1,19 +1,24 @@
-// XML_REFORMA_VALIDATOR — primeira versão, escopo A do plano apresentado ao
-// usuário (ver conversa): confere se os campos de IBS/CBS que o PRÓPRIO XML
-// declara (CST, cClassTrib, percentuais, reduções, valores) são
+// XML_REFORMA_VALIDATOR — confere se os campos de IBS/CBS que o PRÓPRIO
+// XML declara (CST, cClassTrib, percentuais, reduções, valores) são
 // internamente coerentes com a tabela oficial de tratamentos carregada em
-// tax-engine/legal-rules/data/classification/treatments.json.
+// tax-engine/legal-rules/data/classification/treatments.json, E compara
+// contra a sugestão do Motor de Mercadorias (goods-engine/
+// classificarMercadoria.js — NCM + descrição), que é quem de fato
+// determina qual código o produto DEVERIA ter.
 //
-// O QUE ESTE MÓDULO NÃO FAZ (ainda): não determina qual É o benefício
-// correto para o produto/serviço (isso depende do Motor de Mercadorias/
-// Serviços, que usa NCM + descrição + regras legais — ainda não
-// implementado). Por isso nunca gera CST_IBSCBS_INCORRETO nem
-// CCLASSTRIB_INCORRETO "porque o produto deveria ser outro código" — só
-// aponta quando o cClassTrib informado no XML não bate com o CST que a
-// própria tabela associa a ele (isso não exige saber o produto, só a
-// tabela). Quando o cClassTrib nem consta na tabela carregada (que tem
-// apenas 26 tratamentos, um subconjunto), o resultado é REVISAO_MANUAL —
-// ausência na nossa tabela não significa código errado.
+// Essas são duas checagens DIFERENTES, e um item pode passar numa e falhar
+// na outra: a checagem de coerência interna só confirma que o CST/
+// cClassTrib DECLARADO bate com o que a tabela diz pra ESSE PAR
+// (ex.: "CST 000 realmente é tributação integral, sem benefício, segundo a
+// tabela") — isso não tem como saber se esse É o código certo pro produto.
+// Um medicamento declarado com CST de tributação integral passa "coerente"
+// nessa checagem sozinha, mesmo sendo candidato a um benefício que a
+// descrição do item evidencia claramente — só a comparação com o Motor de
+// Mercadorias (que lê NCM + descrição) pega esse caso.
+//
+// Quando o cClassTrib nem consta na tabela carregada (que tem apenas 26
+// tratamentos, um subconjunto), o resultado da checagem interna é
+// REVISAO_MANUAL — ausência na nossa tabela não significa código errado.
 //
 // Também não valida diferimento, crédito presumido, tributação regular
 // (gTribRegular) nem monofásico (gIBSCBSMono) em detalhe — a base de dados
@@ -24,8 +29,19 @@
 
 import { getClassification, getTax } from '../legal-rules/repository.js';
 import { DATA_CORTE_PADRAO } from '../../services/reformaTributariaAnalyzer.js';
+import { classificarMercadoria } from '../goods-engine/classificarMercadoria.js';
 
 const TOLERANCIA_PADRAO = 0.02;
+
+// Mesma lista usada no frontend (app.js:ORIGENS_BAIXA_CONFIANCA) pra não
+// destacar a sugestão como garantida — "candidato a benefício" sem regra
+// específica mapeada (um "chute" por falta de dado, não uma classificação
+// com fundamento) não deveria por si só acusar o XML de divergência. Sem
+// isso, a nova comparação contra o motor (abaixo) geraria ruído de falsos
+// positivos em qualquer item cuja única "evidência" é a ausência de regra
+// melhor — justamente os casos em que o próprio motor pede confirmação
+// manual, não os que ele está confiante o bastante pra apontar erro.
+const ORIGENS_BAIXA_CONFIANCA_MOTOR = new Set(['regra_residual', 'regra_generica_sem_evidencia_suficiente', 'conflito_multiplos_candidatos']);
 
 function round2(n) {
   return Math.round((n + Number.EPSILON) * 100) / 100;
@@ -195,6 +211,45 @@ export function validarReformaItem(item, dataEmissaoDocumento, dataCorte = DATA_
     }
 
     notas.push(`Tratamento na tabela de referência: ${tratamento.tratamento} (${tratamento.fundamento}) — ${possuiBeneficio ? 'com' : 'sem'} benefício.`);
+  }
+
+  // Compara contra a sugestão do Motor de Mercadorias (NCM + descrição) —
+  // ver comentário no topo do arquivo: a checagem de "tratamento" acima só
+  // confere coerência INTERNA do código que o XML declarou (bate com a
+  // tabela pra aquele par classTrib/CST), nunca se é o código CERTO pro
+  // produto. Só compara quando o motor tem uma sugestão concreta (CST/
+  // cClassTrib definidos) — REVISAO_MANUAL/PROVAVEL_TRIBUTACAO_INTEGRAL do
+  // motor não são sugestão confiável o bastante pra acusar divergência.
+  const classificacaoMotor = classificarMercadoria(item);
+  const cstSugeridoMotor = numeroOuNull(classificacaoMotor.cstSugerido);
+  const classTribSugeridoMotor = numeroOuNull(classificacaoMotor.cClassTribSugerido);
+  const motorTemSugestaoConcreta =
+    (classificacaoMotor.status === 'CANDIDATO_A_BENEFICIO' || classificacaoMotor.status === 'CONFIRMADO_AUTOMATICO') &&
+    cstSugeridoMotor !== null &&
+    classTribSugeridoMotor !== null &&
+    !(ORIGENS_BAIXA_CONFIANCA_MOTOR.has(classificacaoMotor.origem) || !classificacaoMotor.origem);
+
+  if (motorTemSugestaoConcreta && (cst !== cstSugeridoMotor || classTrib !== classTribSugeridoMotor)) {
+    const tratamentoSugerido = byPair.get(`${classTribSugeridoMotor}|${cstSugeridoMotor}`);
+    const possuiBeneficioSugerido =
+      Boolean(tratamentoSugerido && ((tratamentoSugerido.percReducaoIbs ?? 0) > 0 || (tratamentoSugerido.percReducaoCbs ?? 0) > 0)) ||
+      classificacaoMotor.status === 'CANDIDATO_A_BENEFICIO';
+    const possuiBeneficioDeclarado = Boolean(tratamento && ((tratamento.percReducaoIbs ?? 0) > 0 || (tratamento.percReducaoCbs ?? 0) > 0));
+
+    const descricaoTratamentoDeclarado = tratamento ? ` (${tratamento.tratamento})` : '';
+    divergencias.push(
+      `Motor de Mercadorias aponta "${classificacaoMotor.tratamentoSugerido || tratamentoSugerido?.tratamento || 'tratamento diferente'}" — candidato a benefício a partir de NCM/descrição (CST ${cstSugeridoMotor}/cClassTrib ${classTribSugeridoMotor}) — mas o XML aplicou CST ${cst ?? '-'}/cClassTrib ${classTrib ?? '-'}${descricaoTratamentoDeclarado}.`
+    );
+    if (possuiBeneficioSugerido && !possuiBeneficioDeclarado) {
+      candidatosStatus.push('BENEFICIO_NAO_APLICADO');
+    } else if (!possuiBeneficioSugerido && possuiBeneficioDeclarado) {
+      candidatosStatus.push('BENEFICIO_APLICADO_INDEVIDAMENTE');
+    } else {
+      // Os dois têm (ou não têm) benefício, só discordam em qual código —
+      // menos claro-cortado que os dois casos acima, pede olhar humano em
+      // vez de cravar uma direção específica de erro.
+      candidatosStatus.push('REVISAO_MANUAL');
+    }
   }
 
   const vbc = r.valorBaseCalculo || null;

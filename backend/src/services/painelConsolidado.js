@@ -4,6 +4,7 @@ import { linhaParaDocumento, cacheDocumentosDisponivel } from './documentCache.j
 import { classificarOperacao } from './xmlParser.js';
 import { analisarConformidadeReforma, resolverDataCorteReforma } from './reformaTributariaAnalyzer.js';
 import { montarPainelDeClassificados } from './painelBuilder.js';
+import { validarReformaDocumento } from '../tax-engine/rtc-xml-validator/validarReformaXml.js';
 
 // Não é "os últimos 7 dias têm que estar 100% sincronizados" (like a
 // primeira versão deste relatório tentava) — isso quase nunca acontece na
@@ -110,13 +111,26 @@ export async function gerarPainelConsolidado({ dataInicio, dataFim } = {}) {
       const dia = String(doc.dataEmissao || '').slice(0, 10);
       if (!dia) continue;
       const mapa = operacao === 'saida' ? porDiaSaida : porDiaEntrada;
-      if (!mapa.has(dia)) mapa.set(dia, { dia, totalDocumentos: 0, conformes: 0, parciais: 0, semAdequacao: 0 });
+      if (!mapa.has(dia)) mapa.set(dia, { dia, totalDocumentos: 0, conformes: 0, parciais: 0, semAdequacao: 0, aVerificar: 0 });
       mapa.get(dia).totalDocumentos += 1;
     }
 
     const dataCorteReforma = resolverDataCorteReforma();
     const reforma = analisarConformidadeReforma(classificados, dataCorteReforma);
-    for (const d of reforma.porDocumento) {
+    // "conforme/parcial/sem_adequacao" (acima) só olha se os campos do
+    // grupo IBS/CBS estão PREENCHIDOS no XML — não se o CST/cClassTrib que
+    // o emissor usou batem com o que o Motor de Mercadorias (a partir de
+    // NCM + descrição) determina que deveria ser. "Documentos a Verificar"
+    // é essa segunda conferência (mesma usada no detalhe de cada documento,
+    // aba "Reforma Tributária" — ver validarReformaDocumento), que pode
+    // acusar um documento mesmo já "conforme" (preenchido, mas com o código
+    // errado) ou deixar de acusar um "sem_adequacao" fora do escopo do
+    // motor (ex.: sem itens analisáveis) — por isso é contado à parte, não
+    // reaproveitando situacao acima.
+    const relevantesPorChave = new Map(reforma.porDocumento.map((d) => [d.chave, d]));
+    for (const { doc } of classificados) {
+      const d = relevantesPorChave.get(doc.chave);
+      if (!d) continue;
       const dia = String(d.dataEmissao || '').slice(0, 10);
       const mapa = d.operacao === 'saida' ? porDiaSaida : porDiaEntrada;
       const linha = mapa.get(dia);
@@ -124,6 +138,8 @@ export async function gerarPainelConsolidado({ dataInicio, dataFim } = {}) {
       if (d.situacao === 'conforme') linha.conformes += 1;
       else if (d.situacao === 'parcial') linha.parciais += 1;
       else linha.semAdequacao += 1;
+
+      if (validarReformaDocumento(doc, dataCorteReforma).status === 'DIVERGENTE') linha.aVerificar += 1;
     }
 
     const saida = finalizarDirecao(porDiaSaida);

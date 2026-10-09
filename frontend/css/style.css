@@ -580,6 +580,19 @@ tr.row-clickable {
   cursor: pointer;
 }
 
+/* Célula clicável sozinha dentro de uma linha também clicável (ex.:
+   "Documentos a Verificar" dentro da linha de um dia inteiro) — precisa de
+   destaque próprio pra não parecer só mais uma célula igual às outras, já
+   que o clique nela faz algo mais específico (filtra) que o resto da linha
+   (abre tudo). */
+td.cell-clickable {
+  cursor: pointer;
+}
+
+td.cell-clickable:hover {
+  text-decoration: underline;
+}
+
 tr.row-clickable:hover {
   background: #f0f3ff;
 }
