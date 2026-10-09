@@ -1117,8 +1117,8 @@ function montarMensagemNotificacao(cliente, pendSaida, pendEntrada) {
   const rotuloDirecao = direcoes.length ? ` de ${direcoes.join(' e ')}` : '';
   return (
     `Olá! Aqui é da Vital Contabilidade. Identificamos documentos fiscais${rotuloDirecao} nos últimos 30 dias sem os ` +
-    `campos da Reforma Tributária (IBS/CBS) preenchidos — sinal de que o sistema emissor da ${cliente.nome} pode ` +
-    `estar desatualizado. Poderia verificar com o suporte do seu sistema a atualização pra emissão com os novos campos?`
+    `campos da Reforma Tributária (IBS/CBS) preenchidos — sinal de que o sistema emissor ou todo o cadastro da ${cliente.nome} ` +
+    `possa estar desatualizado. Poderia verificar com o suporte do seu sistema e o cadastro a atualização pra emissão com os novos campos?`
   );
 }
 
