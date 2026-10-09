@@ -1110,15 +1110,18 @@ function telefoneParaWaMe(telefone) {
   return digitos.startsWith('55') ? digitos : `55${digitos}`;
 }
 
-function montarMensagemNotificacao(cliente, pendSaida, pendEntrada) {
-  const direcoes = [];
-  if (pendSaida > 0) direcoes.push('saídas');
-  if (pendEntrada > 0) direcoes.push('entradas');
-  const rotuloDirecao = direcoes.length ? ` de ${direcoes.join(' e ')}` : '';
+// Só sobre SAÍDA de propósito — a pendência é sobre a própria emissão do
+// cliente (sistema dele e/ou cadastro de tributação dos produtos dele),
+// então é algo que ele mesmo pode resolver. Pendência de ENTRADA é sobre o
+// sistema de quem EMITIU pro cliente (o fornecedor) — não faz sentido pedir
+// pro cliente "verificar o cadastro dele" por um problema que não é dele;
+// por isso nunca entra nesta mensagem (ver o filtro em renderNotificacoes).
+function montarMensagemNotificacao(cliente) {
   return (
-    `Olá! Aqui é da Vital Contabilidade. Identificamos documentos fiscais${rotuloDirecao} nos últimos 30 dias sem os ` +
-    `campos da Reforma Tributária (IBS/CBS) preenchidos — sinal de que o sistema emissor ou todo o cadastro da ${cliente.nome} ` +
-    `possa estar desatualizado. Poderia verificar com o suporte do seu sistema e o cadastro a atualização pra emissão com os novos campos?`
+    `Olá! Aqui é da Vital Contabilidade. Identificamos documentos fiscais de saídas nos últimos 30 dias sem os ` +
+    `campos da Reforma Tributária (IBS/CBS) preenchidos — sinal de que o sistema emissor ou o cadastro de tributação ` +
+    `dos produtos da ${cliente.nome} pode precisar de ajuste. Poderia verificar com o suporte do sistema a atualização ` +
+    `dos campos, e revisar o cadastro de tributação dos produtos?`
   );
 }
 
@@ -1134,7 +1137,11 @@ function renderNotificacoes() {
   }
 
   const linhas = ultimoConsolidado.clientes
-    .filter((c) => c.temDados && (c.saida.temPendencia || c.entrada.temPendencia))
+    // Só saída tem pendência que o cliente controla (ver comentário em
+    // montarMensagemNotificacao) — um cliente com pendência só de entrada
+    // (problema do fornecedor dele) não tem nada de acionável aqui, então
+    // nem aparece nesta lista.
+    .filter((c) => c.temDados && c.saida.temPendencia)
     .map((c) => {
       const pendSaida = somarDias(c.saida.dias);
       const pendEntrada = somarDias(c.entrada.dias);
@@ -1143,7 +1150,7 @@ function renderNotificacoes() {
       const cadastro = clientesCarregados.find((cc) => cc.cnpj === c.cnpj);
       const telefoneWa = telefoneParaWaMe(cadastro?.telefone);
       const email = cadastro?.email || null;
-      const mensagem = montarMensagemNotificacao(c, totalSaida, totalEntrada);
+      const mensagem = montarMensagemNotificacao(c);
 
       const botaoWhats = telefoneWa
         ? `<a class="btn-secondary" target="_blank" rel="noopener" href="https://wa.me/${telefoneWa}?text=${encodeURIComponent(mensagem)}">WhatsApp</a>`
